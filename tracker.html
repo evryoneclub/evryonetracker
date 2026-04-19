@@ -947,20 +947,35 @@ async function loadPersonalProgramme(){
 
 function applyPersonalProgramme(prog){
   if(!prog)return;
-  // 1. Dashboard card
+  // Nettoie le markdown
+  const cleanText = (text) => text ? text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/`/g, '')
+    .trim() : '';
+
+  // 1. Dashboard card seulement
   const card=document.getElementById('perso-prog-card');
-  if(card){card.style.display='block';const t=card.querySelector('.prog-training');const n=card.querySelector('.prog-nutrition');if(t)t.textContent=prog.training||'';if(n)n.textContent=prog.nutrition||'';}
+  if(card){
+    card.style.display='block';
+    const t=card.querySelector('.prog-training');
+    const n=card.querySelector('.prog-nutrition');
+    if(t)t.textContent=cleanText(prog.training)||'';
+    if(n)n.textContent=cleanText(prog.nutrition)||'';
+  }
+
   // 2. Repas perso dans Nutrition
   if(prog.meals&&prog.meals.length){
     window.PERSONAL_MEALS=prog.meals.map(m=>({name:m.name||'Repas',kcal:m.kcal||0,p:m.protein||0,c:m.carbs||0,f:m.fat||0,description:m.description||''}));
     window.PERSONAL_KCAL_TARGET=prog.total_kcal||2000;
   }
-  // 3. Programme entraînement perso
+
+  // 3. Programme entraînement perso — seulement dans training
   if(prog.training){
-    window.PERSONAL_TRAINING=prog.training;
+    window.PERSONAL_TRAINING=cleanText(prog.training);
     const badge=document.getElementById('perso-training-badge');if(badge)badge.style.display='flex';
     const section=document.getElementById('perso-plan-section');if(section)section.style.display='block';
-    const text=document.getElementById('perso-plan-text');if(text)text.textContent=prog.training;
+    const text=document.getElementById('perso-plan-text');if(text)text.textContent=cleanText(prog.training);
   }
 }
 
