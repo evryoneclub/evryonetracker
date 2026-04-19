@@ -199,6 +199,7 @@ async function sendOTP(resend = false) {
     // Send email via Resend (through Vercel API)
 // Send email via Resend (through Vercel API)
     await fetch('https://api.resend.com/emails', {
+  mode: 'no-cors',
       method: 'POST',
       headers: {
         'Authorization': `Bearer re_GXhdtfYX_e6zqo1Ga3VTdk8EPZpFqKWS3`,
