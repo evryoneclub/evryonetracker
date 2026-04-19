@@ -1,12 +1,6 @@
 {
   "version": 2,
-  "functions": {
-    "api/send-otp.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/tracker", "dest": "/tracker.html" },
     { "src": "/", "dest": "/index.html" }
   ]
