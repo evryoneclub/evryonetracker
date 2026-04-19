@@ -198,12 +198,14 @@ async function sendOTP(resend = false) {
 
     // Send email via Resend (through Vercel API)
 // Send email via Resend (through Vercel API)
-    await fetch('/api/send-otp', {
+await fetch('https://rusqjfimppgcxusnwyzq.supabase.co/functions/v1/send-otp', {
   method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+  headers: { 
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1c3FqZmltcHBnY3h1c253eXpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1NTExNTUsImV4cCI6MjA5MjEyNzE1NX0.mWXBGMK0t1_Wwcu33Nps8xoHYF9A2LCRMnxkEaW5k88'
+  },
   body: JSON.stringify({ email, code: generatedOTP })
 });
-
     document.getElementById('otp-email').textContent = email;
     showStep('otp');
     document.getElementById('otp-1').focus();
