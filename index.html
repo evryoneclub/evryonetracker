@@ -1,1 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>EVRYØNE TRACKER — Connexion</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0a;--card:#111;--card2:#161616;--border:#1e1e1e;--accent:#ff3333;--green:#22c55e;--text:#f0f0f0;--muted:#555;--radius:16px}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{overflow-x:hidden;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+body::before{content:'';position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(ellipse,rgba(255,51,51,0.08) 0%,transparent 70%);pointer-events:none}
 
+.login-container{width:100%;max-width:400px;position:relative;z-index:1}
+
+.logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,10vw,64px);letter-spacing:0.1em;color:var(--accent);text-align:center;margin-bottom:8px;line-height:1}
+.logo-sub{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.25em;color:var(--muted);text-align:center;margin-bottom:48px}
+
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px}
+.login-title{font-family:'Bebas Neue',sans-serif;font-size:28px;margin-bottom:4px}
+.login-title span{color:var(--accent)}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5}
+
+.field{margin-bottom:16px}
+.field label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:8px}
+.input{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:16px;padding:14px 16px;outline:none;transition:border-color 0.2s}
+.input:focus{border-color:var(--accent)}
+.input::placeholder{color:#333}
+
+.btn{width:100%;padding:15px;background:var(--accent);color:#fff;border:none;border-radius:99px;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:8px}
+.btn:active{transform:scale(0.98)}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+
+.error-box{background:rgba(255,51,51,0.08);border:1px solid rgba(255,51,51,0.2);border-radius:12px;padding:14px;color:#ff9090;font-size:14px;margin-top:14px;display:none;line-height:1.5}
+.success-box{background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:14px;color:var(--green);font-size:14px;margin-top:14px;display:none;line-height:1.5}
+
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0}
+.divider-line{flex:1;height:1px;background:var(--border)}
+.divider-text{font-size:12px;color:var(--muted)}
+
+.info-box{background:rgba(255,51,51,0.04);border:1px solid rgba(255,51,51,0.1);border-radius:12px;padding:14px;margin-top:16px}
+.info-box p{font-size:12px;color:var(--muted);line-height:1.6}
+.info-box strong{color:var(--text)}
+
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.step{display:none}
+.step.active{display:block}
+
+/* OTP inputs */
+.otp-row{display:flex;gap:10px;justify-content:center;margin:16px 0}
+.otp-input{width:48px;height:56px;background:var(--card2);border:2px solid var(--border);border-radius:12px;color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:28px;text-align:center;outline:none;transition:border-color 0.2s}
+.otp-input:focus{border-color:var(--accent)}
+
+.back-btn{background:none;border:none;color:var(--muted);font-family:inherit;font-size:13px;cursor:pointer;margin-top:12px;display:block;text-align:center;width:100%}
+.back-btn:hover{color:var(--text)}
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <div class="logo">EVRYØNE</div>
+  <div class="logo-sub">TRACKER</div>
+
+  <!-- ÉTAPE 1 : EMAIL -->
+  <div class="login-card">
+    <div id="step-email" class="step active">
+      <div class="login-title">ACCÈDE À TON <span>PROGRAMME</span></div>
+      <div class="login-sub">Entre ton email pour accéder à ton programme personnalisé et ton suivi.</div>
+
+      <div class="field">
+        <label>Ton email</label>
+        <input class="input" type="email" id="email-input" placeholder="ton@email.com" inputmode="email" autocomplete="email">
+      </div>
+
+      <button class="btn" id="email-btn" onclick="sendOTP()">Continuer →</button>
+
+      <div class="error-box" id="email-error"></div>
+
+      <div class="divider"><div class="divider-line"></div><div class="divider-text">OU</div><div class="divider-line"></div></div>
+
+      <div class="info-box">
+        <p>🔒 <strong>Connexion sécurisée</strong><br>On t'envoie un code à 6 chiffres par email. Aucun mot de passe à retenir.</p>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 2 : CODE OTP -->
+    <div id="step-otp" class="step">
+      <div class="login-title">ENTRE TON <span>CODE</span></div>
+      <div class="login-sub" id="otp-sub">Code envoyé à <strong id="otp-email"></strong></div>
+
+      <div class="otp-row">
+        <input class="otp-input" type="number" maxlength="1" id="otp-1" oninput="nextOTP(this,1)" onkeydown="prevOTP(event,1)">
+        <input class="otp-input" type="number" maxlength="1" id="otp-2" oninput="nextOTP(this,2)" onkeydown="prevOTP(event,2)">
+        <input class="otp-input" type="number" maxlength="1" id="otp-3" oninput="nextOTP(this,3)" onkeydown="prevOTP(event,3)">
+        <input class="otp-input" type="number" maxlength="1" id="otp-4" oninput="nextOTP(this,4)" onkeydown="prevOTP(event,4)">
+        <input class="otp-input" type="number" maxlength="1" id="otp-5" oninput="nextOTP(this,5)" onkeydown="prevOTP(event,5)">
+        <input class="otp-input" type="number" maxlength="1" id="otp-6" oninput="nextOTP(this,6)" onkeydown="prevOTP(event,6)">
+      </div>
+
+      <button class="btn" id="otp-btn" onclick="verifyOTP()">Vérifier le code</button>
+      <div class="error-box" id="otp-error"></div>
+      <div class="success-box" id="otp-success"></div>
+
+      <button class="back-btn" onclick="showStep('email')">← Changer d'email</button>
+      <button class="back-btn" onclick="sendOTP(true)" style="margin-top:4px">Renvoyer le code</button>
+    </div>
+
+    <!-- ÉTAPE 3 : CHARGEMENT -->
+    <div id="step-loading" class="step">
+      <div style="text-align:center;padding:20px 0">
+        <div style="font-size:48px;margin-bottom:16px">⚡</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;margin-bottom:8px">CHARGEMENT DE<br><span style="color:var(--accent)">TON PROGRAMME</span></div>
+        <div style="color:var(--muted);font-size:13px" id="loading-status">Connexion en cours...</div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 4 : PAS DE PROGRAMME -->
+    <div id="step-noprog" class="step">
+      <div style="text-align:center;padding:20px 0">
+        <div style="font-size:48px;margin-bottom:16px">🔍</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;margin-bottom:8px">AUCUN <span style="color:var(--accent)">PROGRAMME</span></div>
+        <div style="color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:24px">Aucun programme trouvé pour cet email.<br>Souscris un abonnement pour commencer !</div>
+        <a href="https://coach.evryoneclub.com" style="display:block;width:100%;padding:15px;background:var(--accent);color:#fff;border-radius:99px;font-family:inherit;font-size:16px;font-weight:600;text-decoration:none;text-align:center">Créer mon programme →</a>
+        <button class="back-btn" onclick="showStep('email')" style="margin-top:12px">← Essayer un autre email</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://rusqjfimppgcxusnwyzq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1c3FqZmltcHBnY3h1c253eXpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1NTExNTUsImV4cCI6MjA5MjEyNzE1NX0.mWXBGMK0t1_Wwcu33Nps8xoHYF9A2LCRMnxkEaW5k88';
+
+let currentEmail = '';
+let generatedOTP = '';
+
+// ── Supabase fetch helper ──
+async function sbFetch(path, options = {}) {
+  const resp = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation',
+      ...options.headers
+    }
+  });
+  const text = await resp.text();
+  try { return JSON.parse(text); } catch { return text; }
+}
+
+// ── Show step ──
+function showStep(name) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-' + name).classList.add('active');
+}
+
+// ── Generate 6-digit OTP ──
+function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// ── Send OTP via Resend ──
+async function sendOTP(resend = false) {
+  const emailInput = document.getElementById('email-input');
+  const email = resend ? currentEmail : emailInput.value.trim();
+  const btn = document.getElementById('email-btn');
+  const errorBox = document.getElementById('email-error');
+
+  if (!email || !email.includes('@')) {
+    errorBox.textContent = 'Merci d\'entrer un email valide.';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  errorBox.style.display = 'none';
+  currentEmail = email;
+  generatedOTP = generateOTP();
+
+  btn.innerHTML = '<span class="spinner"></span>Envoi en cours...';
+  btn.disabled = true;
+
+  try {
+    // Save OTP in Supabase temporarily
+    await sbFetch('otp_codes?on_conflict=email', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: email,
+        code: generatedOTP,
+        expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString()
+      }),
+      headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' }
+    });
+
+    // Send email via Resend (through Vercel API)
+    await fetch('/api/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, code: generatedOTP })
+    });
+
+    document.getElementById('otp-email').textContent = email;
+    showStep('otp');
+    document.getElementById('otp-1').focus();
+  } catch (e) {
+    // Fallback: show OTP directly (for testing)
+    document.getElementById('otp-email').textContent = email;
+    showStep('otp');
+    document.getElementById('otp-success').textContent = `Code de test : ${generatedOTP}`;
+    document.getElementById('otp-success').style.display = 'block';
+    document.getElementById('otp-1').focus();
+  }
+
+  btn.innerHTML = 'Continuer →';
+  btn.disabled = false;
+}
+
+// ── OTP input navigation ──
+function nextOTP(input, num) {
+  const val = input.value;
+  if (val.length > 1) input.value = val[0];
+  if (val && num < 6) document.getElementById(`otp-${num + 1}`).focus();
+  if (num === 6) verifyOTP();
+}
+function prevOTP(e, num) {
+  if (e.key === 'Backspace' && !document.getElementById(`otp-${num}`).value && num > 1) {
+    document.getElementById(`otp-${num - 1}`).focus();
+  }
+}
+
+// ── Verify OTP ──
+async function verifyOTP() {
+  const code = [1,2,3,4,5,6].map(i => document.getElementById(`otp-${i}`).value).join('');
+  const btn = document.getElementById('otp-btn');
+  const errorBox = document.getElementById('otp-error');
+
+  if (code.length < 6) {
+    errorBox.textContent = 'Entre les 6 chiffres du code.';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  errorBox.style.display = 'none';
+  btn.innerHTML = '<span class="spinner"></span>Vérification...';
+  btn.disabled = true;
+
+  // Verify code
+  if (code !== generatedOTP) {
+    // Check in Supabase
+    try {
+      const result = await sbFetch(`otp_codes?email=eq.${encodeURIComponent(currentEmail)}&select=code,expires_at`);
+      const otpRecord = result[0];
+      if (!otpRecord || otpRecord.code !== code || new Date(otpRecord.expires_at) < new Date()) {
+        errorBox.textContent = 'Code incorrect ou expiré. Réessaie.';
+        errorBox.style.display = 'block';
+        btn.innerHTML = 'Vérifier le code';
+        btn.disabled = false;
+        return;
+      }
+    } catch(e) {
+      errorBox.textContent = 'Erreur de vérification. Réessaie.';
+      errorBox.style.display = 'block';
+      btn.innerHTML = 'Vérifier le code';
+      btn.disabled = false;
+      return;
+    }
+  }
+
+  // ✅ Code correct — charge le programme
+  showStep('loading');
+  document.getElementById('loading-status').textContent = 'Recherche de ton programme...';
+
+  try {
+    // Get or create client
+    let clients = await sbFetch(`clients?email=eq.${encodeURIComponent(currentEmail)}&select=*`);
+    
+    if (!clients.length) {
+      // Nouveau client — crée-le
+      const newClient = await sbFetch('clients', {
+        method: 'POST',
+        body: JSON.stringify({ email: currentEmail, prenom: '' })
+      });
+      clients = newClient;
+    }
+
+    document.getElementById('loading-status').textContent = 'Chargement de ton programme...';
+
+    // Get programme
+    const programmes = await sbFetch(`programmes?email=eq.${encodeURIComponent(currentEmail)}&order=created_at.desc&limit=1&select=*`);
+
+    // Save session
+    localStorage.setItem('evryone-email', currentEmail);
+    localStorage.setItem('evryone-session', JSON.stringify({
+      email: currentEmail,
+      loggedAt: new Date().toISOString()
+    }));
+
+    if (programmes.length) {
+      // Programme trouvé → sauvegarde et redirige
+      const prog = programmes[0];
+      localStorage.setItem('evryone-programme', JSON.stringify({
+        training: prog.training,
+        nutrition: prog.nutrition,
+        profil: prog.profil,
+        mois: prog.mois
+      }));
+      document.getElementById('loading-status').textContent = 'Programme chargé ! Redirection...';
+      setTimeout(() => { window.location.href = '/tracker'; }, 1000);
+    } else {
+      // Pas de programme
+      showStep('noprog');
+    }
+  } catch(e) {
+    // En cas d'erreur, connecte quand même
+    localStorage.setItem('evryone-email', currentEmail);
+    localStorage.setItem('evryone-session', JSON.stringify({ email: currentEmail, loggedAt: new Date().toISOString() }));
+    setTimeout(() => { window.location.href = '/tracker'; }, 500);
+  }
+}
+
+// ── Check si déjà connecté ──
+const session = localStorage.getItem('evryone-session');
+if (session) {
+  try {
+    const s = JSON.parse(session);
+    const loggedAt = new Date(s.loggedAt);
+    const now = new Date();
+    const diffDays = (now - loggedAt) / (1000 * 60 * 60 * 24);
+    if (diffDays < 30) {
+      // Session encore valide → redirect
+      window.location.href = '/tracker';
+    }
+  } catch(e) {}
+}
+
+// ── Enter key on email ──
+document.getElementById('email-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendOTP();
+});
+</script>
+</body>
+</html>
