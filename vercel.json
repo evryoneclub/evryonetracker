@@ -1,9 +1,12 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "*.html", "use": "@vercel/static" }
-  ],
+  "functions": {
+    "api/send-otp.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/tracker", "dest": "/tracker.html" },
     { "src": "/", "dest": "/index.html" }
   ]
