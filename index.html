@@ -185,7 +185,7 @@ async function sendOTP(resend = false) {
   btn.disabled = true;
 
   try {
-    // Save OTP in Supabase temporarily
+// Save OTP in Supabase temporarily
     await sbFetch('otp_codes?on_conflict=email', {
       method: 'POST',
       body: JSON.stringify({
@@ -196,28 +196,19 @@ async function sendOTP(resend = false) {
       headers: { 'Prefer': 'resolution=merge-duplicates,return=representation' }
     });
 
-    // Send email via Resend (through Vercel API)
-// Send email via Resend (through Vercel API)
-await fetch('https://rusqjfimppgcxusnwyzq.supabase.co/functions/v1/send-otp', {
-  method: 'POST',
-  headers: { 
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1c3FqZmltcHBnY3h1c253eXpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1NTExNTUsImV4cCI6MjA5MjEyNzE1NX0.mWXBGMK0t1_Wwcu33Nps8xoHYF9A2LCRMnxkEaW5k88'
-  },
-  body: JSON.stringify({ email, code: generatedOTP })
-});
+    await fetch('https://rusqjfimppgcxusnwyzq.supabase.co/functions/v1/send-otp', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1c3FqZmltcHBnY3h1c253eXpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1NTExNTUsImV4cCI6MjA5MjEyNzE1NX0.mWXBGMK0t1_Wwcu33Nps8xoHYF9A2LCRMnxkEaW5k88'
+      },
+      body: JSON.stringify({ email, code: generatedOTP })
+    });
+
     document.getElementById('otp-email').textContent = email;
     showStep('otp');
     document.getElementById('otp-1').focus();
   } catch (e) {
-    // Fallback: show OTP directly (for testing)
-    document.getElementById('otp-email').textContent = email;
-    showStep('otp');
-    document.getElementById('otp-success').textContent = `Code de test : ${generatedOTP}`;
-    document.getElementById('otp-success').style.display = 'block';
-    document.getElementById('otp-1').focus();
-  }
-    // Fallback: show OTP directly (for testing)
     document.getElementById('otp-email').textContent = email;
     showStep('otp');
     document.getElementById('otp-success').textContent = `Code de test : ${generatedOTP}`;
@@ -228,20 +219,6 @@ await fetch('https://rusqjfimppgcxusnwyzq.supabase.co/functions/v1/send-otp', {
   btn.innerHTML = 'Continuer →';
   btn.disabled = false;
 }
-
-// ── OTP input navigation ──
-function nextOTP(input, num) {
-  const val = input.value;
-  if (val.length > 1) input.value = val[0];
-  if (val && num < 6) document.getElementById(`otp-${num + 1}`).focus();
-  if (num === 6) verifyOTP();
-}
-function prevOTP(e, num) {
-  if (e.key === 'Backspace' && !document.getElementById(`otp-${num}`).value && num > 1) {
-    document.getElementById(`otp-${num - 1}`).focus();
-  }
-}
-
 // ── Verify OTP ──
 async function verifyOTP() {
   const code = [1,2,3,4,5,6].map(i => document.getElementById(`otp-${i}`).value).join('');
