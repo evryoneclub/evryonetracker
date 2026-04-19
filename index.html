@@ -198,25 +198,23 @@ async function sendOTP(resend = false) {
 
     // Send email via Resend (through Vercel API)
 // Send email via Resend (through Vercel API)
-    await fetch('https://api.resend.com/emails', {
-  mode: 'no-cors',
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer re_GXhdtfYX_e6zqo1Ga3VTdk8EPZpFqKWS3`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'EVRYØNE COACH <coach@evryoneclub.com>',
-        to: [email],
-        subject: `${code} — Ton code EVRYØNE`,
-        html: `<div style="background:#0a0a0a;color:#f0f0f0;font-family:Arial;padding:40px;text-align:center"><div style="color:#ff3333;letter-spacing:0.2em;margin-bottom:20px">EVRYØNE TRACKER</div><div style="font-size:18px;margin-bottom:16px">Ton code de connexion</div><div style="background:#161616;border-radius:16px;padding:28px;margin-bottom:16px"><div style="font-size:48px;font-weight:900;letter-spacing:10px;color:#ff3333">${code}</div></div><div style="color:#555;font-size:13px">Expire dans 10 minutes</div></div>`
-      })
-    });
+    await fetch('/api/send-otp', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email, code: generatedOTP })
+});
 
     document.getElementById('otp-email').textContent = email;
     showStep('otp');
     document.getElementById('otp-1').focus();
   } catch (e) {
+    // Fallback: show OTP directly (for testing)
+    document.getElementById('otp-email').textContent = email;
+    showStep('otp');
+    document.getElementById('otp-success').textContent = `Code de test : ${generatedOTP}`;
+    document.getElementById('otp-success').style.display = 'block';
+    document.getElementById('otp-1').focus();
+  }
     // Fallback: show OTP directly (for testing)
     document.getElementById('otp-email').textContent = email;
     showStep('otp');
