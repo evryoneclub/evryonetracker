@@ -604,17 +604,11 @@ img{max-width:100%;height:auto}
   <button class="nav-btn" id="nav-training" onclick="showPage('training')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>Training
   </button>
-  <button class="nav-btn" id="nav-scan" onclick="showPage('scan')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Scan
-  </button>
-  <button class="nav-btn" id="nav-posture" onclick="showPage('posture')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Posture
+  <button class="nav-btn" id="nav-nutrition" onclick="showPage('nutrition')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>Nutrition
   </button>
   <button class="nav-btn" id="nav-recovery" onclick="showPage('recovery')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Récup.
-  </button>
-  <button class="nav-btn" id="nav-coach" onclick="showPage('coach')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Coach Personnel
   </button>
   <button class="nav-btn" id="nav-more" onclick="toggleMore()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>Plus
@@ -623,16 +617,10 @@ img{max-width:100%;height:auto}
 
 <!-- MORE MENU -->
 <div id="more-menu">
-  <button onclick="showPage('evolution');toggleMore()">📸 Évolution</button>
-  <button onclick="showPage('stats');toggleMore()">📊 Stats avancées</button>
-  <button onclick="showPage('nutrition');toggleMore()">🍽️ Nutrition</button>
-  <button onclick="showPage('wellness');toggleMore()">💧 Bien-être</button>
+  <button onclick="showPage('coach');toggleMore()">🤖 Coach Personnel</button>
   <button onclick="showPage('goals');toggleMore()">🎯 Objectifs</button>
-  <button onclick="showPage('community');toggleMore()">👥 Communauté</button>
-  <button onclick="showPage('share');toggleMore()">📤 Partager</button>
+  <button onclick="showPage('wellness');toggleMore()">💧 Bien-être</button>
 </div>
-
-<script>
 // ══════════════════════════════════════
 // PROGRAMME
 // ══════════════════════════════════════
