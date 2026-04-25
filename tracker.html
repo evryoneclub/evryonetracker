@@ -1186,8 +1186,8 @@ function renderSeance() {
   html += '</div>';
 
   // Colonnes header
-  html += '<div style="display:grid;grid-template-columns:1fr 44px 68px 60px 48px;gap:2px;padding:7px 16px;background:#0d0d0d">';
-  ['EXERCICE','S\u00c9R.','REPS','CHARGE','REPOS'].forEach(function(t){
+  html += '<div style="display:grid;grid-template-columns:1fr 44px 68px 48px;gap:2px;padding:7px 16px;background:#0d0d0d">';
+  ['EXERCICE','S\u00c9R.','REPS','REPOS'].forEach(function(t){
     html += '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;' + (t==='EXERCICE'?'':'text-align:center') + '">' + t + '</div>';
   });
   html += '</div>';
@@ -1200,7 +1200,7 @@ function renderSeance() {
     html += '<div style="border-bottom:1px solid #1a1a1a">';
 
     // Ligne cliquable
-    html += '<div style="display:grid;grid-template-columns:1fr 44px 68px 60px 48px;gap:2px;padding:11px 16px;align-items:center;cursor:pointer" onclick="toggleExo('+ei+')">';
+    html += '<div style="display:grid;grid-template-columns:1fr 44px 68px 48px;gap:2px;padding:11px 16px;align-items:center;cursor:pointer" onclick="toggleExo('+ei+')">';
 
     // Exercice col
     html += '<div style="display:flex;align-items:center;gap:8px">';
@@ -1216,7 +1216,6 @@ function renderSeance() {
     // Colonnes
     html += '<div style="text-align:center;font-size:15px;font-weight:700;color:#ddd">' + exo.sets + '</div>';
     html += '<div style="text-align:center;font-size:12px;color:#ddd">' + exo.reps + '</div>';
-    html += '<div style="text-align:center;font-size:11px;color:' + (best?'#ddd':'#444') + '">' + (best?best.poids+'kg':'--') + '</div>';
     html += '<div style="text-align:center;font-size:11px;color:#555">' + formatRest(exo.rest) + '</div>';
     html += '</div>'; // fin ligne
 
