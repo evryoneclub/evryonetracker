@@ -1208,10 +1208,7 @@ function renderRecupHistory() {
 // HEADER
 // ══════════════════════════════════════
 function initHeader() {
-  var profil = state.profil || {};
-  var prenom = profil.prenom || (_email ? _email.split('@')[0] : '');
-  var avatar = document.getElementById('user-avatar');
-  if (avatar) avatar.textContent = prenom ? prenom[0].toUpperCase() : '?';
+  updateHeaderAvatar();
 }
 
 // ══════════════════════════════════════
@@ -1219,6 +1216,204 @@ function initHeader() {
 // ══════════════════════════════════════
 // ══════════════════════════════════════
 // MENU PROFIL
+// ══════════════════════════════════════
+function openProfile() {
+  var panel = document.getElementById('profile-panel');
+  var overlay = document.getElementById('profile-overlay');
+  var profil = state.profil || {};
+
+  // Prénom
+  var prenom = profil.prenom || (_email ? _email.split('@')[0] : '');
+  document.getElementById('profile-prenom').value = prenom;
+  document.getElementById('profile-name-display').textContent = prenom || 'Mon profil';
+  document.getElementById('profile-email-display').textContent = _email || '';
+  document.getElementById('profile-email-static').textContent = _email || '';
+
+  // Avatar
+  var avatarEl = document.getElementById('profile-avatar-big');
+  if (profil.avatarImg) {
+    avatarEl.innerHTML = '<img src="' + profil.avatarImg + '" style="width:100%;height:100%;object-fit:cover">';
+  } else {
+    avatarEl.textContent = prenom ? prenom[0].toUpperCase() : '?';
+  }
+
+  // Date inscription
+  var since = profil.since || null;
+  if (!since) {
+    since = new Date().toISOString().split('T')[0];
+    profil.since = since;
+    state.profil = profil;
+    save();
+  }
+  var sinceDate = new Date(since).toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
+  var sinceEl = document.getElementById('profile-since');
+  var sinceStEl = document.getElementById('profile-since-static');
+  if (sinceEl) sinceEl.textContent = 'Membre depuis le ' + sinceDate;
+  if (sinceStEl) sinceStEl.textContent = sinceDate;
+
+  // Objectifs
+  var obj = state.objectif || {};
+  if (obj.type) document.getElementById('input-objectif-type').value = obj.type;
+  if (obj.depart) document.getElementById('input-poids-depart').value = obj.depart;
+  if (obj.actuel) document.getElementById('input-poids-actuel').value = obj.actuel;
+  if (obj.cible) document.getElementById('input-poids-cible').value = obj.cible;
+
+  // Séances/semaine
+  var spw = profil.seancesPerWeek || 4;
+  document.querySelectorAll('.spw-btn').forEach(function(btn){
+    btn.style.background = parseInt(btn.textContent) === spw ? 'var(--accent)' : '#1e1e1e';
+    btn.style.color = parseInt(btn.textContent) === spw ? '#fff' : '#888';
+  });
+
+  // Notifications
+  var notifs = profil.notifs || {};
+  setToggle('notif-training','toggle-training','thumb-training', !!notifs.training);
+  setToggle('notif-water','toggle-water','thumb-water', !!notifs.water);
+  setToggle('notif-weekly','toggle-weekly','thumb-weekly', !!notifs.weekly);
+
+  // Unités & langue
+  var unit = profil.unit || 'kg';
+  var lang = profil.lang || 'fr';
+  document.getElementById('unit-kg').style.background = unit==='kg' ? 'var(--accent)' : '#1e1e1e';
+  document.getElementById('unit-kg').style.color = unit==='kg' ? '#fff' : '#888';
+  document.getElementById('unit-lbs').style.background = unit==='lbs' ? 'var(--accent)' : '#1e1e1e';
+  document.getElementById('unit-lbs').style.color = unit==='lbs' ? '#fff' : '#888';
+  document.getElementById('lang-fr').style.background = lang==='fr' ? 'var(--accent)' : '#1e1e1e';
+  document.getElementById('lang-fr').style.color = lang==='fr' ? '#fff' : '#888';
+  document.getElementById('lang-en').style.background = lang==='en' ? 'var(--accent)' : '#1e1e1e';
+  document.getElementById('lang-en').style.color = lang==='en' ? '#fff' : '#888';
+
+  overlay.style.display = 'block';
+  setTimeout(function(){ panel.style.transform = 'translateX(0)'; }, 10);
+}
+
+function closeProfile() {
+  document.getElementById('profile-panel').style.transform = 'translateX(100%)';
+  setTimeout(function(){ document.getElementById('profile-overlay').style.display = 'none'; }, 350);
+}
+
+function previewProfileName() {
+  var val = document.getElementById('profile-prenom').value;
+  document.getElementById('profile-name-display').textContent = val || 'Mon profil';
+  var avatarEl = document.getElementById('profile-avatar-big');
+  if (!(state.profil && state.profil.avatarImg)) {
+    avatarEl.textContent = val ? val[0].toUpperCase() : '?';
+  }
+}
+
+function handleAvatarUpload(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var imgData = e.target.result;
+    if (!state.profil) state.profil = {};
+    state.profil.avatarImg = imgData;
+    save();
+    // Afficher dans le menu
+    document.getElementById('profile-avatar-big').innerHTML = '<img src="' + imgData + '" style="width:100%;height:100%;object-fit:cover">';
+    // Mettre à jour l'avatar header
+    updateHeaderAvatar();
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateHeaderAvatar() {
+  var profil = state.profil || {};
+  var avatar = document.getElementById('user-avatar');
+  if (!avatar) return;
+  if (profil.avatarImg) {
+    avatar.style.background = 'transparent';
+    avatar.innerHTML = '<img src="' + profil.avatarImg + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
+  } else {
+    avatar.style.background = 'var(--accent)';
+    var prenom = profil.prenom || (_email ? _email.split('@')[0] : '');
+    avatar.textContent = prenom ? prenom[0].toUpperCase() : '?';
+  }
+}
+
+function saveProfile() {
+  if (!state.profil) state.profil = {};
+  state.profil.prenom = document.getElementById('profile-prenom').value.trim();
+
+  // Objectifs
+  var depart = parseFloat(document.getElementById('input-poids-depart').value) || 0;
+  var actuel = parseFloat(document.getElementById('input-poids-actuel').value) || 0;
+  var cible = parseFloat(document.getElementById('input-poids-cible').value) || 0;
+  var type = document.getElementById('input-objectif-type').value;
+  if (depart || actuel || cible) {
+    state.objectif = { depart, actuel, cible, type };
+  }
+
+  save();
+  updateHeaderAvatar();
+
+  var heroName = document.getElementById('hero-name');
+  if (heroName) {
+    var n = state.profil.prenom || (_email ? _email.split('@')[0] : '');
+    heroName.textContent = n ? n.charAt(0).toUpperCase() + n.slice(1) : '';
+  }
+
+  renderObjectif();
+  closeProfile();
+}
+
+function saveNotif() {
+  if (!state.profil) state.profil = {};
+  if (!state.profil.notifs) state.profil.notifs = {};
+  state.profil.notifs.training = document.getElementById('notif-training').checked;
+  state.profil.notifs.water = document.getElementById('notif-water').checked;
+  state.profil.notifs.weekly = document.getElementById('notif-weekly').checked;
+  updateToggleUI('notif-training','toggle-training','thumb-training');
+  updateToggleUI('notif-water','toggle-water','thumb-water');
+  updateToggleUI('notif-weekly','toggle-weekly','thumb-weekly');
+  save();
+}
+
+function setToggle(inputId, trackId, thumbId, checked) {
+  var el = document.getElementById(inputId);
+  if (el) el.checked = checked;
+  updateToggleUI(inputId, trackId, thumbId);
+}
+
+function updateToggleUI(inputId, trackId, thumbId) {
+  var checked = document.getElementById(inputId) && document.getElementById(inputId).checked;
+  var track = document.getElementById(trackId);
+  var thumb = document.getElementById(thumbId);
+  if (track) track.style.background = checked ? 'var(--accent)' : '#333';
+  if (thumb) { thumb.style.background = checked ? '#fff' : '#666'; thumb.style.left = checked ? '23px' : '3px'; }
+}
+
+function selectSeancesPerWeek(el, n) {
+  if (!state.profil) state.profil = {};
+  state.profil.seancesPerWeek = n;
+  document.querySelectorAll('.spw-btn').forEach(function(btn){
+    btn.style.background = btn === el ? 'var(--accent)' : '#1e1e1e';
+    btn.style.color = btn === el ? '#fff' : '#888';
+  });
+}
+
+function selectUnit(unit, el) {
+  if (!state.profil) state.profil = {};
+  state.profil.unit = unit;
+  ['kg','lbs'].forEach(function(u){
+    var btn = document.getElementById('unit-'+u);
+    btn.style.background = u===unit ? 'var(--accent)' : '#1e1e1e';
+    btn.style.color = u===unit ? '#fff' : '#888';
+  });
+}
+
+function selectLang(lang, el) {
+  if (!state.profil) state.profil = {};
+  state.profil.lang = lang;
+  ['fr','en'].forEach(function(l){
+    var btn = document.getElementById('lang-'+l);
+    btn.style.background = l===lang ? 'var(--accent)' : '#1e1e1e';
+    btn.style.color = l===lang ? '#fff' : '#888';
+  });
+}
+
+
 // ══════════════════════════════════════
 function openProfile() {
   var panel = document.getElementById('profile-panel');
@@ -1324,94 +1519,157 @@ loadPersonalProgramme().then(function() {
 });
 </script>
 <!-- OVERLAY PROFIL -->
-<div id="profile-overlay" onclick="closeProfile()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:400;backdrop-filter:blur(4px)"></div>
+<div id="profile-overlay" onclick="closeProfile()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:400;backdrop-filter:blur(4px)"></div>
 
-<!-- MENU PROFIL (slide from bottom) -->
+<!-- INPUT PHOTO CACHÉ -->
+<input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)">
+
+<!-- MENU PROFIL PLEIN ÉCRAN -->
 <div id="profile-panel" style="
-  position:fixed;bottom:0;left:0;right:0;z-index:401;
-  background:#141414;border-radius:24px 24px 0 0;
-  padding:0 0 env(safe-area-inset-bottom);
-  transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);
+  position:fixed;inset:0;z-index:401;
+  background:#0d0d0d;
+  transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding-bottom:env(safe-area-inset-bottom);
 ">
-  <!-- Handle -->
-  <div style="display:flex;justify-content:center;padding:12px 0 0">
-    <div style="width:36px;height:4px;border-radius:99px;background:#333"></div>
+  <!-- Header -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;position:sticky;top:0;background:#0d0d0d;z-index:10">
+    <button onclick="closeProfile()" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px">←</button>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px">MON PROFIL</div>
+    <button onclick="saveProfile()" style="background:none;border:none;color:var(--accent);font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.5px">SAUVER</button>
   </div>
 
-  <!-- Header profil -->
-  <div style="display:flex;align-items:center;gap:14px;padding:20px 20px 16px">
-    <div style="width:60px;height:60px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:28px;color:#fff;flex-shrink:0" id="profile-avatar-big">?</div>
-    <div style="flex:1">
-      <div style="font-size:18px;font-weight:700" id="profile-name-display">Mon profil</div>
-      <div style="font-size:12px;color:#888;margin-top:2px" id="profile-email-display"></div>
+  <!-- Avatar + Infos principales -->
+  <div style="display:flex;flex-direction:column;align-items:center;padding:20px 20px 28px">
+    <div style="position:relative;margin-bottom:14px" onclick="document.getElementById('avatar-file-input').click()">
+      <div id="profile-avatar-big" style="width:90px;height:90px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:40px;color:#fff;overflow:hidden;cursor:pointer">?</div>
+      <div style="position:absolute;bottom:0;right:0;width:28px;height:28px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid #0d0d0d">📷</div>
     </div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:2px" id="profile-name-display">Mon profil</div>
+    <div style="font-size:12px;color:#888" id="profile-email-display"></div>
+    <div style="font-size:11px;color:#555;margin-top:4px" id="profile-since">Membre depuis --</div>
   </div>
 
-  <div style="height:1px;background:#222;margin:0 20px"></div>
-
-  <!-- Section : Informations -->
-  <div style="padding:16px 20px 0">
-    <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">INFORMATIONS</div>
-
-    <!-- Prénom -->
-    <div style="background:#1a1a1a;border-radius:12px;padding:14px 16px;margin-bottom:8px">
-      <div style="font-size:10px;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Prénom affiché</div>
-      <div style="display:flex;align-items:center;gap:10px">
+  <!-- ── INFOS COMPTE ── -->
+  <div style="padding:0 20px 16px">
+    <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:600">INFOS COMPTE</div>
+    <div style="background:#141414;border-radius:14px;overflow:hidden">
+      <div style="padding:14px 16px;border-bottom:1px solid #1e1e1e">
+        <div style="font-size:10px;color:#666;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Prénom</div>
         <input id="profile-prenom" type="text" placeholder="Ton prénom"
-          style="flex:1;background:none;border:none;color:#fff;font-size:16px;font-weight:600;outline:none;font-family:'DM Sans',sans-serif"
+          style="width:100%;background:none;border:none;color:#fff;font-size:15px;font-weight:600;outline:none;font-family:'DM Sans',sans-serif"
           oninput="previewProfileName()">
-        <span style="font-size:18px">✏️</span>
+      </div>
+      <div style="padding:14px 16px;border-bottom:1px solid #1e1e1e">
+        <div style="font-size:10px;color:#666;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Email</div>
+        <div style="font-size:15px;color:#555" id="profile-email-static"></div>
+      </div>
+      <div style="padding:14px 16px">
+        <div style="font-size:10px;color:#666;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Membre depuis</div>
+        <div style="font-size:15px;font-weight:600" id="profile-since-static">--</div>
       </div>
     </div>
   </div>
 
-  <!-- Section : Notifications -->
-  <div style="padding:4px 20px 0">
-    <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">NOTIFICATIONS</div>
-
-    <div style="background:#1a1a1a;border-radius:12px;overflow:hidden;margin-bottom:8px">
-      <!-- Rappel entraînement -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #222">
-        <div>
-          <div style="font-size:14px;font-weight:600">Rappel entraînement</div>
-          <div style="font-size:11px;color:#888;margin-top:2px">Notification quotidienne</div>
+  <!-- ── OBJECTIFS FITNESS ── -->
+  <div style="padding:0 20px 16px">
+    <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:600">OBJECTIFS FITNESS</div>
+    <div style="background:#141414;border-radius:14px;overflow:hidden">
+      <div style="padding:14px 16px;border-bottom:1px solid #1e1e1e">
+        <div style="font-size:10px;color:#666;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Type d'objectif</div>
+        <select id="input-objectif-type" style="width:100%;background:none;border:none;color:#fff;font-size:15px;font-weight:600;outline:none;font-family:'DM Sans',sans-serif;-webkit-appearance:none">
+          <option value="Prise de masse" style="background:#141414">Prise de masse</option>
+          <option value="Perte de poids" style="background:#141414">Perte de poids</option>
+          <option value="Maintien" style="background:#141414">Maintien</option>
+          <option value="Remise en forme" style="background:#141414">Remise en forme</option>
+          <option value="Performance" style="background:#141414">Performance sportive</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">
+        <div style="padding:14px 16px;border-right:1px solid #1e1e1e">
+          <div style="font-size:10px;color:#666;margin-bottom:4px">Départ (kg)</div>
+          <input type="number" id="input-poids-depart" step="0.1" placeholder="75"
+            style="width:100%;background:none;border:none;color:#fff;font-size:15px;font-weight:600;outline:none;font-family:'DM Sans',sans-serif;-moz-appearance:textfield">
         </div>
-        <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer">
+        <div style="padding:14px 16px;border-right:1px solid #1e1e1e">
+          <div style="font-size:10px;color:#666;margin-bottom:4px">Actuel (kg)</div>
+          <input type="number" id="input-poids-actuel" step="0.1" placeholder="73"
+            style="width:100%;background:none;border:none;color:#fff;font-size:15px;font-weight:600;outline:none;font-family:'DM Sans',sans-serif;-moz-appearance:textfield">
+        </div>
+        <div style="padding:14px 16px">
+          <div style="font-size:10px;color:#666;margin-bottom:4px">Cible (kg)</div>
+          <input type="number" id="input-poids-cible" step="0.1" placeholder="70"
+            style="width:100%;background:none;border:none;color:#fff;font-size:15px;font-weight:600;outline:none;font-family:'DM Sans',sans-serif;-moz-appearance:textfield">
+        </div>
+      </div>
+      <div style="padding:14px 16px;border-top:1px solid #1e1e1e">
+        <div style="font-size:10px;color:#666;margin-bottom:4px">Séances par semaine</div>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <div onclick="selectSeancesPerWeek(this,3)" class="spw-btn" style="flex:1;text-align:center;padding:8px;border-radius:8px;background:#1e1e1e;font-size:14px;font-weight:600;cursor:pointer">3</div>
+          <div onclick="selectSeancesPerWeek(this,4)" class="spw-btn" style="flex:1;text-align:center;padding:8px;border-radius:8px;background:#1e1e1e;font-size:14px;font-weight:600;cursor:pointer">4</div>
+          <div onclick="selectSeancesPerWeek(this,5)" class="spw-btn" style="flex:1;text-align:center;padding:8px;border-radius:8px;background:#1e1e1e;font-size:14px;font-weight:600;cursor:pointer">5</div>
+          <div onclick="selectSeancesPerWeek(this,6)" class="spw-btn" style="flex:1;text-align:center;padding:8px;border-radius:8px;background:#1e1e1e;font-size:14px;font-weight:600;cursor:pointer">6</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── NOTIFICATIONS ── -->
+  <div style="padding:0 20px 16px">
+    <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:600">NOTIFICATIONS</div>
+    <div style="background:#141414;border-radius:14px;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #1e1e1e">
+        <div><div style="font-size:14px;font-weight:600">Rappel entraînement</div><div style="font-size:11px;color:#666;margin-top:2px">Notification quotidienne</div></div>
+        <label style="position:relative;display:inline-block;width:46px;height:26px;cursor:pointer;flex-shrink:0">
           <input type="checkbox" id="notif-training" style="opacity:0;width:0;height:0" onchange="saveNotif()">
-          <span id="toggle-training" style="position:absolute;inset:0;background:#333;border-radius:99px;transition:.3s">
-            <span style="position:absolute;left:2px;top:2px;width:20px;height:20px;border-radius:50%;background:#666;transition:.3s" id="thumb-training"></span>
-          </span>
+          <span id="toggle-training" style="position:absolute;inset:0;background:#333;border-radius:99px;transition:.3s"><span style="position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#666;transition:.3s" id="thumb-training"></span></span>
         </label>
       </div>
-      <!-- Rappel eau -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px">
-        <div>
-          <div style="font-size:14px;font-weight:600">Rappel hydratation</div>
-          <div style="font-size:11px;color:#888;margin-top:2px">Toutes les 2h</div>
-        </div>
-        <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #1e1e1e">
+        <div><div style="font-size:14px;font-weight:600">Rappel hydratation</div><div style="font-size:11px;color:#666;margin-top:2px">Toutes les 2h</div></div>
+        <label style="position:relative;display:inline-block;width:46px;height:26px;cursor:pointer;flex-shrink:0">
           <input type="checkbox" id="notif-water" style="opacity:0;width:0;height:0" onchange="saveNotif()">
-          <span id="toggle-water" style="position:absolute;inset:0;background:#333;border-radius:99px;transition:.3s">
-            <span style="position:absolute;left:2px;top:2px;width:20px;height:20px;border-radius:50%;background:#666;transition:.3s" id="thumb-water"></span>
-          </span>
+          <span id="toggle-water" style="position:absolute;inset:0;background:#333;border-radius:99px;transition:.3s"><span style="position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#666;transition:.3s" id="thumb-water"></span></span>
+        </label>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px">
+        <div><div style="font-size:14px;font-weight:600">Récapitulatif hebdo</div><div style="font-size:11px;color:#666;margin-top:2px">Chaque dimanche</div></div>
+        <label style="position:relative;display:inline-block;width:46px;height:26px;cursor:pointer;flex-shrink:0">
+          <input type="checkbox" id="notif-weekly" style="opacity:0;width:0;height:0" onchange="saveNotif()">
+          <span id="toggle-weekly" style="position:absolute;inset:0;background:#333;border-radius:99px;transition:.3s"><span style="position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#666;transition:.3s" id="thumb-weekly"></span></span>
         </label>
       </div>
     </div>
   </div>
 
-  <!-- Bouton Sauvegarder -->
-  <div style="padding:12px 20px 8px">
-    <button onclick="saveProfile()" style="width:100%;padding:15px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer">
-      SAUVEGARDER
+  <!-- ── PRÉFÉRENCES ── -->
+  <div style="padding:0 20px 16px">
+    <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:600">PRÉFÉRENCES</div>
+    <div style="background:#141414;border-radius:14px;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #1e1e1e">
+        <div><div style="font-size:14px;font-weight:600">Unité de poids</div></div>
+        <div style="display:flex;gap:4px">
+          <div onclick="selectUnit('kg',this)" id="unit-kg" style="padding:6px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:var(--accent);color:#fff">kg</div>
+          <div onclick="selectUnit('lbs',this)" id="unit-lbs" style="padding:6px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:#1e1e1e;color:#888">lbs</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px">
+        <div><div style="font-size:14px;font-weight:600">Langue</div></div>
+        <div style="display:flex;gap:4px">
+          <div onclick="selectLang('fr',this)" id="lang-fr" style="padding:6px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:var(--accent);color:#fff">🇫🇷 FR</div>
+          <div onclick="selectLang('en',this)" id="lang-en" style="padding:6px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:#1e1e1e;color:#888">🇬🇧 EN</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DÉCONNEXION ── -->
+  <div style="padding:0 20px 32px">
+    <button onclick="logout()" style="width:100%;padding:16px;background:#1a1a1a;border:none;border-radius:14px;color:#ff4444;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">
+      ↗ Se déconnecter
     </button>
   </div>
 
-  <!-- Déconnexion -->
-  <div style="padding:0 20px 20px">
-    <button onclick="logout()" style="width:100%;padding:14px;background:#1a1a1a;border:none;border-radius:12px;color:#ff4444;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px">
-      <span>↗</span> Se déconnecter
-    </button>
-  </div>
 </div>
 
 </body>
