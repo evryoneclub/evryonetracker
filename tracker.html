@@ -17,8 +17,8 @@
   --yellow:#f59e0b;
   --blue:#3b82f6;
   --text:#f0f0f0;
-  --muted:#aaa;
-  --muted2:#333;
+  --muted:#e0e0e0;
+  --muted2:#888;
   --radius:12px;
   --nav-h:70px;
 }
@@ -80,7 +80,7 @@ body{display:flex;flex-direction:column}
 .nav-btn{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:4px;background:none;border:none;cursor:pointer;
-  color:var(--muted);transition:color .2s;padding:8px 0;
+  color:#666;transition:color .2s;padding:8px 0;
 }
 .nav-btn svg{width:22px;height:22px;stroke-width:1.8;transition:stroke .2s}
 .nav-btn span{font-size:10px;font-weight:500;letter-spacing:.5px}
@@ -131,7 +131,7 @@ body{display:flex;flex-direction:column}
 .day-btn{
   flex-shrink:0;background:var(--card2);border:1px solid var(--border);
   border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;
-  cursor:pointer;color:var(--muted);transition:.2s;white-space:nowrap;
+  cursor:pointer;color:#888;transition:.2s;white-space:nowrap;
   font-family:'DM Sans',sans-serif;
 }
 .day-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -895,7 +895,7 @@ function renderChart() {
   });
 
   if (dataPoints.length === 0) {
-    svg.innerHTML = '<text x="50%" y="55%" text-anchor="middle" fill="#444" font-size="12" font-family="DM Sans,sans-serif">Complète des séances pour voir ta progression</text>';
+    svg.innerHTML = '<text x="50%" y="55%" text-anchor="middle" fill="#bbb" font-size="12" font-family="DM Sans,sans-serif">Complète des séances pour voir ta progression</text>';
     return;
   }
 
@@ -943,7 +943,7 @@ function renderChart() {
     // Date en bas
     var d = new Date(p.date);
     var lbl = d.getDate() + '/' + (d.getMonth()+1);
-    html += '<text x="' + p.x + '" y="' + (H - 4) + '" text-anchor="middle" fill="#444" font-size="9" font-family="DM Sans,sans-serif">' + lbl + '</text>';
+    html += '<text x="' + p.x + '" y="' + (H - 4) + '" text-anchor="middle" fill="#bbb" font-size="9" font-family="DM Sans,sans-serif">' + lbl + '</text>';
   });
 
   svg.setAttribute('width', W);
