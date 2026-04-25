@@ -1223,13 +1223,17 @@ function openProfile() {
   var profil = state.profil || {};
   var prenom = profil.prenom || (_email ? _email.split('@')[0] : '');
 
-  document.getElementById('profile-name-display').textContent = prenom || 'Mon profil';
+  var nameEl = document.getElementById('profile-name-display');
+  if (nameEl) nameEl.textContent = prenom || 'Mon profil';
 
-  // Avatar menu principal
   updateAvatarEl('profile-avatar-big', profil);
 
   overlay.style.display = 'block';
-  setTimeout(function(){ panel.style.transform = 'translateX(0)'; }, 10);
+  panel.style.display = 'block';
+  panel.style.visibility = 'visible';
+  setTimeout(function(){ 
+    panel.style.transform = 'translateX(0)';
+  }, 10);
 }
 
 function closeProfile() {
@@ -1746,13 +1750,13 @@ loadPersonalProgramme().then(function() {
 </script>
 
 <!-- OVERLAY PROFIL -->
-<div id="profile-overlay" onclick="closeProfile()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:400;backdrop-filter:blur(4px)"></div>
+<div id="profile-overlay" onclick="closeProfile()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9998;backdrop-filter:blur(4px)"></div>
 
 <!-- INPUT PHOTO -->
 <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)">
 
 <!-- ═══ MENU PROFIL PRINCIPAL ═══ -->
-<div id="profile-panel" style="position:fixed;inset:0;z-index:401;background:#0d0d0d;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom)">
+<div id="profile-panel" style="position:fixed;inset:0;z-index:9999;background:#0d0d0d;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom)">
   <div style="padding:16px 20px 0">
     <button onclick="closeProfile()" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:4px;line-height:1">&#10005;</button>
   </div>
@@ -1798,7 +1802,7 @@ loadPersonalProgramme().then(function() {
 </div>
 
 <!-- SOUS-PAGE PROFIL -->
-<div id="sub-profil" style="position:fixed;inset:0;z-index:402;background:#0d0d0d;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)">
+<div id="sub-profil" style="position:fixed;inset:0;z-index:10000;background:#0d0d0d;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)">
   <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;position:sticky;top:0;background:#0d0d0d">
     <button onclick="closeSubPage('sub-profil')" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1">&#8592;</button>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px">PROFIL &amp; OBJECTIFS</div>
@@ -1834,7 +1838,7 @@ loadPersonalProgramme().then(function() {
 </div>
 
 <!-- SOUS-PAGE NOTIFICATIONS -->
-<div id="sub-notifs" style="position:fixed;inset:0;z-index:402;background:#0d0d0d;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)">
+<div id="sub-notifs" style="position:fixed;inset:0;z-index:10000;background:#0d0d0d;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)">
   <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;position:sticky;top:0;background:#0d0d0d">
     <button onclick="closeSubPage('sub-notifs')" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1">&#8592;</button>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px">NOTIFICATIONS</div>
@@ -1849,7 +1853,7 @@ loadPersonalProgramme().then(function() {
 </div>
 
 <!-- SOUS-PAGE PREFERENCES -->
-<div id="sub-prefs" style="position:fixed;inset:0;z-index:402;background:#0d0d0d;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)">
+<div id="sub-prefs" style="position:fixed;inset:0;z-index:10000;background:#0d0d0d;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)">
   <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;position:sticky;top:0;background:#0d0d0d">
     <button onclick="closeSubPage('sub-prefs')" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1">&#8592;</button>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px">PR&#201;F&#201;RENCES</div>
@@ -1863,7 +1867,7 @@ loadPersonalProgramme().then(function() {
 </div>
 
 <!-- SOUS-PAGE SUPPORT -->
-<div id="sub-support" style="position:fixed;inset:0;z-index:402;background:#0d0d0d;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)">
+<div id="sub-support" style="position:fixed;inset:0;z-index:10000;background:#0d0d0d;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)">
   <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;position:sticky;top:0;background:#0d0d0d">
     <button onclick="closeSubPage('sub-support')" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1">&#8592;</button>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px">SUPPORT</div>
