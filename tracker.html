@@ -399,23 +399,37 @@ body{display:flex;flex-direction:column}
   </div>
 
   <div class="page" id="page-training">
-    <div style="margin-bottom:14px">
-      <div style="font-family:Bebas Neue,sans-serif;font-size:32px;letter-spacing:3px;margin-bottom:10px">MON <span style="color:var(--accent)">ENTRAÎNEMENT</span></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center">
-          <div style="font-family:Bebas Neue,sans-serif;font-size:36px;line-height:1;color:var(--accent)" id="total-seances-training">0</div>
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;margin-top:2px">💪 Séances</div>
+
+    <!-- HEADER ENTRAÎNEMENT -->
+    <div style="margin-bottom:16px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;margin-bottom:12px">MON <span style="color:var(--accent)">ENTRAÎNEMENT</span></div>
+
+      <!-- Semaine + compteurs -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div>
+          <div style="font-size:16px;font-weight:700" id="week-label">Semaine --</div>
+          <div style="font-size:12px;color:#888" id="week-dates"></div>
         </div>
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center">
-          <div style="font-family:Bebas Neue,sans-serif;font-size:36px;line-height:1;color:var(--green)" id="total-series-training">0</div>
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;margin-top:2px">✅ Séries</div>
+        <div style="display:flex;gap:16px">
+          <div style="text-align:center">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent)" id="total-seances-training">0</div>
+            <div style="font-size:9px;color:#666;text-transform:uppercase">Séances</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--green)" id="total-series-training">0</div>
+            <div style="font-size:9px;color:#666;text-transform:uppercase">Séries</div>
+          </div>
         </div>
       </div>
-    </div>
-    <div id="day-selector" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px"></div>
-    <div id="seance-content"></div>
-  </div>
 
+      <!-- CALENDRIER SEMAINE -->
+      <div id="week-calendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px"></div>
+    </div>
+
+    <!-- SÉANCE DU JOUR -->
+    <div id="seance-content"></div>
+
+  </div>
   <div class="page" id="page-nutrition">
     <div class="card">
       <div class="card-title">MACROS DU JOUR</div>
@@ -744,10 +758,12 @@ if (!state.water) state.water = {};
 if (!state.recup) state.recup = {};
 if (!state.feeling) state.feeling = {};
 if (!state.poids) state.poids = {};
+if (!state.notes) state.notes = {};
 if (!state.objectif) state.objectif = {};
 
 let timerInterval = null;
-let currentDay = 0;
+var _todayWeekDay = (new Date().getDay() + 6) % 7; // 0=lun, 6=dim
+let currentDay = _todayWeekDay;
 let feeling = state.feeling[today] !== undefined ? state.feeling[today] : -1;
 
 function save() { localStorage.setItem('evryone-state', JSON.stringify(state)); }
@@ -1721,4 +1737,302 @@ loadPersonalProgramme().then(function() {
 </script>
 
 </body>
-</html>
+</html// ═══════════════════════════════════════
+// TRAINING
+// ═══════════════════════════════════════
+
+function countSeries() {
+  var t = 0;
+  Object.values(state.sets || {}).forEach(function(o){ Object.values(o).forEach(function(v){ if(v===true) t++; }); });
+  return t;
+}
+function countSeances() {
+  return Object.keys(state.doneSeances || {}).filter(function(k){ return !k.includes('_d') && state.doneSeances[k]; }).length;
+}
+
+// Obtenir le lundi de la semaine courante
+function getWeekStart(date) {
+  var d = new Date(date);
+  var day = d.getDay();
+  var diff = (day === 0 ? -6 : 1 - day);
+  d.setDate(d.getDate() + diff);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function initTraining() {
+  document.getElementById('total-seances-training').textContent = countSeances();
+  document.getElementById('total-series-training').textContent = countSeries();
+  renderWeekCalendar();
+  renderSeance();
+}
+
+function renderWeekCalendar() {
+  var weekStart = getWeekStart(new Date());
+  var days = ['LUN','MAR','MER','JEU','VEN','SAM','DIM'];
+  var months = ['jan','fév','mar','avr','mai','jun','jul','aoû','sep','oct','nov','déc'];
+
+  // Label semaine
+  var weekNum = getWeekNumber(weekStart);
+  document.getElementById('week-label').textContent = 'Semaine ' + weekNum;
+  var weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate() + 6);
+  document.getElementById('week-dates').textContent =
+    weekStart.getDate() + ' – ' + weekEnd.getDate() + ' ' + months[weekEnd.getMonth()];
+
+  var cal = document.getElementById('week-calendar');
+  cal.innerHTML = '';
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(weekStart);
+    d.setDate(d.getDate() + i);
+    var dateStr = d.toISOString().split('T')[0];
+    var isToday = dateStr === today;
+    var isDone = !!state.doneSeances[dateStr];
+    var isRest = PROGRAM[i] && PROGRAM[i].rest;
+
+    // Associer chaque jour de semaine à un jour du programme
+    var progDay = PROGRAM[i];
+
+    var btn = document.createElement('div');
+    btn.style.cssText = 'text-align:center;cursor:pointer;border-radius:10px;padding:8px 4px;transition:.2s;' +
+      (isToday ? 'background:var(--accent);' : isDone ? 'background:#0a1a0a;' : 'background:#1a1a1a;');
+    btn.innerHTML =
+      '<div style="font-size:9px;font-weight:700;letter-spacing:.5px;color:' + (isToday ? '#fff' : '#666') + ';margin-bottom:4px">' + days[i] + '</div>' +
+      '<div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:' + (isToday ? '#fff' : isDone ? 'var(--green)' : '#ddd') + ';line-height:1">' + d.getDate() + '</div>' +
+      (isDone ? '<div style="width:6px;height:6px;border-radius:50%;background:var(--green);margin:3px auto 0"></div>' :
+       isRest ? '<div style="font-size:8px;color:#444;margin-top:3px">REPOS</div>' :
+       '<div style="width:6px;height:6px;border-radius:50%;background:' + (isToday?'rgba(255,255,255,.4)':'#333') + ';margin:3px auto 0"></div>');
+
+    (function(idx){ btn.onclick = function(){ currentDay = idx; renderSeance(); highlightCalendar(idx); }; })(i);
+    cal.appendChild(btn);
+  }
+}
+
+function highlightCalendar(activeIdx) {
+  var cal = document.getElementById('week-calendar');
+  if (!cal) return;
+  Array.from(cal.children).forEach(function(btn, i) {
+    var weekStart = getWeekStart(new Date());
+    var d = new Date(weekStart); d.setDate(d.getDate() + i);
+    var dateStr = d.toISOString().split('T')[0];
+    var isActive = i === activeIdx;
+    var isDone = !!state.doneSeances[dateStr];
+    btn.style.background = isActive ? 'var(--accent)' : isDone ? '#0a1a0a' : '#1a1a1a';
+  });
+}
+
+function getWeekNumber(d) {
+  var date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+  var yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+}
+
+function renderSeance() {
+  var day = PROGRAM[currentDay];
+  var cont = document.getElementById('seance-content');
+  if (!cont) return;
+
+  if (day.rest) {
+    cont.innerHTML = '<div style="text-align:center;padding:48px 16px;background:#141414;border-radius:16px">' +
+      '<div style="font-size:52px;margin-bottom:12px">🛌</div>' +
+      '<div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:#555">JOUR DE REPOS</div>' +
+      '<div style="font-size:13px;color:#555;margin-top:8px">Récupère, mange bien, hydrate-toi 💧</div></div>';
+    return;
+  }
+
+  var sk = today + '_d' + currentDay;
+  if (!state.sets[sk]) state.sets[sk] = {};
+  if (!state.poids[sk]) state.poids[sk] = {};
+  var seanceDone = !!state.doneSeances[sk];
+
+  // Header séance
+  var totalSeries = day.exercises.reduce(function(a,e){ return a+e.sets; }, 0);
+  var seriesDone = Object.values(state.sets[sk] || {}).filter(function(v){ return v===true; }).length;
+
+  var html = '<div style="background:#141414;border-radius:16px;overflow:hidden;margin-bottom:12px">' +
+    '<div style="padding:16px 16px 12px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between">' +
+    '<div style="display:flex;align-items:center;gap:10px">' +
+    '<div style="width:4px;height:28px;background:var(--accent);border-radius:2px"></div>' +
+    '<div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px">' + day.name + '</div>' +
+    '</div>' +
+    (seanceDone ? '<div style="background:rgba(34,197,94,.15);color:var(--green);font-size:12px;font-weight:700;padding:5px 12px;border-radius:99px;display:flex;align-items:center;gap:4px">✓ Terminé</div>' :
+      '<div style="font-size:12px;color:#666">' + seriesDone + '/' + totalSeries + ' séries</div>') +
+    '</div>' +
+
+    // En-tête colonnes
+    '<div style="display:grid;grid-template-columns:1fr 60px 80px 70px 60px;gap:4px;padding:8px 16px;background:#111">' +
+    '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px">EXERCICE</div>' +
+    '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;text-align:center">SÉR.</div>' +
+    '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;text-align:center">REPS</div>' +
+    '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;text-align:center">CHARGE</div>' +
+    '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;text-align:center">REPOS</div>' +
+    '</div>';
+
+  day.exercises.forEach(function(exo, ei) {
+    var allDone = Array.from({length: exo.sets}, function(_,s){ return state.sets[sk][ei+'_'+s]===true; }).every(Boolean);
+    var prevPd = getBestSet(ei, currentDay);
+
+    html += '<div id="exo-row-' + ei + '" style="border-bottom:1px solid #1a1a1a;cursor:pointer" onclick="toggleExo(' + ei + ')">' +
+      '<div style="display:grid;grid-template-columns:1fr 60px 80px 70px 60px;gap:4px;padding:12px 16px;align-items:center">' +
+
+      // Numéro + image + nom
+      '<div style="display:flex;align-items:center;gap:10px">' +
+      '<div style="width:28px;height:28px;border-radius:50%;background:' + (allDone ? 'var(--green)' : '#222') + ';border:2px solid ' + (allDone ? 'var(--green)' : 'var(--accent)') + ';display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:14px;color:' + (allDone ? '#fff' : 'var(--accent)') + ';flex-shrink:0">' + (allDone ? '✓' : (ei+1)) + '</div>' +
+      '<div style="width:44px;height:44px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#222">' +
+      (exo.gif ? '<img src="' + exo.gif + '" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.parentElement.style.background='#222'">' : '') +
+      '</div>' +
+      '<div>' +
+      '<div style="font-size:13px;font-weight:600;color:#fff;line-height:1.3">' + exo.name + '</div>' +
+      (prevPd ? '<div style="font-size:10px;color:#555;margin-top:2px">Dernier: ' + prevPd.poids + 'kg × ' + prevPd.reps + '</div>' : '<div style="font-size:10px;color:#444;margin-top:2px">Exercice composé</div>') +
+      '</div></div>' +
+
+      // Séries
+      '<div style="text-align:center;font-size:15px;font-weight:700;color:#ddd">' + exo.sets + '</div>' +
+      // Reps
+      '<div style="text-align:center;font-size:14px;color:#ddd">' + exo.reps + '</div>' +
+      // Charge
+      '<div style="text-align:center;font-size:13px;color:' + (prevPd ? '#ddd' : '#444') + '">' + (prevPd ? prevPd.poids + ' kg' : '-- kg') + '</div>' +
+      // Repos
+      '<div style="text-align:center;font-size:12px;color:#666">' + formatRest(exo.rest) + '</div>' +
+      '</div>' +
+
+      // Séries détail (expandable)
+      '<div id="exo-body-' + ei + '" class="exo-body" style="display:none;padding:0 16px 12px">' +
+      '<div style="display:grid;grid-template-columns:28px 1fr 1fr 44px;gap:8px;padding:4px 0 6px;border-bottom:1px solid #222;font-size:9px;color:#555;text-transform:uppercase;text-align:center;letter-spacing:.5px;margin-bottom:4px">' +
+      '<div>S</div><div>POIDS (kg)</div><div>REPS</div><div>OK</div></div>';
+
+    for (var s = 0; s < exo.sets; s++) {
+      var k = ei + '_' + s;
+      var done = state.sets[sk][k] === true;
+      var pd = state.poids[sk][k] || {};
+      html += '<div class="set-row">' +
+        '<div class="set-num' + (done?' done-num':'') + '">' + (s+1) + '</div>' +
+        '<input class="set-input' + (done?' filled':'') + '" type="number" step="0.5" min="0" id="p-'+ei+'-'+s+'" placeholder="' + (prevPd?prevPd.poids:'0') + '" value="' + (done&&pd.poids?pd.poids:'') + '" data-ei="'+ei+'" data-si="'+s+'" onchange="saveFromInput(this)">' +
+        '<input class="set-input' + (done?' filled':'') + '" type="number" min="0" id="r-'+ei+'-'+s+'" placeholder="' + exo.reps + '" value="' + (done&&pd.reps?pd.reps:'') + '" data-ei="'+ei+'" data-si="'+s+'" onchange="saveFromInput(this)">' +
+        '<button class="set-ok' + (done?' done':'') + '" id="ok-'+ei+'-'+s+'" data-ei="'+ei+'" data-si="'+s+'" data-rest="'+exo.rest+'" onclick="validateFromBtn(this)">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></button>' +
+        '</div>';
+    }
+    html += '</div></div>';
+  });
+
+  html += '</div>';
+
+  // Résumé séance
+  var totalVol = 0;
+  Object.keys(state.poids[sk] || {}).forEach(function(k){
+    var pd = state.poids[sk][k];
+    if (pd && pd.poids && pd.reps) totalVol += pd.poids * pd.reps;
+  });
+  html += '<div style="background:#141414;border-radius:14px;padding:14px 16px;margin-bottom:12px">' +
+    '<div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:6px">' +
+    '<span style="font-size:14px">📊</span> RÉSUMÉ DE LA SÉANCE</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px">' +
+    '<div style="text-align:center"><div style="font-size:9px;color:#555;text-transform:uppercase;margin-bottom:4px">Volume</div><div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--text)">' + Math.round(totalVol) + '<span style="font-size:11px"> kg</span></div></div>' +
+    '<div style="text-align:center"><div style="font-size:9px;color:#555;text-transform:uppercase;margin-bottom:4px">Séries</div><div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--text)">' + seriesDone + '/' + totalSeries + '</div></div>' +
+    '<div style="text-align:center"><div style="font-size:9px;color:#555;text-transform:uppercase;margin-bottom:4px">Exercices</div><div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--text)">' + day.exercises.length + '</div></div>' +
+    '<div style="text-align:center"><div style="font-size:9px;color:#555;text-transform:uppercase;margin-bottom:4px">Repos</div><div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--text)">' + formatRest(day.exercises[0]&&day.exercises[0].rest||90) + '</div></div>' +
+    '</div></div>';
+
+  // Notes
+  html += '<div style="background:#141414;border-radius:14px;padding:14px 16px;margin-bottom:12px">' +
+    '<div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:6px"><span style="font-size:14px">📝</span> NOTES DE LA SÉANCE</div>' +
+    '<textarea id="seance-notes" placeholder="Comment s'est passée ta séance ? Ajoute des notes ici..." ' +
+    'style="width:100%;background:none;border:none;color:#aaa;font-size:13px;resize:none;outline:none;font-family:'DM Sans',sans-serif;line-height:1.6;min-height:60px" ' +
+    'onchange="saveNotes('' + sk + '')">' + (state.notes && state.notes[sk] ? state.notes[sk] : '') + '</textarea></div>';
+
+  // Bouton terminer
+  if (!seanceDone) {
+    html += '<button class="btn-finish" onclick="finishSeance()">TERMINER LA SÉANCE 🔥</button>';
+  } else {
+    html += '<div style="text-align:center;padding:16px;color:var(--green);font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px">✅ SÉANCE COMPLÉTÉE !</div>';
+  }
+
+  cont.innerHTML = html;
+
+  // Ouvrir le 1er exo par défaut
+  var firstBody = document.getElementById('exo-body-0');
+  if (firstBody && !seanceDone) firstBody.style.display = 'block';
+}
+
+function formatRest(s) {
+  if (s >= 60) return Math.floor(s/60) + ' min' + (s%60 ? ' ' + s%60 : '');
+  return s + 's';
+}
+
+function getBestSet(ei, dayIdx) {
+  var prevKeys = Object.keys(state.poids || {}).filter(function(k){
+    return k !== (today+'_d'+dayIdx) && k.endsWith('_d'+dayIdx);
+  });
+  if (!prevKeys.length) return null;
+  var lastKey = prevKeys[prevKeys.length-1];
+  var sets = state.poids[lastKey] || {};
+  var best = null;
+  Object.keys(sets).forEach(function(k){
+    if (k.startsWith(ei+'_')) {
+      var pd = sets[k];
+      if (pd && pd.poids && (!best || pd.poids > best.poids)) best = pd;
+    }
+  });
+  return best;
+}
+
+function toggleExo(ei) {
+  var body = document.getElementById('exo-body-' + ei);
+  if (!body) return;
+  var isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+}
+
+function saveFromInput(input) {
+  var ei = parseInt(input.dataset.ei);
+  var si = parseInt(input.dataset.si);
+  var sk = today + '_d' + currentDay;
+  var pEl = document.getElementById('p-' + ei + '-' + si);
+  var rEl = document.getElementById('r-' + ei + '-' + si);
+  if (!state.poids[sk]) state.poids[sk] = {};
+  state.poids[sk][ei + '_' + si] = { poids: parseFloat(pEl.value)||0, reps: parseInt(rEl.value)||0 };
+  save();
+}
+
+function validateFromBtn(btn) {
+  var ei = parseInt(btn.dataset.ei);
+  var si = parseInt(btn.dataset.si);
+  var rest = parseInt(btn.dataset.rest);
+  var sk = today + '_d' + currentDay;
+  saveFromInput(document.getElementById('p-' + ei + '-' + si));
+  var k = ei + '_' + si;
+  if (!state.sets[sk]) state.sets[sk] = {};
+  var done = !(state.sets[sk][k] === true);
+  state.sets[sk][k] = done;
+  save();
+  if (done) startTimer(rest);
+  // Refresh séance
+  renderSeance();
+  document.getElementById('total-series-training').textContent = countSeries();
+  initDash();
+  // Rouvrir le même exo
+  var body = document.getElementById('exo-body-' + ei);
+  if (body) body.style.display = 'block';
+}
+
+function saveNotes(sk) {
+  if (!state.notes) state.notes = {};
+  var el = document.getElementById('seance-notes');
+  if (el) state.notes[sk] = el.value;
+  save();
+}
+
+function finishSeance() {
+  var key = today + '_d' + currentDay;
+  state.doneSeances[key] = true;
+  state.doneSeances[today] = true;
+  save();
+  renderSeance();
+  renderWeekCalendar();
+  initDash();
+  document.getElementById('cg-sub').textContent = 'Séance ' + PROGRAM[currentDay].name + ' terminée 💪';
+  document.getElementById('congrats-overlay').classList.add('show');
+}
+
+>
