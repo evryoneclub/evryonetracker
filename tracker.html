@@ -1110,8 +1110,10 @@ function renderWeekCalendar() {
     d.setDate(d.getDate() + i);
     var dateStr = d.toISOString().split('T')[0];
     var isToday = dateStr === today;
-    var isDone = !!state.doneSeances[dateStr];
     var isRest = PROGRAM[i] && PROGRAM[i].rest;
+    // Vérifier si la séance de ce jour précis est terminée (clé weekDate_dX)
+    var weekDateKey = d.toISOString().split('T')[0] + '_d' + i;
+    var isDone = !isRest && !!state.doneSeances[weekDateKey];
     var isActive = i === currentDay;
 
     var btn = document.createElement('div');
@@ -1315,8 +1317,6 @@ function finishSeance() {
   var weekDateStr = weekStart.toISOString().split('T')[0];
   var sk = weekDateStr+'_d'+currentDay;
   state.doneSeances[sk] = true;
-  // Marquer aussi le vrai jour today si c'est la semaine courante
-  if (weekOffset===0) state.doneSeances[today] = true;
   save();
   renderSeance();
   renderWeekCalendar();
