@@ -1592,80 +1592,9 @@ function exportData() {
 
 
 // ══════════════════════════════════════
-function openProfile() {
-  var panel = document.getElementById('profile-panel');
-  var overlay = document.getElementById('profile-overlay');
-  var profil = state.profil || {};
 
-  // Prénom
-  var prenom = profil.prenom || (_email ? _email.split('@')[0] : '');
-  document.getElementById('profile-prenom').value = prenom;
-  document.getElementById('profile-name-display').textContent = prenom || 'Mon profil';
-  document.getElementById('profile-email-display').textContent = _email || '';
-  document.getElementById('profile-email-static').textContent = _email || '';
 
-  // Avatar
-  var avatarEl = document.getElementById('profile-avatar-big');
-  if (profil.avatarImg) {
-    avatarEl.innerHTML = '<img src="' + profil.avatarImg + '" style="width:100%;height:100%;object-fit:cover">';
-  } else {
-    avatarEl.textContent = prenom ? prenom[0].toUpperCase() : '?';
-  }
 
-  // Date inscription
-  var since = profil.since || null;
-  if (!since) {
-    since = new Date().toISOString().split('T')[0];
-    profil.since = since;
-    state.profil = profil;
-    save();
-  }
-  var sinceDate = new Date(since).toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
-  var sinceEl = document.getElementById('profile-since');
-  var sinceStEl = document.getElementById('profile-since-static');
-  if (sinceEl) sinceEl.textContent = 'Membre depuis le ' + sinceDate;
-  if (sinceStEl) sinceStEl.textContent = sinceDate;
-
-  // Objectifs
-  var obj = state.objectif || {};
-  if (obj.type) document.getElementById('input-objectif-type').value = obj.type;
-  if (obj.depart) document.getElementById('input-poids-depart').value = obj.depart;
-  if (obj.actuel) document.getElementById('input-poids-actuel').value = obj.actuel;
-  if (obj.cible) document.getElementById('input-poids-cible').value = obj.cible;
-
-  // Séances/semaine
-  var spw = profil.seancesPerWeek || 4;
-  document.querySelectorAll('.spw-btn').forEach(function(btn){
-    btn.style.background = parseInt(btn.textContent) === spw ? 'var(--accent)' : '#1e1e1e';
-    btn.style.color = parseInt(btn.textContent) === spw ? '#fff' : '#888';
-  });
-
-  // Notifications
-  var notifs = profil.notifs || {};
-  setToggle('notif-training','toggle-training','thumb-training', !!notifs.training);
-  setToggle('notif-water','toggle-water','thumb-water', !!notifs.water);
-  setToggle('notif-weekly','toggle-weekly','thumb-weekly', !!notifs.weekly);
-
-  // Unités & langue
-  var unit = profil.unit || 'kg';
-  var lang = profil.lang || 'fr';
-  document.getElementById('unit-kg').style.background = unit==='kg' ? 'var(--accent)' : '#1e1e1e';
-  document.getElementById('unit-kg').style.color = unit==='kg' ? '#fff' : '#888';
-  document.getElementById('unit-lbs').style.background = unit==='lbs' ? 'var(--accent)' : '#1e1e1e';
-  document.getElementById('unit-lbs').style.color = unit==='lbs' ? '#fff' : '#888';
-  document.getElementById('lang-fr').style.background = lang==='fr' ? 'var(--accent)' : '#1e1e1e';
-  document.getElementById('lang-fr').style.color = lang==='fr' ? '#fff' : '#888';
-  document.getElementById('lang-en').style.background = lang==='en' ? 'var(--accent)' : '#1e1e1e';
-  document.getElementById('lang-en').style.color = lang==='en' ? '#fff' : '#888';
-
-  overlay.style.display = 'block';
-  setTimeout(function(){ panel.style.transform = 'translateX(0)'; }, 10);
-}
-
-function closeProfile() {
-  document.getElementById('profile-panel').style.transform = 'translateX(100%)';
-  setTimeout(function(){ document.getElementById('profile-overlay').style.display = 'none'; }, 350);
-}
 
 function previewProfileName() {
   var val = document.getElementById('profile-prenom').value;
@@ -1707,43 +1636,9 @@ function updateHeaderAvatar() {
   }
 }
 
-function saveProfile() {
-  if (!state.profil) state.profil = {};
-  state.profil.prenom = document.getElementById('profile-prenom').value.trim();
 
-  // Objectifs
-  var depart = parseFloat(document.getElementById('input-poids-depart').value) || 0;
-  var actuel = parseFloat(document.getElementById('input-poids-actuel').value) || 0;
-  var cible = parseFloat(document.getElementById('input-poids-cible').value) || 0;
-  var type = document.getElementById('input-objectif-type').value;
-  if (depart || actuel || cible) {
-    state.objectif = { depart, actuel, cible, type };
-  }
 
-  save();
-  updateHeaderAvatar();
 
-  var heroName = document.getElementById('hero-name');
-  if (heroName) {
-    var n = state.profil.prenom || (_email ? _email.split('@')[0] : '');
-    heroName.textContent = n ? n.charAt(0).toUpperCase() + n.slice(1) : '';
-  }
-
-  renderObjectif();
-  closeProfile();
-}
-
-function saveNotif() {
-  if (!state.profil) state.profil = {};
-  if (!state.profil.notifs) state.profil.notifs = {};
-  state.profil.notifs.training = document.getElementById('notif-training').checked;
-  state.profil.notifs.water = document.getElementById('notif-water').checked;
-  state.profil.notifs.weekly = document.getElementById('notif-weekly').checked;
-  updateToggleUI('notif-training','toggle-training','thumb-training');
-  updateToggleUI('notif-water','toggle-water','thumb-water');
-  updateToggleUI('notif-weekly','toggle-weekly','thumb-weekly');
-  save();
-}
 
 function setToggle(inputId, trackId, thumbId, checked) {
   var el = document.getElementById(inputId);
@@ -1790,34 +1685,9 @@ function selectLang(lang, el) {
 
 
 // ══════════════════════════════════════
-function openProfile() {
-  var panel = document.getElementById('profile-panel');
-  var overlay = document.getElementById('profile-overlay');
-  
-  // Charger les données sauvegardées
-  var profil = state.profil || {};
-  var prenom = profil.prenom || (_email ? _email.split('@')[0] : '');
-  
-  document.getElementById('profile-prenom').value = prenom;
-  document.getElementById('profile-name-display').textContent = prenom || 'Mon profil';
-  document.getElementById('profile-email-display').textContent = _email || '';
-  document.getElementById('profile-avatar-big').textContent = prenom ? prenom[0].toUpperCase() : '?';
-  
-  // Notifications
-  var notifs = profil.notifs || {};
-  setToggle('notif-training', 'toggle-training', 'thumb-training', !!notifs.training);
-  setToggle('notif-water', 'toggle-water', 'thumb-water', !!notifs.water);
-  
-  overlay.style.display = 'block';
-  setTimeout(function(){ panel.style.transform = 'translateY(0)'; }, 10);
-}
 
-function closeProfile() {
-  var panel = document.getElementById('profile-panel');
-  var overlay = document.getElementById('profile-overlay');
-  panel.style.transform = 'translateY(100%)';
-  setTimeout(function(){ overlay.style.display = 'none'; }, 350);
-}
+
+
 
 function previewProfileName() {
   var val = document.getElementById('profile-prenom').value;
@@ -1825,32 +1695,9 @@ function previewProfileName() {
   document.getElementById('profile-avatar-big').textContent = val ? val[0].toUpperCase() : '?';
 }
 
-function saveProfile() {
-  var prenom = document.getElementById('profile-prenom').value.trim();
-  if (!state.profil) state.profil = {};
-  state.profil.prenom = prenom;
-  save();
-  
-  // Mettre à jour l'avatar header
-  var avatar = document.getElementById('user-avatar');
-  if (avatar) avatar.textContent = prenom ? prenom[0].toUpperCase() : (_email ? _email[0].toUpperCase() : '?');
-  
-  // Mettre à jour le hero
-  var heroName = document.getElementById('hero-name');
-  if (heroName) heroName.textContent = prenom || (_email ? _email.split('@')[0] : '');
-  
-  closeProfile();
-}
 
-function saveNotif() {
-  if (!state.profil) state.profil = {};
-  if (!state.profil.notifs) state.profil.notifs = {};
-  state.profil.notifs.training = document.getElementById('notif-training').checked;
-  state.profil.notifs.water = document.getElementById('notif-water').checked;
-  updateToggleUI('notif-training', 'toggle-training', 'thumb-training');
-  updateToggleUI('notif-water', 'toggle-water', 'thumb-water');
-  save();
-}
+
+
 
 function setToggle(inputId, trackId, thumbId, checked) {
   var input = document.getElementById(inputId);
