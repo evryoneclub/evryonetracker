@@ -1730,8 +1730,11 @@ initRecovery();
 
 // Supabase en arrière-plan — met à jour si programme perso trouvé
 loadPersonalProgramme().then(function() {
-  if (window.PERSONAL_MEALS && window.PERSONAL_MEALS.length > 0) {
-    window._repasData = window.PERSONAL_MEALS.map(function(m){ return {
+  var meals = window.PERSONAL_MEALS;
+  // S'assurer que meals est bien un array
+  if (typeof meals === 'string') { try { meals = JSON.parse(meals); } catch(e) { meals = null; } }
+  if (meals && Array.isArray(meals) && meals.length > 0) {
+    window._repasData = meals.map(function(m){ return {
       name: m.name||m.repas||'Repas', cals: m.calories||m.kcal||0,
       prot: m.proteines||m.protein||0, gluci: m.glucides||m.carbs||0,
       lip: m.lipides||m.fat||0, detail: m.detail||m.description||''
