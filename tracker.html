@@ -812,7 +812,7 @@ function renderSeance() {
           </div>
         </div>
         <div class="exo-chevron ${isOpen ? 'open' : ''}" id="chev-${ei}">▼</div>
-      </div>`
+      </div>
       <div class="exo-body ${isOpen ? 'open' : ''}" id="exo-body-${ei}">
         <div class="set-cols">
           <div style="text-align:center">S</div>
@@ -1127,11 +1127,14 @@ function renderRecupHistory() {
 // ═══════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════
-initHeader();
+// ── INIT PRINCIPAL ──
+async function boot() {
+  initHeader();
 
-// Charge le programme perso PUIS initialise
-loadPersonalProgramme().then(() => {
-  // Si des repas perso existent, on les utilise
+  // Charge programme perso
+  await loadPersonalProgramme();
+
+  // Repas perso si disponibles
   if (window.PERSONAL_MEALS && window.PERSONAL_MEALS.length > 0) {
     window._repasData = window.PERSONAL_MEALS.map(m => ({
       name: m.name || m.repas || 'Repas',
@@ -1142,18 +1145,21 @@ loadPersonalProgramme().then(() => {
       detail: m.detail || m.description || ''
     }));
   }
+
+  // Init toutes les pages
   initDash();
   initTraining();
   initNutrition();
   initRecovery();
-});
 
-// Les onglets utilisent onclick="showPage()" dans le HTML
-// Ces listeners ne font que re-render le contenu APRÈS le changement de page
-document.getElementById('nav-dash').addEventListener('click', () => { showPage('dash'); initDash(); });
-document.getElementById('nav-training').addEventListener('click', () => { showPage('training'); initTraining(); });
-document.getElementById('nav-nutrition').addEventListener('click', () => { showPage('nutrition'); initNutrition(); });
-document.getElementById('nav-recovery').addEventListener('click', () => { showPage('recovery'); initRecovery(); });
+  // Nav buttons
+  document.getElementById('nav-dash').addEventListener('click', () => { showPage('dash'); initDash(); });
+  document.getElementById('nav-training').addEventListener('click', () => { showPage('training'); initTraining(); });
+  document.getElementById('nav-nutrition').addEventListener('click', () => { showPage('nutrition'); initNutrition(); });
+  document.getElementById('nav-recovery').addEventListener('click', () => { showPage('recovery'); initRecovery(); });
+}
+
+boot();
 </script>
 </body>
 </html>
