@@ -98,7 +98,7 @@ body{display:flex;flex-direction:column}
   width:120px;height:120px;border-radius:50%;
   background:radial-gradient(circle,rgba(255,51,51,.15),transparent 70%);
 }
-.quote-text{font-size:17px;font-weight:300;line-height:1.5;font-style:italic;margin-bottom:8px}
+.quote-text{font-size:16px;font-weight:300;line-height:1.6;font-style:italic;margin-bottom:10px;color:var(--text)}
 .quote-author{font-size:11px;color:var(--accent);font-weight:600;letter-spacing:1px;text-transform:uppercase}
 
 .streak-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
@@ -616,12 +616,36 @@ const REPAS_DEFAULT = [
 ];
 
 const QUOTES = [
-  {text:'"Le succès n\'est pas final, l\'échec n\'est pas fatal."',author:'— Winston Churchill'},
+  {text:'"Le succes n\'est pas final, l\'echec n\'est pas fatal."',author:'— Winston Churchill'},
   {text:'"La douleur que tu ressens aujourd\'hui est la force que tu ressentiras demain."',author:'— Arnold Schwarzenegger'},
-  {text:'"Ton seul concurrent, c\'est qui tu étais hier."',author:'— EVRYØNE'},
+  {text:'"Ton seul concurrent, c\'est qui tu etais hier."',author:'— EVRYØNE'},
   {text:'"Chaque rep compte. Chaque jour compte."',author:'— EVRYØNE'},
-  {text:'"Les champions ne se font pas dans les salles dorées."',author:'— Muhammad Ali'},
+  {text:'"Les champions ne se font pas dans les salles dorees."',author:'— Muhammad Ali'},
   {text:'"Fais-le maintenant. Tu ne trouveras pas de meilleur moment."',author:'— EVRYØNE'},
+  {text:'"Le corps accomplit ce que l\'esprit croit."',author:'— Napoleon Hill'},
+  {text:'"Tu ne regretteras jamais une seance d\'entrainement."',author:'— EVRYØNE'},
+  {text:'"La discipline c\'est faire ce que tu dois faire, meme quand tu n\'en as pas envie."',author:'— EVRYØNE'},
+  {text:'"Les excuses ne brulen pas de calories."',author:'— EVRYØNE'},
+  {text:'"Sois plus fort que tes excuses."',author:'— EVRYØNE'},
+  {text:'"Un an de maintenant, tu seras content d\'avoir commence aujourd\'hui."',author:'— Karen Lamb'},
+  {text:'"La sueur d\'aujourd\'hui est la victoire de demain."',author:'— EVRYØNE'},
+  {text:'"Chaque grand voyage commence par un premier pas."',author:'— Lao Tseu'},
+  {text:'"Ce n\'est pas l\'envie qui manque, c\'est la constance qui fait la difference."',author:'— EVRYØNE'},
+  {text:'"Ton corps peut tout supporter. C\'est ton mental qu\'il faut convaincre."',author:'— EVRYØNE'},
+  {text:'"Progresse chaque jour, meme un peu. La regularite bat l\'intensite."',author:'— EVRYØNE'},
+  {text:'"Les resultats viendront si tu restes coherent."',author:'— EVRYØNE'},
+  {text:'"La douleur est temporaire. La fierte est eternelle."',author:'— Lance Armstrong'},
+  {text:'"Tu es plus fort que tu ne le penses."',author:'— EVRYØNE'},
+  {text:'"Chaque serie rapproche de la meilleure version de toi."',author:'— EVRYØNE'},
+  {text:'"Ne baisse jamais les bras. Les grands accomplissements demandent du temps."',author:'— EVRYØNE'},
+  {text:'"L\'entrainement d\'aujourd\'hui est l\'investissement de demain."',author:'— EVRYØNE'},
+  {text:'"Sois la personne que tu veux devenir, des maintenant."',author:'— EVRYØNE'},
+  {text:'"Le mental forge le corps."',author:'— EVRYØNE'},
+  {text:'"Travailler dur en silence. Laisser le succes faire du bruit."',author:'— Frank Ocean'},
+  {text:'"La difference entre possible et impossible c\'est ta volonte."',author:'— Tommy Lasorda'},
+  {text:'"Chaque matin tu as deux choix : continuer a dormir ou te lever et realiser tes reves."',author:'— EVRYØNE'},
+  {text:'"Un corps transforme commence dans la tete."',author:'— EVRYØNE'},
+  {text:'"Fais de chaque seance un chef-d\'oeuvre."',author:'— John Wooden'},
 ];
 
 // ══════════════════════════════════════
@@ -668,8 +692,10 @@ function logout() {
 // BOARD
 // ══════════════════════════════════════
 function initDash() {
-  // Citation
-  const qi = new Date().getDate() % QUOTES.length;
+  // Citation — change chaque jour
+  var now = new Date();
+  var dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+  var qi = dayOfYear % QUOTES.length;
   document.getElementById('quote-text').textContent = QUOTES[qi].text;
   document.getElementById('quote-author').textContent = QUOTES[qi].author;
 
