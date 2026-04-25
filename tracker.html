@@ -1214,7 +1214,14 @@ document.getElementById('nav-training').addEventListener('click', function(){ sh
 document.getElementById('nav-nutrition').addEventListener('click', function(){ showPage('nutrition'); initNutrition(); });
 document.getElementById('nav-recovery').addEventListener('click', function(){ showPage('recovery'); initRecovery(); });
 
+// Init immédiat — sans attendre Supabase
 initHeader();
+initDash();
+initTraining();
+initNutrition();
+initRecovery();
+
+// Supabase en arrière-plan — met à jour si programme perso trouvé
 loadPersonalProgramme().then(function() {
   if (window.PERSONAL_MEALS && window.PERSONAL_MEALS.length > 0) {
     window._repasData = window.PERSONAL_MEALS.map(function(m){ return {
@@ -1222,11 +1229,8 @@ loadPersonalProgramme().then(function() {
       prot: m.proteines||m.protein||0, gluci: m.glucides||m.carbs||0,
       lip: m.lipides||m.fat||0, detail: m.detail||m.description||''
     };});
+    initNutrition();
   }
-  initDash();
-  initTraining();
-  initNutrition();
-  initRecovery();
 });
 </script>
 </body>
