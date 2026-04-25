@@ -1038,6 +1038,94 @@ function countSeances() {
   return Object.keys(state.doneSeances).filter(k => !k.includes('_d') && state.doneSeances[k]).length;
 }
 
+function getWeekStart(date) {
+  var d = new Date(date);
+  var day = d.getDay();
+  var diff = (day === 0 ? -6 : 1 - day);
+  d.setDate(d.getDate() + diff);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function getWeekNumber(d) {
+  var date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay()||7));
+  var yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+  return Math.ceil((((date-yearStart)/86400000)+1)/7);
+}
+
+function formatRest(s) {
+  if (s >= 60) return Math.floor(s/60) + 'min' + (s%60 ? s%60+'s' : '');
+  return s + 's';
+}
+
+function getBestSet(ei, dayIdx) {
+  var sk = today + '_d' + dayIdx;
+  var prevKeys = Object.keys(state.poids||{}).filter(function(k){
+    return k !== sk && k.endsWith('_d'+dayIdx);
+  });
+  if (!prevKeys.length) return null;
+  var lastKey = prevKeys[prevKeys.length-1];
+  var sets = state.poids[lastKey] || {};
+  var best = null;
+  Object.keys(sets).forEach(function(k){
+    if (k.startsWith(ei+'_')) {
+      var pd = sets[k];
+      if (pd && pd.poids && (!best || pd.poids > best.poids)) best = pd;
+    }
+  });
+  return best;
+}
+
+function renderWeekCalendar() {
+  var weekStart = getWeekStart(new Date());
+  var days = ['LUN','MAR','MER','JEU','VEN','SAM','DIM'];
+  var months = ['jan','fév','mar','avr','mai','jun','jul','aoû','sep','oct','nov','déc'];
+
+  var weekNum = getWeekNumber(weekStart);
+  var wlEl = document.getElementById('week-label');
+  if (wlEl) wlEl.textContent = 'Semaine ' + weekNum;
+  var weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate()+6);
+  var wdEl = document.getElementById('week-dates');
+  if (wdEl) wdEl.textContent = weekStart.getDate() + ' – ' + weekEnd.getDate() + ' ' + months[weekEnd.getMonth()];
+
+  var cal = document.getElementById('week-calendar');
+  if (!cal) return;
+  cal.innerHTML = '';
+
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(weekStart);
+    d.setDate(d.getDate() + i);
+    var dateStr = d.toISOString().split('T')[0];
+    var isToday = dateStr === today;
+    var isDone = !!state.doneSeances[dateStr];
+    var isRest = PROGRAM[i] && PROGRAM[i].rest;
+    var isActive = i === currentDay;
+
+    var btn = document.createElement('div');
+    btn.style.cssText = 'text-align:center;cursor:pointer;border-radius:10px;padding:8px 4px;transition:.15s;' +
+      (isActive ? 'background:var(--accent);' : isDone ? 'background:#0a1a0a;' : 'background:#1a1a1a;');
+
+    btn.innerHTML =
+      '<div style="font-size:9px;font-weight:700;letter-spacing:.5px;color:' + (isActive?'#fff':'#666') + ';margin-bottom:4px">' + days[i] + '</div>' +
+      '<div style="font-family:Bebas Neue,sans-serif;font-size:18px;line-height:1;color:' + (isActive?'#fff':isDone?'var(--green)':'#ddd') + '">' + d.getDate() + '</div>' +
+      (isDone ? '<div style="width:5px;height:5px;border-radius:50%;background:var(--green);margin:3px auto 0"></div>' :
+       isRest ? '<div style="font-size:7px;color:#333;margin-top:3px">REPOS</div>' :
+       '<div style="width:5px;height:5px;border-radius:50%;background:' + (isActive?'rgba(255,255,255,.4)':'#2a2a2a') + ';margin:3px auto 0"></div>');
+
+    (function(idx){ btn.onclick = function(){
+      currentDay = idx;
+      renderWeekCalendar();
+      renderSeance();
+    }; })(i);
+    cal.appendChild(btn);
+  }
+}
+
+function highlightCalendar(activeIdx) {
+  renderWeekCalendar();
+}
+
 function initTraining() {
   document.getElementById('total-seances-training').textContent = countSeances();
   document.getElementById('total-series-training').textContent = countSeries();
