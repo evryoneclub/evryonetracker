@@ -1218,22 +1218,35 @@ function initHeader() {
 // MENU PROFIL
 // ══════════════════════════════════════
 function openProfile() {
-  var panel = document.getElementById('profile-panel');
-  var overlay = document.getElementById('profile-overlay');
-  var profil = state.profil || {};
-  var prenom = profil.prenom || (_email ? _email.split('@')[0] : '');
+  try {
+    var panel = document.getElementById('profile-panel');
+    var overlay = document.getElementById('profile-overlay');
+    if (!panel || !overlay) { alert('Panel introuvable'); return; }
 
-  var nameEl = document.getElementById('profile-name-display');
-  if (nameEl) nameEl.textContent = prenom || 'Mon profil';
+    var profil = state.profil || {};
+    var prenom = profil.prenom || (_email ? _email.split('@')[0] : '');
 
-  updateAvatarEl('profile-avatar-big', profil);
+    var nameEl = document.getElementById('profile-name-display');
+    if (nameEl) nameEl.textContent = prenom || 'Mon profil';
 
-  overlay.style.display = 'block';
-  panel.style.display = 'block';
-  panel.style.visibility = 'visible';
-  setTimeout(function(){ 
-    panel.style.transform = 'translateX(0)';
-  }, 10);
+    // Avatar inline sans appeler updateAvatarEl
+    var avatarEl = document.getElementById('profile-avatar-big');
+    if (avatarEl) {
+      if (profil.avatarImg) {
+        avatarEl.innerHTML = '<img src="' + profil.avatarImg + '" style="width:100%;height:100%;object-fit:cover">';
+      } else {
+        avatarEl.textContent = prenom ? prenom[0].toUpperCase() : '?';
+      }
+    }
+
+    overlay.style.display = 'block';
+    panel.style.display = 'block';
+    setTimeout(function(){
+      panel.style.transform = 'translateX(0)';
+    }, 10);
+  } catch(e) {
+    alert('Erreur openProfile: ' + e.message);
+  }
 }
 
 function closeProfile() {
