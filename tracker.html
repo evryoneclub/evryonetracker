@@ -423,7 +423,11 @@ body{display:flex;flex-direction:column}
       </div>
 
       <!-- CALENDRIER SEMAINE -->
-      <div id="week-calendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <button onclick="changeWeek(-1)" style="background:#1a1a1a;border:none;color:#fff;width:32px;height:32px;border-radius:8px;font-size:16px;cursor:pointer;flex-shrink:0">&#8249;</button>
+        <div id="week-calendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;flex:1"></div>
+        <button onclick="changeWeek(1)" style="background:#1a1a1a;border:none;color:#fff;width:32px;height:32px;border-radius:8px;font-size:16px;cursor:pointer;flex-shrink:0">&#8250;</button>
+      </div>
     </div>
 
     <!-- SÉANCE DU JOUR -->
@@ -1041,8 +1045,7 @@ function countSeances() {
 function getWeekStart(date) {
   var d = new Date(date);
   var day = d.getDay();
-  var diff = (day === 0 ? -6 : 1 - day);
-  d.setDate(d.getDate() + diff);
+  d.setDate(d.getDate() + (day===0?-6:1-day));
   d.setHours(0,0,0,0);
   return d;
 }
@@ -1055,7 +1058,7 @@ function getWeekNumber(d) {
 }
 
 function formatRest(s) {
-  if (s >= 60) return Math.floor(s/60) + 'min' + (s%60 ? s%60+'s' : '');
+  if (s >= 60) return Math.floor(s/60) + 'min' + (s%60?s%60+'s':'');
   return s + 's';
 }
 
@@ -1066,7 +1069,7 @@ function getBestSet(ei, dayIdx) {
   });
   if (!prevKeys.length) return null;
   var lastKey = prevKeys[prevKeys.length-1];
-  var sets = state.poids[lastKey] || {};
+  var sets = state.poids[lastKey]||{};
   var best = null;
   Object.keys(sets).forEach(function(k){
     if (k.startsWith(ei+'_')) {
@@ -1077,17 +1080,26 @@ function getBestSet(ei, dayIdx) {
   return best;
 }
 
+// weekOffset = 0 -> semaine courante, -1 -> semaine précédente, +1 -> semaine suivante
+var weekOffset = 0;
+
+function getWeekStartWithOffset() {
+  var ws = getWeekStart(new Date());
+  ws.setDate(ws.getDate() + weekOffset * 7);
+  return ws;
+}
+
 function renderWeekCalendar() {
-  var weekStart = getWeekStart(new Date());
+  var weekStart = getWeekStartWithOffset();
   var days = ['LUN','MAR','MER','JEU','VEN','SAM','DIM'];
-  var months = ['jan','fév','mar','avr','mai','jun','jul','aoû','sep','oct','nov','déc'];
+  var months = ['jan','f\u00e9v','mar','avr','mai','jun','jul','ao\u00fb','sep','oct','nov','d\u00e9c'];
 
   var weekNum = getWeekNumber(weekStart);
   var wlEl = document.getElementById('week-label');
   if (wlEl) wlEl.textContent = 'Semaine ' + weekNum;
   var weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate()+6);
   var wdEl = document.getElementById('week-dates');
-  if (wdEl) wdEl.textContent = weekStart.getDate() + ' – ' + weekEnd.getDate() + ' ' + months[weekEnd.getMonth()];
+  if (wdEl) wdEl.textContent = weekStart.getDate() + ' \u2013 ' + weekEnd.getDate() + ' ' + months[weekEnd.getMonth()];
 
   var cal = document.getElementById('week-calendar');
   if (!cal) return;
@@ -1105,25 +1117,28 @@ function renderWeekCalendar() {
     var btn = document.createElement('div');
     btn.style.cssText = 'text-align:center;cursor:pointer;border-radius:10px;padding:8px 4px;transition:.15s;' +
       (isActive ? 'background:var(--accent);' : isDone ? 'background:#0a1a0a;' : 'background:#1a1a1a;');
-
     btn.innerHTML =
       '<div style="font-size:9px;font-weight:700;letter-spacing:.5px;color:' + (isActive?'#fff':'#666') + ';margin-bottom:4px">' + days[i] + '</div>' +
       '<div style="font-family:Bebas Neue,sans-serif;font-size:18px;line-height:1;color:' + (isActive?'#fff':isDone?'var(--green)':'#ddd') + '">' + d.getDate() + '</div>' +
       (isDone ? '<div style="width:5px;height:5px;border-radius:50%;background:var(--green);margin:3px auto 0"></div>' :
        isRest ? '<div style="font-size:7px;color:#333;margin-top:3px">REPOS</div>' :
        '<div style="width:5px;height:5px;border-radius:50%;background:' + (isActive?'rgba(255,255,255,.4)':'#2a2a2a') + ';margin:3px auto 0"></div>');
-
-    (function(idx){ btn.onclick = function(){
-      currentDay = idx;
-      renderWeekCalendar();
-      renderSeance();
-    }; })(i);
+    (function(idx){ btn.onclick = function(){ currentDay=idx; renderWeekCalendar(); renderSeance(); }; })(i);
     cal.appendChild(btn);
+  }
+
+  // Flèches navigation semaine
+  var nav = document.getElementById('week-nav');
+  if (nav) {
+    nav.querySelector('.week-prev').disabled = false;
+    nav.querySelector('.week-next').disabled = false;
   }
 }
 
-function highlightCalendar(activeIdx) {
+function changeWeek(dir) {
+  weekOffset += dir;
   renderWeekCalendar();
+  renderSeance();
 }
 
 function initTraining() {
@@ -1133,29 +1148,8 @@ function initTraining() {
   renderSeance();
 }
 
-function toggleExo(ei) {
-  var body = document.getElementById('eb-' + ei);
-  var chev = document.getElementById('chev-' + ei);
-  if (!body) return;
-  var isOpen = body.classList.contains('open');
-  body.classList.toggle('open', !isOpen);
-  if (chev) chev.classList.toggle('open', !isOpen);
-}
-
-function renderDaySelector() {
-  const sel = document.getElementById('day-selector');
-  sel.innerHTML = '';
-  PROGRAM.forEach((day, i) => {
-    const btn = document.createElement('button');
-    const isDone = !!state.doneSeances[today + '_d' + i];
-    btn.className = 'day-btn' + (i === currentDay ? ' active' : '') + (isDone ? ' done' : '');
-    btn.textContent = day.label + ' · ' + day.name;
-    btn.onclick = () => { currentDay = i; renderDaySelector(); renderSeance(); };
-    sel.appendChild(btn);
-  });
-}
-
 function renderSeance() {
+  var weekStart = getWeekStartWithOffset();
   var day = PROGRAM[currentDay];
   var cont = document.getElementById('seance-content');
   if (!cont) return;
@@ -1163,153 +1157,132 @@ function renderSeance() {
   if (day.rest) {
     cont.innerHTML = '<div style="text-align:center;padding:48px 16px;background:#141414;border-radius:16px">' +
       '<div style="font-size:52px;margin-bottom:12px">&#x1F6CC;</div>' +
-      '<div style="font-family:Bebas Neue,sans-serif;font-size:28px;letter-spacing:2px;color:#555">JOUR DE REPOS</div>' +
-      '<div style="font-size:13px;color:#555;margin-top:8px">R&#233;cup&#232;re, mange bien, hydrate-toi &#128167;</div></div>';
+      '<div style="font-family:Bebas Neue,sans-serif;font-size:26px;letter-spacing:2px;color:#555">JOUR DE REPOS</div>' +
+      '<div style="font-size:13px;color:#555;margin-top:8px">R\u00e9cup\u00e8re, mange bien, hydrate-toi &#128167;</div></div>';
     return;
   }
 
-  var sk = today + '_d' + currentDay;
+  // Clé unique par semaine+jour
+  var weekDateStr = weekStart.toISOString().split('T')[0];
+  var sk = weekDateStr + '_d' + currentDay;
   if (!state.sets[sk]) state.sets[sk] = {};
   if (!state.poids[sk]) state.poids[sk] = {};
-  if (!state.notes) state.notes = {};
   var seanceDone = !!state.doneSeances[sk];
   var totalSeries = day.exercises.reduce(function(a,e){ return a+e.sets; }, 0);
   var seriesDone = Object.values(state.sets[sk]||{}).filter(function(v){ return v===true; }).length;
 
-  // ── HEADER SÉANCE ──
+  // Header
   var html = '<div style="background:#141414;border-radius:16px;overflow:hidden;margin-bottom:12px">';
-  html += '<div style="padding:16px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between">';
-  html += '<div style="display:flex;align-items:center;gap:10px">';
-  html += '<div style="width:4px;height:28px;background:var(--accent);border-radius:2px"></div>';
+  html += '<div style="padding:14px 16px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between">';
+  html += '<div style="display:flex;align-items:center;gap:8px">';
+  html += '<div style="width:4px;height:26px;background:var(--accent);border-radius:2px"></div>';
   html += '<div style="font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:1px">' + day.name + '</div>';
   html += '</div>';
   html += seanceDone
-    ? '<div style="background:rgba(34,197,94,.15);color:var(--green);font-size:12px;font-weight:700;padding:5px 12px;border-radius:99px">&#10003; Termin&#233;</div>'
-    : '<div style="font-size:12px;color:#666">' + seriesDone + '/' + totalSeries + ' s&#233;ries</div>';
+    ? '<div style="background:rgba(34,197,94,.15);color:var(--green);font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px">&#10003; Termin\u00e9</div>'
+    : '<div style="font-size:12px;color:#666">' + seriesDone + '/' + totalSeries + ' s\u00e9ries</div>';
   html += '</div>';
 
-  // ── EN-TÊTE COLONNES ──
-  html += '<div style="display:grid;grid-template-columns:1fr 48px 72px 64px 52px;gap:4px;padding:8px 16px;background:#0d0d0d">';
-  html += '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px">EXERCICE</div>';
-  html += '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;text-align:center">S&#201;R.</div>';
-  html += '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;text-align:center">REPS</div>';
-  html += '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;text-align:center">CHARGE</div>';
-  html += '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;text-align:center">REPOS</div>';
+  // Colonnes header
+  html += '<div style="display:grid;grid-template-columns:1fr 44px 68px 60px 48px;gap:2px;padding:7px 16px;background:#0d0d0d">';
+  ['EXERCICE','S\u00c9R.','REPS','CHARGE','REPOS'].forEach(function(t){
+    html += '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;' + (t==='EXERCICE'?'':'text-align:center') + '">' + t + '</div>';
+  });
   html += '</div>';
 
-  // ── EXERCICES ──
-  for (var ei = 0; ei < day.exercises.length; ei++) {
-    var exo = day.exercises[ei];
-    var allDone = true;
-    for (var s = 0; s < exo.sets; s++) {
-      if (state.sets[sk][ei+'_'+s] !== true) { allDone = false; break; }
-    }
-    var bestPrev = getBestSet(ei, currentDay);
-    var chargeLabel = bestPrev ? bestPrev.poids + ' kg' : '--';
+  // Exercices
+  day.exercises.forEach(function(exo, ei) {
+    var allDone = Array.from({length:exo.sets},function(_,s){ return state.sets[sk][ei+'_'+s]===true; }).every(Boolean);
+    var best = getBestSet(ei, currentDay);
 
-    html += '<div id="exo-row-' + ei + '" style="border-bottom:1px solid #1a1a1a">';
+    html += '<div style="border-bottom:1px solid #1a1a1a">';
+
     // Ligne cliquable
-    html += '<div style="display:grid;grid-template-columns:1fr 48px 72px 64px 52px;gap:4px;padding:12px 16px;align-items:center;cursor:pointer" onclick="toggleExo(' + ei + ')">';
+    html += '<div style="display:grid;grid-template-columns:1fr 44px 68px 60px 48px;gap:2px;padding:11px 16px;align-items:center;cursor:pointer" onclick="toggleExo('+ei+')">';
 
-    // Colonne exercice
+    // Exercice col
     html += '<div style="display:flex;align-items:center;gap:8px">';
-    html += '<div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:13px;font-weight:700;' +
-      (allDone ? 'background:var(--green);color:#fff;' : 'border:2px solid var(--accent);color:var(--accent);') + '">' +
-      (allDone ? '&#10003;' : (ei+1)) + '</div>';
-    // Image
-    html += '<div style="width:42px;height:42px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#222;">';
-    if (exo.gif) html += '<img src="' + exo.gif + '" style="width:100%;height:100%;object-fit:cover" loading="lazy">';
+    html += '<div style="width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid '+(allDone?'var(--green)':'var(--accent)')+';color:'+(allDone?'var(--green)':'var(--accent)')+';">'+(allDone?'&#10003;':(ei+1))+'</div>';
+    html += '<div style="width:40px;height:40px;border-radius:7px;overflow:hidden;flex-shrink:0;background:#222">';
+    if (exo.gif) html += '<img src="'+exo.gif+'" style="width:100%;height:100%;object-fit:cover" loading="lazy">';
     html += '</div>';
     html += '<div style="min-width:0">';
-    html += '<div style="font-size:13px;font-weight:600;color:#fff;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + exo.name + '</div>';
-    html += '<div style="font-size:10px;color:#555;margin-top:2px">' + (bestPrev ? 'Dernier: ' + bestPrev.poids + 'kg &times; ' + bestPrev.reps : 'Exercice compos&#233;') + '</div>';
+    html += '<div style="font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + exo.name + '</div>';
+    html += '<div style="font-size:10px;color:#555;margin-top:1px">' + (best?'Dernier: '+best.poids+'kg':'\u2013') + '</div>';
     html += '</div></div>';
 
-    // Séries
+    // Colonnes
     html += '<div style="text-align:center;font-size:15px;font-weight:700;color:#ddd">' + exo.sets + '</div>';
-    // Reps
-    html += '<div style="text-align:center;font-size:13px;color:#ddd">' + exo.reps + '</div>';
-    // Charge
-    html += '<div style="text-align:center;font-size:12px;color:' + (bestPrev ? '#ddd' : '#444') + '">' + chargeLabel + '</div>';
-    // Repos
-    html += '<div style="text-align:center;font-size:12px;color:#666">' + formatRest(exo.rest) + '</div>';
-    html += '</div>'; // fin grid
+    html += '<div style="text-align:center;font-size:12px;color:#ddd">' + exo.reps + '</div>';
+    html += '<div style="text-align:center;font-size:11px;color:' + (best?'#ddd':'#444') + '">' + (best?best.poids+'kg':'--') + '</div>';
+    html += '<div style="text-align:center;font-size:11px;color:#555">' + formatRest(exo.rest) + '</div>';
+    html += '</div>'; // fin ligne
 
-    // ── DÉTAIL SÉRIES (expandable) ──
-    html += '<div id="exo-body-' + ei + '" style="display:' + (ei===0&&!seanceDone?'block':'none') + ';padding:0 16px 12px;background:#111">';
-    html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 44px;gap:8px;padding:6px 0;border-bottom:1px solid #222;font-size:9px;color:#444;text-transform:uppercase;text-align:center;letter-spacing:.5px;margin-bottom:4px">';
-    html += '<div>S</div><div>POIDS</div><div>REPS</div><div>OK</div></div>';
+    // Séries déroulantes
+    html += '<div id="exo-body-'+ei+'" style="display:'+(ei===0&&!seanceDone?'block':'none')+';padding:0 16px 12px;background:#0f0f0f">';
+    html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 44px;gap:8px;padding:6px 0 4px;border-bottom:1px solid #222;font-size:9px;color:#444;text-transform:uppercase;text-align:center;letter-spacing:.5px;margin-bottom:4px">';
+    html += '<div>S</div><div>POIDS (kg)</div><div>REPS</div><div>OK</div></div>';
 
     for (var s = 0; s < exo.sets; s++) {
-      var k = ei + '_' + s;
-      var done = state.sets[sk][k] === true;
-      var pd = state.poids[sk][k] || {};
+      var k = ei+'_'+s;
+      var done = state.sets[sk][k]===true;
+      var pd = state.poids[sk][k]||{};
       var pval = (done && pd.poids) ? String(pd.poids) : '';
       var rval = (done && pd.reps) ? String(pd.reps) : '';
-      var pph = bestPrev ? String(bestPrev.poids) : '';
-      var rph = exo.reps;
+      var pph = best ? String(best.poids) : '';
 
       html += '<div class="set-row">';
-      html += '<div class="set-num' + (done?' done-num':'') + '">' + (s+1) + '</div>';
-      html += '<input class="set-input' + (done?' filled':'') + '" type="number" step="0.5" min="0"' +
-        ' id="p-'+ei+'-'+s+'" placeholder="'+pph+'" value="'+pval+'"' +
-        ' data-ei="'+ei+'" data-si="'+s+'" onchange="saveFromInput(this)">';
-      html += '<input class="set-input' + (done?' filled':'') + '" type="number" min="0"' +
-        ' id="r-'+ei+'-'+s+'" placeholder="'+rph+'" value="'+rval+'"' +
-        ' data-ei="'+ei+'" data-si="'+s+'" onchange="saveFromInput(this)">';
-      html += '<button class="set-ok' + (done?' done':'') + '" id="ok-'+ei+'-'+s+'"' +
-        ' data-ei="'+ei+'" data-si="'+s+'" data-rest="'+exo.rest+'" onclick="validateFromBtn(this)">' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></button>';
+      html += '<div class="set-num'+(done?' done-num':'')+'">'+( s+1)+'</div>';
+      html += '<input class="set-input'+(done?' filled':'')+'" type="number" step="0.5" min="0" id="p-'+ei+'-'+s+'" placeholder="'+pph+'" value="'+pval+'" data-ei="'+ei+'" data-si="'+s+'" onchange="saveFromInput(this)">';
+      html += '<input class="set-input'+(done?' filled':'')+'" type="number" min="0" id="r-'+ei+'-'+s+'" placeholder="'+exo.reps+'" value="'+rval+'" data-ei="'+ei+'" data-si="'+s+'" onchange="saveFromInput(this)">';
+      html += '<button class="set-ok'+(done?' done':'')+'" id="ok-'+ei+'-'+s+'" data-ei="'+ei+'" data-si="'+s+'" data-rest="'+exo.rest+'" data-sk="'+sk+'" onclick="validateFromBtn(this)">';
+      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></button>';
       html += '</div>';
     }
-    html += '</div>'; // fin exo-body
-    html += '</div>'; // fin exo-row
-  }
+    html += '</div></div>'; // fin exo-body + exo row
+  });
+
   html += '</div>'; // fin séance card
 
-  // ── RÉSUMÉ ──
+  // Résumé
   var totalVol = 0;
   Object.keys(state.poids[sk]||{}).forEach(function(k){
     var pd = state.poids[sk][k];
-    if (pd && pd.poids && pd.reps) totalVol += pd.poids * pd.reps;
+    if (pd&&pd.poids&&pd.reps) totalVol += pd.poids*pd.reps;
   });
   html += '<div style="background:#141414;border-radius:14px;padding:14px 16px;margin-bottom:12px">';
-  html += '<div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">&#128202; R&#201;SUM&#201; DE LA S&#201;ANCE</div>';
-  html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px">';
-  html += '<div style="text-align:center"><div style="font-size:9px;color:#555;text-transform:uppercase;margin-bottom:4px">Volume</div><div style="font-family:Bebas Neue,sans-serif;font-size:18px">' + Math.round(totalVol) + '<span style="font-size:10px"> kg</span></div></div>';
-  html += '<div style="text-align:center"><div style="font-size:9px;color:#555;text-transform:uppercase;margin-bottom:4px">S&#233;ries</div><div style="font-family:Bebas Neue,sans-serif;font-size:18px">' + seriesDone + '/' + totalSeries + '</div></div>';
-  html += '<div style="text-align:center"><div style="font-size:9px;color:#555;text-transform:uppercase;margin-bottom:4px">Exercices</div><div style="font-family:Bebas Neue,sans-serif;font-size:18px">' + day.exercises.length + '</div></div>';
-  html += '<div style="text-align:center"><div style="font-size:9px;color:#555;text-transform:uppercase;margin-bottom:4px">Repos moy.</div><div style="font-family:Bebas Neue,sans-serif;font-size:18px">' + formatRest(Math.round(day.exercises.reduce(function(a,e){return a+e.rest;},0)/day.exercises.length)) + '</div></div>';
+  html += '<div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">&#128202; R\u00c9SUM\u00c9 DE LA S\u00c9ANCE</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">';
+  html += '<div style="text-align:center"><div style="font-size:9px;color:#555;text-transform:uppercase;margin-bottom:4px">Volume</div><div style="font-family:Bebas Neue,sans-serif;font-size:20px">'+Math.round(totalVol)+'<span style="font-size:10px"> kg</span></div></div>';
+  html += '<div style="text-align:center"><div style="font-size:9px;color:#555;text-transform:uppercase;margin-bottom:4px">S\u00e9ries</div><div style="font-family:Bebas Neue,sans-serif;font-size:20px">'+seriesDone+'/'+totalSeries+'</div></div>';
+  html += '<div style="text-align:center"><div style="font-size:9px;color:#555;text-transform:uppercase;margin-bottom:4px">Exercices</div><div style="font-family:Bebas Neue,sans-serif;font-size:20px">'+day.exercises.length+'</div></div>';
   html += '</div></div>';
 
-  // ── NOTES ──
-  html += '<div style="background:#141414;border-radius:14px;padding:14px 16px;margin-bottom:12px">';
-  html += '<div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">&#128221; NOTES DE LA S&#201;ANCE</div>';
-  html += '<textarea id="seance-notes" placeholder="Notes de seance..." data-sk="' + sk + '" onchange="saveNotes(this.dataset.sk)">' + ((state.notes&&state.notes[sk])?state.notes[sk]:'') + '</textarea>';
-  html += '</div>';
-
-  // ── BOUTON ──
+  // Bouton terminer
   if (!seanceDone) {
-    html += '<button class="btn-finish" onclick="finishSeance()">TERMINER LA S&#201;ANCE &#128293;</button>';
+    html += '<button class="btn-finish" onclick="finishSeance()">TERMINER LA S\u00c9ANCE &#128293;</button>';
   } else {
-    html += '<div style="text-align:center;padding:16px;color:var(--green);font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:2px">&#9989; S&#201;ANCE COMPL&#201;T&#201;E !</div>';
+    html += '<div style="text-align:center;padding:16px;color:var(--green);font-family:Bebas Neue,sans-serif;font-size:20px;letter-spacing:2px">&#9989; S\u00c9ANCE COMPL\u00c9T\u00c9E !</div>';
   }
 
   cont.innerHTML = html;
 }
 
+function toggleExo(ei) {
+  var body = document.getElementById('exo-body-'+ei);
+  if (!body) return;
+  body.style.display = body.style.display==='none' ? 'block' : 'none';
+}
 
 function saveFromInput(input) {
   var ei = parseInt(input.dataset.ei);
   var si = parseInt(input.dataset.si);
-  var sk = today + '_d' + currentDay;
-  var pEl = document.getElementById('p-' + ei + '-' + si);
-  var rEl = document.getElementById('r-' + ei + '-' + si);
-  if (!state.poids[sk]) state.poids[sk] = {};
-  state.poids[sk][ei + '_' + si] = {
-    poids: parseFloat(pEl.value) || 0,
-    reps: parseInt(rEl.value) || 0
-  };
+  var btn = document.getElementById('ok-'+ei+'-'+si);
+  var sk = btn ? btn.dataset.sk : today+'_d'+currentDay;
+  var pEl = document.getElementById('p-'+ei+'-'+si);
+  var rEl = document.getElementById('r-'+ei+'-'+si);
+  if (!state.poids[sk]) state.poids[sk]={};
+  state.poids[sk][ei+'_'+si] = {poids:parseFloat(pEl.value)||0, reps:parseInt(rEl.value)||0};
   save();
 }
 
@@ -1317,43 +1290,38 @@ function validateFromBtn(btn) {
   var ei = parseInt(btn.dataset.ei);
   var si = parseInt(btn.dataset.si);
   var rest = parseInt(btn.dataset.rest);
-  var sk = today + '_d' + currentDay;
-  saveFromInput(document.getElementById('p-' + ei + '-' + si));
-  var k = ei + '_' + si;
-  if (!state.sets[sk]) state.sets[sk] = {};
-  var done = !(state.sets[sk][k] === true);
+  var sk = btn.dataset.sk || (today+'_d'+currentDay);
+  var pEl = document.getElementById('p-'+ei+'-'+si);
+  var rEl = document.getElementById('r-'+ei+'-'+si);
+  if (!state.poids[sk]) state.poids[sk]={};
+  state.poids[sk][ei+'_'+si]={poids:parseFloat(pEl?pEl.value:0)||0, reps:parseInt(rEl?rEl.value:0)||0};
+  if (!state.sets[sk]) state.sets[sk]={};
+  var k = ei+'_'+si;
+  var done = !(state.sets[sk][k]===true);
   state.sets[sk][k] = done;
   save();
   if (done) startTimer(rest);
-  var pi = document.getElementById('p-' + ei + '-' + si);
-  var ri = document.getElementById('r-' + ei + '-' + si);
-  btn.classList.toggle('done', done);
-  pi.classList.toggle('filled', done);
-  ri.classList.toggle('filled', done);
-  var numEl = document.querySelector('#eb-' + ei + ' .set-row:nth-child(' + (si+2) + ') .set-num');
-  if (numEl) numEl.classList.toggle('done-num', done);
-  var exo = PROGRAM[currentDay].exercises[ei];
-  var allDone = true;
-  for (var s = 0; s < exo.sets; s++) {
-    if (state.sets[sk][ei + '_' + s] !== true) { allDone = false; break; }
-  }
-  var card = document.getElementById('ec-' + ei);
-  var dot = card.querySelector('.exo-done-dot');
-  card.classList.toggle('done-exo', allDone);
-  dot.classList.toggle('done', allDone);
-  dot.innerHTML = allDone ? '&#10003;' : '';
+  renderSeance();
   document.getElementById('total-series-training').textContent = countSeries();
+  // Rouvrir le même exo
+  var body = document.getElementById('exo-body-'+ei);
+  if (body) body.style.display = 'block';
   initDash();
 }
 
-
 function finishSeance() {
-  state.doneSeances[today + '_d' + currentDay] = true;
-  state.doneSeances[today] = true;
+  var weekStart = getWeekStartWithOffset();
+  var weekDateStr = weekStart.toISOString().split('T')[0];
+  var sk = weekDateStr+'_d'+currentDay;
+  state.doneSeances[sk] = true;
+  // Marquer aussi le vrai jour today si c'est la semaine courante
+  if (weekOffset===0) state.doneSeances[today] = true;
   save();
-  initTraining();
+  renderSeance();
+  renderWeekCalendar();
+  document.getElementById('total-seances-training').textContent = countSeances();
   initDash();
-  document.getElementById('cg-sub').textContent = 'Séance ' + PROGRAM[currentDay].name + ' terminée 💪';
+  document.getElementById('cg-sub').textContent = 'S\u00e9ance '+PROGRAM[currentDay].name+' termin\u00e9e \ud83d\udcaa';
   document.getElementById('congrats-overlay').classList.add('show');
 }
 
