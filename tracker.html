@@ -1186,7 +1186,7 @@ function renderSeance() {
   html += '</div>';
 
   // Colonnes header
-  html += '<div style="display:grid;grid-template-columns:1fr 44px 68px 48px;gap:2px;padding:7px 16px;background:#0d0d0d">';
+  html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 44px 56px 52px;gap:4px;padding:7px 16px;background:#0d0d0d">';
   ['EXERCICE','S\u00c9R.','REPS','REPOS'].forEach(function(t){
     html += '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;' + (t==='EXERCICE'?'':'text-align:center') + '">' + t + '</div>';
   });
@@ -1200,7 +1200,7 @@ function renderSeance() {
     html += '<div style="border-bottom:1px solid #1a1a1a">';
 
     // Ligne cliquable
-    html += '<div style="display:grid;grid-template-columns:1fr 44px 68px 48px;gap:2px;padding:11px 16px;align-items:center;cursor:pointer" onclick="toggleExo('+ei+')">';
+    html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 44px 56px 52px;gap:4px;padding:11px 16px;align-items:center;cursor:pointer" onclick="toggleExo('+ei+')">';
 
     // Exercice col
     html += '<div style="display:flex;align-items:center;gap:8px">';
@@ -1209,7 +1209,7 @@ function renderSeance() {
     if (exo.gif) html += '<img src="'+exo.gif+'" style="width:100%;height:100%;object-fit:cover" loading="lazy">';
     html += '</div>';
     html += '<div style="min-width:0">';
-    html += '<div style="font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + exo.name + '</div>';
+    html += '<div style="font-size:12px;font-weight:600;color:#fff;line-height:1.3">' + exo.name + '</div>';
     html += '<div style="font-size:10px;color:#555;margin-top:1px">' + (best?'Dernier: '+best.poids+'kg':'\u2013') + '</div>';
     html += '</div></div>';
 
