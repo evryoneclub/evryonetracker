@@ -545,16 +545,6 @@ body{display:flex;flex-direction:column}
       <div style="flex:1"><div style="font-size:15px;font-weight:600">Pr&#233;f&#233;rences</div><div style="font-size:12px;color:#666;margin-top:2px">Apparence, unit&#233;s, langue</div></div>
       <div style="color:#555;font-size:20px">&#8250;</div>
     </div>
-    <div onclick="exportData()" style="display:flex;align-items:center;gap:16px;padding:16px 20px;cursor:pointer">
-      <div style="width:36px;height:36px;border-radius:10px;background:#1a0808;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" width="18" height="18"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
-      <div style="flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:15px;font-weight:600">Exporter mes donn&#233;es</span><span style="background:var(--accent);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px">NOUVEAU</span></div><div style="font-size:12px;color:#666;margin-top:2px">T&#233;l&#233;charger tes donn&#233;es</div></div>
-      <div style="color:#555;font-size:20px">&#8250;</div>
-    </div>
-    <div onclick="openSubPage('support')" style="display:flex;align-items:center;gap:16px;padding:16px 20px;cursor:pointer">
-      <div style="width:36px;height:36px;border-radius:10px;background:#1a0808;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" width="18" height="18"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-      <div style="flex:1"><div style="font-size:15px;font-weight:600">Support</div><div style="font-size:12px;color:#666;margin-top:2px">Centre d'aide &amp; contact</div></div>
-      <div style="color:#555;font-size:20px">&#8250;</div>
-    </div>
   </div>
   <div style="height:8px;background:#111;margin:8px 0"></div>
   <div onclick="logout()" style="display:flex;align-items:center;gap:16px;padding:18px 20px;cursor:pointer">
@@ -629,20 +619,6 @@ body{display:flex;flex-direction:column}
   </div>
 </div>
 
-<!-- SOUS-PAGE SUPPORT -->
-<div id="sub-support" style="position:fixed;inset:0;z-index:10000;background:#0d0d0d;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)">
-  <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;position:sticky;top:0;background:#0d0d0d">
-    <button onclick="closeSubPage('sub-support')" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1">&#8592;</button>
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px">SUPPORT</div>
-  </div>
-  <div style="padding:16px 20px">
-    <div style="background:#141414;border-radius:14px;overflow:hidden">
-      <div style="padding:16px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:15px;font-weight:600">Centre d'aide</div><div style="font-size:12px;color:#666;margin-top:2px">FAQ et tutoriels</div></div><span style="color:#555;font-size:20px">&#8250;</span></div>
-      <div style="padding:16px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="window.open('mailto:support@evryoneclub.com')"><div><div style="font-size:15px;font-weight:600">Contacter le support</div><div style="font-size:12px;color:#666;margin-top:2px">support@evryoneclub.com</div></div><span style="color:#555;font-size:20px">&#8250;</span></div>
-      <div style="padding:16px;display:flex;align-items:center;justify-content:space-between"><div style="font-size:15px;font-weight:600">Version</div><div style="font-size:14px;color:#555;font-weight:600">v1.0.0</div></div>
-    </div>
-  </div>
-</div>
 
 <script>
 // ══════════════════════════════════════
