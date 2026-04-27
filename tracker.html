@@ -280,138 +280,131 @@ body{display:flex;flex-direction:column}
 
 <div class="page active" id="page-dash">
 
-    <!-- HERO -->
-    <div style="margin-bottom:20px">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:4px;letter-spacing:.5px" id="hero-date"></div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;margin-bottom:2px">Bonjour <span style="color:var(--accent)" id="hero-name"></span> 👋</div>
-      <div style="font-size:13px;color:var(--muted)">Prêt à atteindre tes objectifs aujourd'hui ?</div>
-    </div>
+    <!-- ═══ HERO SECTION ═══ -->
+    <div style="position:relative;min-height:340px;margin:-16px -16px 0;padding:20px 20px 24px;overflow:hidden;background:#0a0a0a">
+      <!-- Image de fond -->
+      <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=60') right center/cover no-repeat;opacity:0.35"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(to right,#0a0a0a 40%,transparent 100%)"></div>
+      <div style="position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to top,#0a0a0a,transparent)"></div>
 
-    <!-- OBJECTIF ACTUEL -->
-    <div class="card" style="margin-bottom:12px">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <div style="flex:1">
-          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">OBJECTIF ACTUEL</div>
-          <div style="font-size:18px;font-weight:700;margin-bottom:2px" id="obj-label">Définis ton objectif</div>
-          <div style="font-size:13px;color:var(--muted)">Objectif : <span style="color:var(--accent);font-weight:600" id="obj-end-label">--</span></div>
+      <!-- Contenu hero -->
+      <div style="position:relative;z-index:1">
+        <!-- Bonjour -->
+        <div style="font-size:15px;color:#aaa;margin-bottom:6px">Bonjour <span id="hero-name" style="color:#fff;font-weight:600"></span> 👋</div>
+
+        <!-- Accroche -->
+        <div style="margin-bottom:24px">
+          <div style="font-size:32px;font-weight:800;color:#fff;line-height:1.1">Deviens ta</div>
+          <div style="font-size:32px;font-weight:800;font-style:italic;color:var(--accent);line-height:1.1">meilleure version.</div>
         </div>
-        <!-- Cercle progression -->
-        <div style="position:relative;width:80px;height:80px;flex-shrink:0;margin:0 12px">
-          <svg viewBox="0 0 80 80" style="width:80px;height:80px;transform:rotate(-90deg)">
-            <circle cx="40" cy="40" r="34" fill="none" stroke="#222" stroke-width="6"/>
-            <circle cx="40" cy="40" r="34" fill="none" stroke="var(--accent)" stroke-width="6"
-              stroke-linecap="round" stroke-dasharray="213.6"
-              id="obj-circle" stroke-dashoffset="213.6" style="transition:stroke-dashoffset .6s"/>
-          </svg>
-          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;line-height:1" id="obj-progress-pct">0%</div>
-          </div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:11px;color:var(--muted)">Il te reste</div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent);line-height:1" id="obj-restant">--</div>
-          <div style="font-size:11px;color:var(--muted)">kg <span id="obj-direction">à perdre</span> !</div>
-        </div>
-      </div>
-      <!-- Barre progression cachée (gardée pour compat JS) -->
-      <div id="obj-progress-bar" style="display:none"></div>
-      <div style="margin-top:12px;text-align:right">
-        <button onclick="toggleObjectifEdit()" id="objectif-edit-btn" style="background:none;border:none;color:var(--accent);font-size:11px;cursor:pointer;font-family:inherit;letter-spacing:.5px">✏️ Modifier</button>
-      </div>
-      <div id="objectif-form" style="display:none;margin-top:12px">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
-          <div>
-            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Départ (kg)</div>
-            <input type="number" id="input-poids-depart" step="0.1" placeholder="75" style="width:100%;background:#111;border:none;border-radius:8px;padding:8px;color:var(--text);font-size:14px;text-align:center">
+
+        <!-- Objectif cercle -->
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+          <div style="position:relative;width:110px;height:110px;flex-shrink:0">
+            <svg viewBox="0 0 110 110" width="110" height="110" style="transform:rotate(-90deg)">
+              <circle cx="55" cy="55" r="46" fill="none" stroke="#222" stroke-width="8"/>
+              <circle cx="55" cy="55" r="46" fill="none" stroke="var(--accent)" stroke-width="8"
+                stroke-linecap="round" stroke-dasharray="289.0"
+                id="hero-obj-arc" stroke-dashoffset="289.0" style="transition:stroke-dashoffset .8s;filter:drop-shadow(0 0 6px rgba(255,51,51,.5))"/>
+            </svg>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+              <div style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px" id="hero-obj-type">OBJECTIF</div>
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;color:#fff" id="hero-obj-pct">0<span style="font-size:16px">%</span></div>
+              <div style="font-size:10px;color:#666;margin-top:2px">Objectif : <span style="color:var(--accent)" id="hero-obj-cible">--</span> kg</div>
+            </div>
           </div>
           <div>
-            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Actuel (kg)</div>
-            <input type="number" id="input-poids-actuel" step="0.1" placeholder="73" style="width:100%;background:#111;border:none;border-radius:8px;padding:8px;color:var(--text);font-size:14px;text-align:center">
-          </div>
-          <div>
-            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Cible (kg)</div>
-            <input type="number" id="input-poids-cible" step="0.1" placeholder="70" style="width:100%;background:#111;border:none;border-radius:8px;padding:8px;color:var(--text);font-size:14px;text-align:center">
+            <div style="font-size:13px;color:#666;margin-bottom:6px">Voir mon objectif →</div>
           </div>
         </div>
-        <div style="margin-bottom:10px">
-          <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Type d'objectif</div>
-          <select id="input-objectif-type" style="width:100%;background:#111;border:none;border-radius:8px;padding:10px;color:var(--text);font-size:13px">
-            <option value="Prise de masse">Prise de masse</option>
-            <option value="Perte de poids">Perte de poids</option>
-            <option value="Maintien">Maintien</option>
-            <option value="Remise en forme">Remise en forme</option>
-          </select>
+      </div>
+    </div>
+
+    <!-- ═══ STATS 3 EN 1 ═══ -->
+    <div style="background:#141414;border-radius:18px;margin:16px 0 12px;padding:16px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">
+
+        <!-- Calories -->
+        <div style="padding:4px 12px 4px 0;border-right:1px solid #222">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+            <div style="width:28px;height:28px;border-radius:8px;background:rgba(255,51,51,.15);display:flex;align-items:center;justify-content:center;font-size:14px">🔥</div>
+            <div style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px">CALORIES</div>
+          </div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;color:#fff" id="apercu-kcal">--</div>
+          <div style="font-size:10px;color:#555;margin-top:2px">kcal</div>
+          <svg viewBox="0 0 60 16" style="width:100%;margin-top:8px"><polyline points="0,14 10,10 20,12 30,8 40,11 50,7 60,9" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg>
         </div>
-        <button onclick="saveObjectif()" style="width:100%;padding:14px;background:var(--accent);border:none;border-radius:var(--radius);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer">SAUVEGARDER</button>
+
+        <!-- Séances -->
+        <div style="padding:4px 12px;border-right:1px solid #222">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+            <div style="width:28px;height:28px;border-radius:8px;background:rgba(255,51,51,.15);display:flex;align-items:center;justify-content:center">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" width="14" height="14"><rect x="1" y="10" width="3" height="4" rx="1"/><rect x="20" y="10" width="3" height="4" rx="1"/><rect x="4" y="8" width="3" height="8" rx="1"/><rect x="17" y="8" width="3" height="8" rx="1"/><line x1="7" y1="12" x2="17" y2="12" stroke-width="2.5"/></svg>
+            </div>
+            <div style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px">SÉANCES</div>
+          </div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;color:#fff" id="stat-semaine">--</div>
+          <div style="font-size:10px;color:#555;margin-top:2px">ce mois</div>
+          <svg viewBox="0 0 60 16" style="width:100%;margin-top:8px"><polyline points="0,14 10,12 20,9 30,11 40,7 50,9 60,6" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+
+        <!-- Streak -->
+        <div style="padding:4px 0 4px 12px">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+            <div style="width:28px;height:28px;border-radius:8px;background:rgba(255,51,51,.15);display:flex;align-items:center;justify-content:center;font-size:14px">⚡</div>
+            <div style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px">STREAK</div>
+          </div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;color:#fff" id="stat-streak">--</div>
+          <div style="font-size:10px;color:#555;margin-top:2px">jours</div>
+          <div style="font-size:10px;color:#555;margin-top:4px">Meilleur : <span id="stat-streak-best" style="color:var(--accent)">--</span> 🔥</div>
+        </div>
+
       </div>
     </div>
 
-    <!-- STATS CARDS -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px">
-      <div class="stat-card">
-        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">CALORIES</div>
-        <div style="font-size:22px;margin-bottom:2px">🔥</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;color:var(--text)" id="apercu-kcal">--</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">kcal</div>
-        <svg viewBox="0 0 60 20" style="width:100%;margin-top:8px" id="spark-kcal"><polyline points="0,15 15,12 30,10 45,13 60,8" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg>
-      </div>
-      <div class="stat-card">
-        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">SÉANCES</div>
-        <div style="font-size:22px;margin-bottom:2px">🏋️</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;color:var(--text)" id="stat-semaine">--</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">ce mois</div>
-        <svg viewBox="0 0 60 20" style="width:100%;margin-top:8px"><polyline points="0,16 15,14 30,11 45,9 60,6" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg>
-      </div>
-      <div class="stat-card">
-        <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">STREAK</div>
-        <div style="font-size:22px;margin-bottom:2px">🔥</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;color:var(--text)" id="stat-streak">--</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">jours</div>
-        <svg viewBox="0 0 60 20" style="width:100%;margin-top:8px"><polyline points="0,15 15,13 30,10 45,7 60,4" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <!-- ═══ PROCHAIN ENTRAÎNEMENT ═══ -->
+    <div id="next-training-card" style="background:#141414;border-radius:18px;margin-bottom:12px;overflow:hidden;position:relative">
+      <!-- Fond image -->
+      <div style="position:absolute;right:0;top:0;bottom:0;width:50%;background:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=50') center/cover;opacity:0.25"></div>
+      <div style="position:absolute;right:0;top:0;bottom:0;width:50%;background:linear-gradient(to right,#141414 30%,transparent)"></div>
+      <div style="position:relative;z-index:1;padding:20px">
+        <div id="next-training-content"></div>
       </div>
     </div>
 
-    <!-- PROCHAIN ENTRAÎNEMENT -->
-    <div class="card" style="margin-bottom:12px" id="next-training-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:700;letter-spacing:.5px">PROCHAIN ENTRAÎNEMENT</div>
-        <div style="background:rgba(255,51,51,.15);color:var(--accent);font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px">Aujourd'hui</div>
+    <!-- ═══ TA PROGRESSION ═══ -->
+    <div style="background:#141414;border-radius:18px;padding:16px;margin-bottom:12px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+        <div>
+          <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">TA PROGRESSION</div>
+          <div id="chart-container" style="position:relative;height:100px;width:100%">
+            <svg id="prog-chart" width="100%" height="100" style="overflow:visible"></svg>
+          </div>
+        </div>
       </div>
-      <div id="next-training-content"></div>
     </div>
 
-    <!-- PROGRESSION GRAPHIQUE -->
-    <div class="card" style="margin-bottom:12px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div style="font-size:13px;font-weight:700;letter-spacing:.5px">PROGRESSION</div>
-      </div>
-      <div id="chart-container" style="position:relative;height:110px;width:100%">
-        <svg id="prog-chart" width="100%" height="110" style="overflow:visible"></svg>
-      </div>
-      <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:4px">Charge totale soulevée par séance (kg)</div>
-    </div>
-
-    <!-- CITATION DU JOUR -->
-    <div style="background:linear-gradient(135deg,#1a0505,#141414);border-radius:var(--radius);padding:20px;margin-bottom:12px;position:relative;overflow:hidden">
-      <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(255,51,51,.2),transparent 70%)"></div>
-      <div style="font-size:28px;color:var(--accent);font-family:'Bebas Neue',sans-serif;line-height:1;margin-bottom:8px">❝❝</div>
-      <div style="font-size:15px;font-weight:300;line-height:1.6;font-style:italic;color:var(--text)" id="quote-text"></div>
+    <!-- ═══ CITATION ═══ -->
+    <div style="background:linear-gradient(135deg,#1a0505,#141414);border-radius:18px;padding:20px;margin-bottom:12px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(255,51,51,.2),transparent 70%)"></div>
+      <div style="font-size:24px;color:var(--accent);font-family:'Bebas Neue',sans-serif;line-height:1;margin-bottom:8px">❝❝</div>
+      <div style="font-size:14px;font-weight:300;line-height:1.6;font-style:italic;color:#fff" id="quote-text"></div>
       <div style="font-size:11px;color:var(--accent);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-top:10px" id="quote-author"></div>
     </div>
 
-    <!-- RÉSUMÉ JOUR (dots cachés mais gardés pour compat) -->
+    <!-- Éléments cachés compat -->
     <div style="display:none">
-      <div class="today-pill-dot" id="dot-training"></div>
-      <div class="today-pill-dot" id="dot-nutrition"></div>
-      <div class="today-pill-dot" id="dot-water"></div>
-      <div class="today-pill-dot" id="dot-recup"></div>
+      <div id="stat-seances"></div>
+      <div id="apercu-series"></div><div id="apercu-eau"></div>
+      <div id="obj-poids-actuel"></div><div id="obj-progress-bar"></div>
+      <div id="obj-progress-pct"></div><div id="obj-end-label"></div>
+      <div id="obj-restant"></div><div id="obj-direction"></div>
+      <div id="obj-circle"></div><div id="obj-label"></div>
+      <div id="objectif-form"></div><div id="objectif-display"></div>
+      <div id="dot-training"></div><div id="dot-nutrition"></div>
+      <div id="dot-water"></div><div id="dot-recup"></div>
+      <div id="hero-date"></div>
     </div>
-
-    <!-- stat-seances caché pour compat -->
-    <div style="display:none" id="stat-seances"></div>
-    <div style="display:none" id="apercu-series"></div>
-    <div style="display:none" id="apercu-eau"></div>
-    <div style="display:none" id="obj-poids-actuel"></div>
 
   </div>
 
@@ -927,66 +920,73 @@ function logout() {
 // BOARD
 // ══════════════════════════════════════
 function initDash() {
-  // Hero header
+  // Citation
   var now = new Date();
-  document.getElementById('hero-date').textContent = now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-  var profil = state.profil || {};
-  var name = profil.prenom || (_email ? _email.split('@')[0] : '');
-  var heroName = document.getElementById('hero-name');
-  if (heroName) heroName.textContent = name ? name.charAt(0).toUpperCase() + name.slice(1) : '';
-
-  // Citation — change chaque jour
-  var dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+  var dayOfYear = Math.floor((now - new Date(now.getFullYear(),0,0)) / 86400000);
   var qi = dayOfYear % QUOTES.length;
-  document.getElementById('quote-text').textContent = QUOTES[qi].text;
-  document.getElementById('quote-author').textContent = QUOTES[qi].author;
+  var qtEl = document.getElementById('quote-text');
+  var qaEl = document.getElementById('quote-author');
+  if (qtEl) qtEl.textContent = QUOTES[qi].text;
+  if (qaEl) qaEl.textContent = QUOTES[qi].author;
+
+  // Prénom hero
+  var profil = state.profil || {};
+  var prenom = profil.prenom || (_email ? _email.split('@')[0] : '');
+  var heroName = document.getElementById('hero-name');
+  if (heroName) heroName.textContent = prenom ? prenom.charAt(0).toUpperCase()+prenom.slice(1) : '';
 
   // Stats
-  const allSeances = Object.keys(state.doneSeances).filter(k => !k.includes('_d') && state.doneSeances[k]);
-  document.getElementById('stat-seances').textContent = allSeances.length;
+  var allSeances = Object.keys(state.doneSeances||{}).filter(function(k){ return k.includes('_d') && state.doneSeances[k]; });
+  var monthKey = now.toISOString().slice(0,7);
+  var monthSeances = allSeances.filter(function(k){ return k.startsWith(monthKey); }).length;
 
-  let streak = 0, d = new Date();
-  while (true) {
-    const k = d.toISOString().split('T')[0];
-    if (state.doneSeances[k]) { streak++; d.setDate(d.getDate()-1); } else break;
+  var el;
+  el = document.getElementById('stat-semaine'); if(el) el.textContent = monthSeances;
+  el = document.getElementById('stat-seances'); if(el) el.textContent = allSeances.length;
+
+  // Streak
+  var streak = 0;
+  var bestStreak = state.bestStreak || 0;
+  var d = new Date();
+  while(true) {
+    var k = d.toISOString().split('T')[0];
+    var dayIdx = (d.getDay()+6)%7;
+    var dayKey = k+'_d'+dayIdx;
+    if (state.doneSeances[dayKey]) { streak++; d.setDate(d.getDate()-1); }
+    else break;
   }
-  document.getElementById('stat-streak').textContent = streak;
+  if (streak > bestStreak) { bestStreak = streak; state.bestStreak = bestStreak; save(); }
+  el = document.getElementById('stat-streak'); if(el) el.textContent = streak;
+  el = document.getElementById('stat-streak-best'); if(el) el.textContent = bestStreak;
 
-  const monthKey = new Date().toISOString().slice(0,7);
-  document.getElementById('stat-semaine').textContent = allSeances.filter(k => k.startsWith(monthKey)).length;
-
-  // Aperçu aujourd'hui
+  // Calories du jour
   var REPAS = window._repasData || REPAS_DEFAULT;
   var repasToday = state.repas[today] || {};
-  var totalKcal = 0;
-  REPAS.forEach(function(r,i){ if(repasToday[i]) totalKcal += r.cals; });
-  var seriesAujourd = 0;
-  Object.keys(state.sets).filter(k => k.startsWith(today)).forEach(function(sk){
-    Object.values(state.sets[sk]).forEach(function(v){ if(v===true) seriesAujourd++; });
-  });
-  var eau = state.water[today] || 0;
-  document.getElementById('apercu-kcal').textContent = totalKcal || '--';
-  document.getElementById('apercu-series').textContent = seriesAujourd || '--';
-  document.getElementById('apercu-eau').textContent = eau || '--';
+  var tCal = 0;
+  REPAS.forEach(function(r,i){ if(repasToday[i]) tCal += r.cals; });
+  el = document.getElementById('apercu-kcal'); if(el) el.textContent = tCal || '--';
 
-  // Dots résumé (gardés pour compatibilité)
-  var dotT = document.getElementById('dot-training');
-  var dotN = document.getElementById('dot-nutrition');
-  var dotW = document.getElementById('dot-water');
-  var dotR = document.getElementById('dot-recup');
-  if(dotT) dotT.className = 'today-pill-dot' + (state.doneSeances[today] ? ' done' : '');
-  const rc = Object.values(state.repas[today]||{}).filter(Boolean).length;
-  const rl = (window._repasData || REPAS_DEFAULT).length;
-  if(dotN) dotN.className = 'today-pill-dot' + (rc >= rl ? ' done' : rc > 0 ? ' partial' : '');
-  const wc = state.water[today] || 0;
-  if(dotW) dotW.className = 'today-pill-dot' + (wc >= 8 ? ' done' : wc > 0 ? ' partial' : '');
-  if(dotR) dotR.className = 'today-pill-dot' + (state.recup[today] ? ' done' : '');
+  // Objectif — cercle hero
+  var obj = state.objectif || {};
+  var objType = obj.type || 'OBJECTIF';
+  var depart = obj.depart || 0;
+  var actuel = obj.actuel || 0;
+  var cible = obj.cible || 0;
+  var pct = 0;
+  if (depart && cible && actuel) {
+    var total = Math.abs(depart-cible);
+    var done = Math.abs(depart-actuel);
+    pct = Math.min(100, Math.round(done/total*100));
+  }
+  var circ = 289.0;
+  var offset = circ - (pct/100)*circ;
+  el = document.getElementById('hero-obj-arc'); if(el) el.style.strokeDashoffset = offset;
+  el = document.getElementById('hero-obj-pct'); if(el) el.innerHTML = pct+'<span style="font-size:16px">%</span>';
+  el = document.getElementById('hero-obj-type'); if(el) el.textContent = objType.toUpperCase();
+  el = document.getElementById('hero-obj-cible'); if(el) el.textContent = cible || '--';
 
   // Prochain entraînement
   renderNextTraining();
-
-  // Objectif
-  renderObjectif();
 
   // Graphique
   renderChart();
@@ -995,26 +995,37 @@ function initDash() {
 // ── PROCHAIN ENTRAÎNEMENT ──
 function renderNextTraining() {
   var el = document.getElementById('next-training-content');
-  // Trouver le prochain jour non complété
+  if (!el) return;
+
   var next = null;
   for (var i = 0; i < PROGRAM.length; i++) {
-    if (!PROGRAM[i].rest && !state.doneSeances[today + '_d' + i]) {
-      next = { day: PROGRAM[i], idx: i };
-      break;
+    if (!PROGRAM[i].rest) {
+      var weekStart = getWeekStart ? getWeekStart(new Date()) : new Date();
+      var d = new Date(weekStart); d.setDate(d.getDate()+i);
+      var dateStr = d.toISOString().split('T')[0];
+      var sk = dateStr+'_d'+i;
+      if (!state.doneSeances[sk]) { next = {day:PROGRAM[i], idx:i}; break; }
     }
   }
+
   if (!next) {
-    el.innerHTML = '<div style="text-align:center;padding:8px;color:var(--green);font-size:13px">✅ Toutes les séances du jour sont faites !</div>';
+    el.innerHTML = '<div style="text-align:center;padding:12px;color:var(--green);font-size:14px">✅ Toutes les séances sont faites !</div>';
     return;
   }
-  var exos = next.day.exercises.slice(0,3).map(function(e){ return e.name; }).join(' · ');
-    var exoList = next.day.exercises.slice(0,4).map(function(e){
-    return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><div style="width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0"></div><span style="font-size:13px">' + e.name + '</span></div>';
+
+  var exoList = next.day.exercises.slice(0,4).map(function(e){
+    return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span style="font-size:13px;color:#ccc">'+e.name+'</span></div>';
   }).join('');
-  el.innerHTML = '<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">'
-    + '<div style="width:80px;height:80px;border-radius:10px;background:#1a1a1a;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:32px">🏋️</div>'
-    + '<div style="flex:1"><div style="font-family:Bebas Neue,sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:6px">' + next.day.name + '</div>' + exoList + '</div></div>'
-    + '<button onclick="showPage(\'training\');initTraining()" style="width:100%;padding:16px;background:var(--accent);border:none;border-radius:14px;color:#fff;font-family:Bebas Neue,sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer">COMMENCER L\'ENTRAÎNEMENT &#8594;</button>';
+
+  el.innerHTML = '<div style="margin-bottom:6px;font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:1px;font-weight:700">AUJOURD\'HUI</div>'
+    +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:36px;letter-spacing:2px;color:#fff;line-height:1;margin-bottom:4px">'+next.day.name+'</div>'
+    +'<div style="font-size:12px;color:#666;margin-bottom:14px">'+next.day.exercises.length+' exercices</div>'
+    +exoList
+    +'<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between">'
+    +'<button onclick="showPage(\'training\');initTraining()" style="font-size:13px;font-weight:600;color:#fff;background:none;border:none;cursor:pointer;border-bottom:1px solid var(--accent);padding-bottom:2px">Commencer l\'entraînement</button>'
+    +'<button onclick="showPage(\'training\');initTraining()" style="width:44px;height:44px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center">'
+    +'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>'
+    +'</div>';
 }
 
 // ── OBJECTIF POIDS ──
