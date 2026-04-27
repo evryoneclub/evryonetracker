@@ -71,38 +71,36 @@ body{display:flex;flex-direction:column}
 /* BOTTOM NAV */
 .bottom-nav{
   position:fixed;bottom:0;left:0;right:0;
-  background:rgba(10,10,10,.95);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  background:#111;
   display:flex;align-items:center;justify-content:space-around;
-  padding:8px 16px calc(8px + env(safe-area-inset-bottom));
-  z-index:100;border-top:1px solid #1a1a1a;
+  padding:10px 8px calc(10px + env(safe-area-inset-bottom));
+  z-index:100;
   height:calc(70px + env(safe-area-inset-bottom));
+  border-radius:24px 24px 0 0;
 }
 .nav-btn{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:4px;background:none;border:none;cursor:pointer;
-  color:#444;transition:all .25s;padding:6px 0;position:relative;
+  gap:5px;background:none;border:none;cursor:pointer;
+  color:#444;transition:all .2s;padding:4px 0;
 }
-.nav-btn svg{width:22px;height:22px;stroke-width:1.8;transition:all .25s}
-.nav-btn span{font-size:9px;font-weight:600;letter-spacing:.5px;transition:all .25s}
+.nav-btn svg{width:22px;height:22px;stroke-width:1.8;transition:all .2s}
+.nav-btn span{font-size:10px;font-weight:600;letter-spacing:.3px;transition:all .2s}
 .nav-btn.active{color:var(--accent)}
 .nav-btn.active svg{stroke:var(--accent)}
 .nav-btn.active span{color:var(--accent)}
-/* Bulle active */
-.nav-btn.active::before{
-  content:'';
-  position:absolute;
-  top:-2px;
-  left:50%;transform:translateX(-50%);
-  width:36px;height:36px;
-  border-radius:50%;
-  background:rgba(255,51,51,.12);
-  z-index:-1;
+/* Bulle sous l'icône active */
+.nav-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:transparent;margin-top:-2px;transition:.2s;
+}
+.nav-btn.active .nav-dot{ background:var(--accent); }
+/* Fond bulle sur icône active */
+.nav-icon-wrap{
+  width:44px;height:34px;display:flex;align-items:center;justify-content:center;
+  border-radius:12px;transition:.2s;
 }
 .nav-btn.active .nav-icon-wrap{
   background:rgba(255,51,51,.15);
-  border-radius:12px;
-  padding:6px 14px;
 }
 
 /* ─── BOARD ─── */
@@ -632,18 +630,21 @@ body{display:flex;flex-direction:column}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
     </div>
     <span>Accueil</span>
+    <div class="nav-dot"></div>
   </button>
   <button class="nav-btn" id="nav-training">
     <div class="nav-icon-wrap">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="10" width="3" height="4" rx="1"/><rect x="20" y="10" width="3" height="4" rx="1"/><rect x="4" y="8" width="3" height="8" rx="1"/><rect x="17" y="8" width="3" height="8" rx="1"/><line x1="7" y1="12" x2="17" y2="12" stroke-width="2.5"/></svg>
     </div>
     <span>Training</span>
+    <div class="nav-dot"></div>
   </button>
   <button class="nav-btn" id="nav-nutrition">
     <div class="nav-icon-wrap">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6h3v7"/></svg>
     </div>
     <span>Nutrition</span>
+    <div class="nav-dot"></div>
   </button>
 </div>
 
