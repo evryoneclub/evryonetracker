@@ -435,23 +435,143 @@ body{display:flex;flex-direction:column}
 
   </div>
   <div class="page" id="page-nutrition">
-    <div class="card">
-      <div class="card-title">MACROS DU JOUR</div>
-      <div class="macro-ring">
-        <div class="macro-box"><div class="macro-val" id="m-cal" style="color:var(--yellow)">0</div><div class="macro-lbl">kcal</div><div class="macro-bar"><div class="macro-fill" id="bar-cal" style="background:var(--yellow);width:0%"></div></div></div>
-        <div class="macro-box"><div class="macro-val" id="m-prot" style="color:var(--accent)">0g</div><div class="macro-lbl">Protéines</div><div class="macro-bar"><div class="macro-fill" id="bar-prot" style="background:var(--accent);width:0%"></div></div></div>
-        <div class="macro-box"><div class="macro-val" id="m-gluci" style="color:var(--blue)">0g</div><div class="macro-lbl">Glucides</div><div class="macro-bar"><div class="macro-fill" id="bar-gluci" style="background:var(--blue);width:0%"></div></div></div>
-        <div class="macro-box"><div class="macro-val" id="m-lip" style="color:var(--green)">0g</div><div class="macro-lbl">Lipides</div><div class="macro-bar"><div class="macro-fill" id="bar-lip" style="background:var(--green);width:0%"></div></div></div>
+
+    <!-- HEADER -->
+    <div style="margin-bottom:16px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px">NUTRI<span style="color:var(--accent)">TION</span></div>
+    </div>
+
+    <!-- ANNEAU CALORIES + MACROS -->
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:16px">
+        <!-- Anneau SVG -->
+        <div style="position:relative;flex-shrink:0;width:130px;height:130px">
+          <svg viewBox="0 0 130 130" width="130" height="130" style="transform:rotate(-90deg)">
+            <!-- Fond -->
+            <circle cx="65" cy="65" r="52" fill="none" stroke="#222" stroke-width="12"/>
+            <!-- Protéines (rouge) -->
+            <circle cx="65" cy="65" r="52" fill="none" stroke="var(--accent)" stroke-width="12"
+              stroke-linecap="round" stroke-dasharray="326.7"
+              id="ring-prot" stroke-dashoffset="326.7" style="transition:stroke-dashoffset .6s"/>
+            <!-- Glucides (orange) -->
+            <circle cx="65" cy="65" r="52" fill="none" stroke="#f59e0b" stroke-width="12"
+              stroke-linecap="round" stroke-dasharray="326.7"
+              id="ring-gluci" stroke-dashoffset="326.7" style="transition:stroke-dashoffset .6s"/>
+            <!-- Lipides (gris) -->
+            <circle cx="65" cy="65" r="52" fill="none" stroke="#888" stroke-width="12"
+              stroke-linecap="round" stroke-dasharray="326.7"
+              id="ring-lip" stroke-dashoffset="326.7" style="transition:stroke-dashoffset .6s"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;color:#fff" id="ring-kcal">0</div>
+            <div style="font-size:10px;color:#666;margin-top:2px">kcal</div>
+          </div>
+        </div>
+
+        <!-- Macros barres -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+              <div style="display:flex;align-items:center;gap:6px">
+                <div style="width:10px;height:10px;border-radius:50%;background:var(--accent)"></div>
+                <span style="font-size:13px;font-weight:600">Protéines</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span style="font-size:11px;color:#666" id="macro-prot-label">0 / 150 g</span>
+                <span style="font-size:12px;font-weight:700;color:var(--accent)" id="macro-prot-pct">0%</span>
+              </div>
+            </div>
+            <div style="background:#222;border-radius:99px;height:4px;overflow:hidden">
+              <div id="bar-prot" style="height:4px;border-radius:99px;background:var(--accent);width:0%;transition:width .5s"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+              <div style="display:flex;align-items:center;gap:6px">
+                <div style="width:10px;height:10px;border-radius:50%;background:#f59e0b"></div>
+                <span style="font-size:13px;font-weight:600">Glucides</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span style="font-size:11px;color:#666" id="macro-gluci-label">0 / 200 g</span>
+                <span style="font-size:12px;font-weight:700;color:#f59e0b" id="macro-gluci-pct">0%</span>
+              </div>
+            </div>
+            <div style="background:#222;border-radius:99px;height:4px;overflow:hidden">
+              <div id="bar-gluci" style="height:4px;border-radius:99px;background:#f59e0b;width:0%;transition:width .5s"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+              <div style="display:flex;align-items:center;gap:6px">
+                <div style="width:10px;height:10px;border-radius:50%;background:#888"></div>
+                <span style="font-size:13px;font-weight:600">Lipides</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span style="font-size:11px;color:#666" id="macro-lip-label">0 / 65 g</span>
+                <span style="font-size:12px;font-weight:700;color:#888" id="macro-lip-pct">0%</span>
+              </div>
+            </div>
+            <div style="background:#222;border-radius:99px;height:4px;overflow:hidden">
+              <div id="bar-lip" style="height:4px;border-radius:99px;background:#888;width:0%;transition:width .5s"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:#666">Objectif : <span style="color:var(--accent);font-weight:600" id="kcal-objectif">2 000</span> kcal</div>
+    </div>
+
+    <!-- STATS RAPIDES -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div class="card" style="padding:14px">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+          <span style="font-size:16px">🔥</span>
+          <span style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.5px">CALORIES</span>
+        </div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1" id="stat-kcal-val">0 <span style="font-size:12px">kcal</span></div>
+        <div style="font-size:11px;color:#555;margin-top:4px"><span id="stat-kcal-reste">2000</span> kcal restantes</div>
+        <div style="background:#222;border-radius:99px;height:3px;margin-top:8px;overflow:hidden">
+          <div id="bar-cal" style="height:3px;border-radius:99px;background:var(--accent);width:0%;transition:width .5s"></div>
+        </div>
+      </div>
+      <div class="card" style="padding:14px">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+          <span style="font-size:16px">💧</span>
+          <span style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.5px">EAU</span>
+        </div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1"><span id="water-val-l">0</span> <span style="font-size:12px">L</span></div>
+        <div style="font-size:11px;color:#555;margin-top:4px">Objectif : 2 L</div>
+        <div style="background:#222;border-radius:99px;height:3px;margin-top:8px;overflow:hidden">
+          <div id="bar-water" style="height:3px;border-radius:99px;background:var(--blue);width:0%;transition:width .5s"></div>
+        </div>
       </div>
     </div>
-    <div class="card"><div class="card-title">MES REPAS</div><div id="repas-list"></div></div>
-    <div class="card">
-      <div class="card-title">💧 HYDRATATION</div>
-      <div style="margin-bottom:10px;font-size:13px;color:var(--muted)">Objectif : <span style="color:var(--blue);font-weight:600">8 verres</span> — <span id="water-count" style="color:var(--text);font-weight:600">0</span> atteints</div>
+
+    <!-- REPAS DU JOUR -->
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-size:13px;font-weight:700;letter-spacing:.5px">REPAS DU JOUR</div>
+      </div>
+      <div id="repas-list"></div>
+    </div>
+
+    <!-- HYDRATATION -->
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;letter-spacing:.5px">💧 HYDRATATION</div>
+        <span style="font-size:12px;color:#666"><span id="water-count">0</span>/8 verres</span>
+      </div>
       <div class="water-row" id="water-glasses"></div>
     </div>
-  </div>
 
+    <!-- Éléments cachés pour compatibilité JS -->
+    <div style="display:none">
+      <div id="m-cal">0</div>
+      <div id="m-prot">0g</div>
+      <div id="m-gluci">0g</div>
+      <div id="m-lip">0g</div>
+    </div>
+
+  </div>
   <div class="page" id="page-recovery">
     <div class="card">
       <div class="card-title">🌙 MON ÉTAT DU JOUR</div>
@@ -1348,33 +1468,127 @@ function stopTimer() {
 // NUTRITION
 // ══════════════════════════════════════
 function initNutrition() {
-  const REPAS = window._repasData || REPAS_DEFAULT;
-  const repasToday = state.repas[today] || {};
-  let tCal=0, tProt=0, tGluci=0, tLip=0;
+  var REPAS = window._repasData || REPAS_DEFAULT;
+  var repasToday = state.repas[today] || {};
+  var tCal=0, tProt=0, tGluci=0, tLip=0;
 
-  let html = '';
+  // Cibles
+  var tgtCal = window.PERSONAL_KCAL || 2000;
+  var tgtProt = window.PERSONAL_PROTEIN || 150;
+  var tgtGluci = window.PERSONAL_CARBS || 200;
+  var tgtLip = window.PERSONAL_FAT || 65;
+
+  // Calcul macros
   REPAS.forEach(function(r, i) {
-    const checked = !!repasToday[i];
-    if (checked) { tCal+=r.cals; tProt+=r.prot; tGluci+=r.gluci; tLip+=r.lip; }
-    html += '<div class="repas-item"><div class="repas-top"><div class="repas-name">'+r.name+'</div><div class="repas-cals">'+r.cals+' kcal</div></div><div class="repas-detail">'+r.detail+'</div><div class="repas-check"><input type="checkbox" id="rep-'+i+'" '+(checked?'checked':'')+ ' onchange="toggleRepas('+i+')"><label for="rep-'+i+'">Repas pris ✓</label></div></div>';
+    if (repasToday[i]) { tCal+=r.cals; tProt+=r.prot; tGluci+=r.gluci; tLip+=r.lip; }
   });
-  document.getElementById('repas-list').innerHTML = html;
 
-  const tgt = {cal:2000,prot:150,gluci:200,lip:65};
-  document.getElementById('m-cal').textContent = tCal;
-  document.getElementById('m-prot').textContent = tProt+'g';
-  document.getElementById('m-gluci').textContent = tGluci+'g';
-  document.getElementById('m-lip').textContent = tLip+'g';
-  document.getElementById('bar-cal').style.width = Math.min(100,tCal/tgt.cal*100)+'%';
-  document.getElementById('bar-prot').style.width = Math.min(100,tProt/tgt.prot*100)+'%';
-  document.getElementById('bar-gluci').style.width = Math.min(100,tGluci/tgt.gluci*100)+'%';
-  document.getElementById('bar-lip').style.width = Math.min(100,tLip/tgt.lip*100)+'%';
+  // ── Anneau SVG ──
+  var circ = 326.7;
+  var pctProt = Math.min(1, tProt/tgtProt);
+  var pctGluci = Math.min(1, tGluci/tgtGluci);
+  var pctLip = Math.min(1, tLip/tgtLip);
 
-  const wc = state.water[today] || 0;
-  document.getElementById('water-count').textContent = wc;
-  let whtml = '';
-  for (let g=0; g<8; g++) whtml += '<div class="water-glass'+(g<wc?' filled':'')+'" onclick="toggleWater('+g+')">💧</div>';
-  document.getElementById('water-glasses').innerHTML = whtml;
+  // L'anneau est divisé en 3 arcs : protéines rouge, glucides orange, lipides gris
+  // On utilise stroke-dashoffset pour simuler les arcs
+  // Arc prot : du début, longueur pctProt*circ
+  // Arc gluci : après prot
+  // Arc lip : après gluci
+  var protArc = pctProt * circ;
+  var gluciArc = pctGluci * circ;
+  var lipArc = pctLip * circ;
+
+  var ringProt = document.getElementById('ring-prot');
+  var ringGluci = document.getElementById('ring-gluci');
+  var ringLip = document.getElementById('ring-lip');
+  if (ringProt) {
+    ringProt.style.strokeDasharray = protArc + ' ' + (circ - protArc);
+    ringProt.style.strokeDashoffset = 0;
+  }
+  if (ringGluci) {
+    ringGluci.style.strokeDasharray = gluciArc + ' ' + (circ - gluciArc);
+    ringGluci.style.strokeDashoffset = -(protArc);
+  }
+  if (ringLip) {
+    ringLip.style.strokeDasharray = lipArc + ' ' + (circ - lipArc);
+    ringLip.style.strokeDashoffset = -(protArc + gluciArc);
+  }
+
+  // Centre anneau
+  var ringKcal = document.getElementById('ring-kcal');
+  if (ringKcal) ringKcal.textContent = tCal.toLocaleString('fr-FR');
+
+  // Objectif kcal
+  var kcalObj = document.getElementById('kcal-objectif');
+  if (kcalObj) kcalObj.textContent = tgtCal.toLocaleString('fr-FR');
+
+  // Barres macros
+  var pProt = Math.min(100, Math.round(tProt/tgtProt*100));
+  var pGluci = Math.min(100, Math.round(tGluci/tgtGluci*100));
+  var pLip = Math.min(100, Math.round(tLip/tgtLip*100));
+  var pCal = Math.min(100, Math.round(tCal/tgtCal*100));
+
+  var el = document.getElementById('bar-prot'); if(el) el.style.width = pProt+'%';
+  el = document.getElementById('bar-gluci'); if(el) el.style.width = pGluci+'%';
+  el = document.getElementById('bar-lip'); if(el) el.style.width = pLip+'%';
+  el = document.getElementById('bar-cal'); if(el) el.style.width = pCal+'%';
+
+  el = document.getElementById('macro-prot-label'); if(el) el.textContent = tProt+' / '+tgtProt+' g';
+  el = document.getElementById('macro-gluci-label'); if(el) el.textContent = tGluci+' / '+tgtGluci+' g';
+  el = document.getElementById('macro-lip-label'); if(el) el.textContent = tLip+' / '+tgtLip+' g';
+  el = document.getElementById('macro-prot-pct'); if(el) el.textContent = pProt+'%';
+  el = document.getElementById('macro-gluci-pct'); if(el) el.textContent = pGluci+'%';
+  el = document.getElementById('macro-lip-pct'); if(el) el.textContent = pLip+'%';
+
+  // Stats
+  el = document.getElementById('stat-kcal-val'); if(el) el.innerHTML = tCal+' <span style="font-size:12px">kcal</span>';
+  el = document.getElementById('stat-kcal-reste'); if(el) el.textContent = Math.max(0, tgtCal-tCal);
+
+  // Compat éléments cachés
+  el = document.getElementById('m-cal'); if(el) el.textContent = tCal;
+  el = document.getElementById('m-prot'); if(el) el.textContent = tProt+'g';
+  el = document.getElementById('m-gluci'); if(el) el.textContent = tGluci+'g';
+  el = document.getElementById('m-lip'); if(el) el.textContent = tLip+'g';
+
+  // ── Repas du jour ──
+  var icons = ['☀️','☀️','🌤️','🌙'];
+  var times = ['7:30','12:30','16:30','19:30'];
+  var html = '';
+  REPAS.forEach(function(r, i) {
+    var checked = !!repasToday[i];
+    html += '<div style="display:flex;align-items:center;gap:12px;padding:12px 0;' + (i<REPAS.length-1?'border-bottom:1px solid #1a1a1a;':'') + 'cursor:pointer" onclick="toggleRepas('+i+')">';
+    html += '<div style="font-size:22px;flex-shrink:0">' + icons[i] + '</div>';
+    html += '<div style="flex:1;min-width:0">';
+    html += '<div style="font-size:14px;font-weight:700;color:#fff;' + (checked?'text-decoration:line-through;color:#555;':'') + '">' + r.name + '</div>';
+    html += '<div style="font-size:11px;color:#555;margin-top:1px">' + times[i] + '</div>';
+    html += '</div>';
+    html += '<div style="text-align:right;flex-shrink:0">';
+    html += '<div style="font-size:14px;font-weight:700;color:' + (checked?'#555':'#fff') + '">' + r.cals + ' <span style="color:var(--accent);font-size:12px">kcal</span></div>';
+    html += '<div style="font-size:10px;color:#555;margin-top:2px">P:'+r.prot+'g G:'+r.gluci+'g L:'+r.lip+'g</div>';
+    html += '</div>';
+    html += '<div style="width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-left:4px;' + (checked?'background:var(--green);':'border:2px solid #333;') + '">';
+    html += (checked?'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>':'');
+    html += '</div>';
+    html += '</div>';
+  });
+  var repasEl = document.getElementById('repas-list');
+  if (repasEl) repasEl.innerHTML = html;
+
+  // ── Eau ──
+  var wc = state.water[today] || 0;
+  var wL = (wc * 0.25).toFixed(1);
+  var barW = Math.min(100, Math.round(wc/8*100));
+  el = document.getElementById('water-count'); if(el) el.textContent = wc;
+  el = document.getElementById('water-val-l'); if(el) el.textContent = wL;
+  el = document.getElementById('bar-water'); if(el) el.style.width = barW+'%';
+
+  var wGlasses = '';
+  for (var g=0; g<8; g++) {
+    wGlasses += '<div class="water-glass'+(g<wc?' filled':'')+'" onclick="toggleWater('+g+')">💧</div>';
+  }
+  el = document.getElementById('water-glasses'); if(el) el.innerHTML = wGlasses;
+
+  initDash();
 }
 
 function toggleRepas(i) {
