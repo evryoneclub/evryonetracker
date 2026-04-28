@@ -1133,93 +1133,112 @@ function renderObjectif() {
 
 // ── GRAPHIQUE PROGRESSION ──
 function renderChart() {
-  var barsEl   = document.getElementById('prog-bars');
-  var labelsEl = document.getElementById('prog-labels');
-  var totalEl  = document.getElementById('prog-total-val');
-  var maxBadge = document.getElementById('prog-max-badge');
+  var barsEl    = document.getElementById('prog-bars');
+  var labelsEl  = document.getElementById('prog-labels');
+  var totalEl   = document.getElementById('prog-total-val');
+  var maxBadge  = document.getElementById('prog-max-badge');
   var trendBadge = document.getElementById('prog-trend-badge');
   var trendArrow = document.getElementById('prog-trend-arrow');
   var trendText  = document.getElementById('prog-trend-text');
   if (!barsEl) return;
 
   var days = ['LUN','MAR','MER','JEU','VEN','SAM','DIM'];
-  var weekStart = (typeof getWeekStart === 'function') ? getWeekStart(new Date()) : new Date();
+  var weekStart = (typeof getWeekStart==='function') ? getWeekStart(new Date()) : new Date();
   var todayIdx = (new Date().getDay()+6)%7;
 
-  // Calculer le volume par jour de la semaine courante
-  var vols = [];
-  var totalVol = 0;
+  // ── Calculer volume par jour (semaine courante) ──
+  var vols = [0,0,0,0,0,0,0];
   for (var i = 0; i < 7; i++) {
     var d = new Date(weekStart);
     d.setDate(d.getDate()+i);
-    var dateStr = d.toISOString().split('T')[0];
-    var sk = dateStr+'_d'+i;
-    var vol = 0;
-    var setsObj = state.poids[sk] || {};
+    var sk = d.toISOString().split('T')[0]+'_d'+i;
+    var setsObj = state.poids[sk]||{};
     Object.values(setsObj).forEach(function(pd){
-      if (pd && pd.poids && pd.reps) vol += pd.poids * pd.reps;
+      if (pd && pd.poids && pd.reps) vols[i] += pd.poids * pd.reps;
     });
-    vols.push(vol);
-    totalVol += vol;
   }
 
-  // Volume semaine précédente pour tendance
+  // Si aucune donnée cette semaine → chercher dans toutes les semaines précédentes
+  var totalVol = vols.reduce(function(a,b){return a+b;},0);
+  if (totalVol === 0) {
+    // Utiliser l'historique global par jour de programme
+    for (var i = 0; i < 7; i++) {
+      var allKeys = Object.keys(state.poids||{}).filter(function(k){ return k.endsWith('_d'+i); });
+      if (allKeys.length > 0) {
+        var lastKey = allKeys[allKeys.length-1];
+        var setsObj2 = state.poids[lastKey]||{};
+        Object.values(setsObj2).forEach(function(pd){
+          if (pd && pd.poids && pd.reps) vols[i] += pd.poids * pd.reps;
+        });
+      }
+    }
+    totalVol = vols.reduce(function(a,b){return a+b;},0);
+  }
+
+  // ── Volume semaine précédente (tendance) ──
   var prevWeekStart = new Date(weekStart);
   prevWeekStart.setDate(prevWeekStart.getDate()-7);
   var prevTotal = 0;
   for (var i = 0; i < 7; i++) {
-    var d2 = new Date(prevWeekStart);
-    d2.setDate(d2.getDate()+i);
-    var sk2 = d2.toISOString().split('T')[0]+'_d'+i;
-    var setsObj2 = state.poids[sk2] || {};
-    Object.values(setsObj2).forEach(function(pd){
-      if (pd && pd.poids && pd.reps) prevTotal += pd.poids * pd.reps;
-    });
+    var dp = new Date(prevWeekStart); dp.setDate(dp.getDate()+i);
+    var skp = dp.toISOString().split('T')[0]+'_d'+i;
+    var sp = state.poids[skp]||{};
+    Object.values(sp).forEach(function(pd){ if(pd&&pd.poids&&pd.reps) prevTotal+=pd.poids*pd.reps; });
   }
 
-  // Total et max
-  var maxVol = Math.max.apply(null, vols) || 1;
+  // ── Affichage total ──
+  var maxVol = Math.max.apply(null, vols);
   if (totalEl) totalEl.textContent = Math.round(totalVol).toLocaleString('fr-FR');
-  if (maxBadge) maxBadge.textContent = Math.round(maxVol).toLocaleString('fr-FR');
+  if (maxBadge) maxBadge.textContent = maxVol > 0 ? Math.round(maxVol).toLocaleString('fr-FR') : '--';
 
-  // Tendance
+  // ── Tendance ──
   if (trendBadge && trendArrow && trendText) {
-    if (prevTotal > 0) {
-      var diff = Math.round((totalVol - prevTotal) / prevTotal * 100);
-      var isUp = diff >= 0;
-      trendArrow.textContent = isUp ? '↑' : '↓';
-      trendText.textContent = (isUp?'+':'') + diff + '% vs semaine dernière';
-      trendBadge.style.color = isUp ? 'var(--green)' : 'var(--accent)';
-    } else {
-      trendText.textContent = 'Première semaine';
+    if (prevTotal > 0 && totalVol > 0) {
+      var diff = Math.round((totalVol-prevTotal)/prevTotal*100);
+      trendArrow.textContent = diff>=0 ? '↑' : '↓';
+      trendText.textContent = (diff>=0?'+':'')+diff+'% vs semaine dernière';
+      trendBadge.style.color = diff>=0 ? 'var(--green)' : 'var(--accent)';
+    } else if (totalVol > 0) {
       trendArrow.textContent = '→';
+      trendText.textContent = 'Première semaine';
       trendBadge.style.color = '#888';
+    } else {
+      trendArrow.textContent = '→';
+      trendText.textContent = 'Lance-toi !';
+      trendBadge.style.color = '#666';
     }
   }
 
-  // Barres
+  // ── Barres proportionnelles ──
   var barsHtml = '';
   var labelsHtml = '';
-  var isToday = function(i){ return i === todayIdx; };
+  var maxH = maxVol > 0 ? maxVol : 1;
 
   for (var i = 0; i < 7; i++) {
-    var heightPct = vols[i] > 0 ? Math.max(8, Math.round(vols[i]/maxVol*100)) : 8;
-    var isT = isToday(i);
+    var isT = (i === todayIdx);
     var hasData = vols[i] > 0;
-    var color = (isT || hasData) ? (isT ? 'var(--accent)' : '#444') : '#2a2a2a';
-    var glow = isT && hasData ? 'box-shadow:0 0 12px rgba(255,51,51,.4);' : '';
+    // Hauteur proportionnelle : min 8px si pas de données, sinon au moins 12%
+    var heightPct = hasData ? Math.max(12, Math.round(vols[i]/maxH*100)) : 0;
+    var color = isT && hasData ? 'var(--accent)' : (hasData ? '#444' : '#222');
+    var glow = isT && hasData ? 'box-shadow:0 0 14px rgba(255,51,51,.5);' : '';
+    var radius = hasData ? '6px 6px 3px 3px' : '4px 4px 3px 3px';
 
-    barsHtml += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end">';
-    barsHtml += '<div style="width:100%;border-radius:6px 6px 4px 4px;background:'+color+';height:'+heightPct+'%;min-height:8px;transition:.4s;'+glow+'"></div>';
+    barsHtml += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:80px">';
+    if (hasData) {
+      barsHtml += '<div style="width:80%;border-radius:'+radius+';background:'+color+';height:'+heightPct+'%;'+glow+'transition:.5s cubic-bezier(.4,0,.2,1)"></div>';
+    } else {
+      // Barre vide courte
+      barsHtml += '<div style="width:80%;border-radius:'+radius+';background:#222;height:10px;transition:.5s"></div>';
+    }
     barsHtml += '</div>';
 
-    var dayColor = isT ? 'var(--accent)' : '#555';
-    var dayWeight = isT ? '700' : '400';
-    labelsHtml += '<div style="flex:1;text-align:center;font-size:9px;color:'+dayColor+';font-weight:'+dayWeight+';letter-spacing:.3px">'+days[i]+'</div>';
+    var dc = isT ? 'var(--accent)' : '#555';
+    var dw = isT ? '700' : '400';
+    labelsHtml += '<div style="flex:1;text-align:center;font-size:9px;color:'+dc+';font-weight:'+dw+';letter-spacing:.3px">'+days[i]+'</div>';
   }
 
   barsEl.innerHTML = barsHtml;
-  labelsEl.innerHTML = labelsHtml;
+  if (labelsEl) labelsEl.innerHTML = labelsHtml;
 }
 
 // ══════════════════════════════════════
