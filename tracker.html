@@ -313,21 +313,31 @@ body{display:flex;flex-direction:column}
         </div>
 
         <!-- Objectif cercle -->
-        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
-          <div style="position:relative;width:140px;height:140px;flex-shrink:0">
-            <svg viewBox="0 0 140 140" width="140" height="140" style="transform:rotate(-90deg)">
-              <circle cx="70" cy="70" r="58" fill="none" stroke="#222" stroke-width="9"/>
-              <circle cx="70" cy="70" r="58" fill="none" stroke="var(--accent)" stroke-width="9"
-                stroke-linecap="round" stroke-dasharray="364.4"
-                id="hero-obj-arc" stroke-dashoffset="364.4" style="transition:stroke-dashoffset .8s;filter:drop-shadow(0 0 6px rgba(255,51,51,.5))"/>
+        <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:16px">
+          <div style="position:relative;width:200px;height:200px;flex-shrink:0">
+            <svg viewBox="0 0 200 200" width="200" height="200" style="transform:rotate(-90deg)">
+              <circle cx="100" cy="100" r="90" fill="none" stroke="#1a1a1a" stroke-width="5"/>
+                  <stop offset="0%" stop-color="#cc0000"/>
+                  <stop offset="100%" stop-color="#ff4444"/>
+                </linearGradient>
+              </defs>
+              <!-- Lueur rouge en fond -->
+              <circle cx="100" cy="100" r="90" fill="none" stroke="#ff0000" stroke-width="5"
+                stroke-dasharray="565.5" id="hero-obj-arc-glow" stroke-dashoffset="565.5"
+                style="filter:blur(6px);opacity:0.4;transition:stroke-dashoffset .8s"/>
+              <!-- Arc principal -->
+              <circle cx="100" cy="100" r="90" fill="none" stroke="url(#arcGrad)" stroke-width="5"
+                stroke-linecap="round" stroke-dasharray="565.5"
+                id="hero-obj-arc" stroke-dashoffset="565.5"
+                style="transition:stroke-dashoffset .8s;filter:drop-shadow(0 0 8px rgba(255,51,51,.8))"/>
             </svg>
             <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
               <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px" id="hero-obj-type">OBJECTIF</div>
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;color:#fff" id="hero-obj-pct">0<span style="font-size:20px">%</span></div>
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:1;color:#fff" id="hero-obj-pct">0<span style="font-size:20px">%</span></div>
               <div style="font-size:12px;color:#666;margin-top:2px">Objectif : <span style="color:var(--accent)" id="hero-obj-cible">--</span> kg</div>
             </div>
           </div>
-          <div>
+          <div style="margin-top:14px">
             <div onclick="openProfile();setTimeout(function(){openSubPage('profil')},80)" style="font-size:13px;color:#888;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border-bottom:1px solid #333;padding-bottom:3px">Voir mon objectif <span style="color:var(--accent)">→</span></div>
           </div>
         </div>
@@ -1015,9 +1025,10 @@ function initDash() {
     var done = Math.abs(depart-actuel);
     pct = Math.min(100, Math.round(done/total*100));
   }
-  var circ = 364.4;
+  var circ = 565.5;
   var offset = circ - (pct/100)*circ;
   el = document.getElementById('hero-obj-arc'); if(el) el.style.strokeDashoffset = offset;
+  el = document.getElementById('hero-obj-arc-glow'); if(el) el.style.strokeDashoffset = offset;
   el = document.getElementById('hero-obj-pct'); if(el) el.innerHTML = pct+'<span style="font-size:16px">%</span>';
   el = document.getElementById('hero-obj-type'); if(el) el.textContent = objType.toUpperCase();
   el = document.getElementById('hero-obj-cible'); if(el) el.textContent = cible || '--';
