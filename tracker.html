@@ -9,8 +9,8 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
   --bg:#0a0a0a;
-  --card:#141414;
-  --card2:#1a1a1a;
+  --card:rgba(255,255,255,0.04);
+  --card2:rgba(255,255,255,0.06);
   --border:transparent;
   --accent:#ff3333;
   --green:#22c55e;
@@ -60,8 +60,12 @@ body{display:flex;flex-direction:column}
 
 /* CARDS */
 .card{
-  background:var(--card);
+  background:rgba(255,255,255,0.04);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.07);
   border-radius:var(--radius);padding:16px;margin-bottom:12px;
+  box-shadow:0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
 }
 .card-title{
   font-family:'Bebas Neue',sans-serif;font-size:14px;
@@ -138,7 +142,7 @@ body{display:flex;flex-direction:column}
 .seance-name{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px}
 .seance-badge{background:var(--accent);color:#fff;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600}
 
-.exo-card{background:var(--card2);border-radius:12px;margin-bottom:10px;overflow:hidden;transition:.2s;}
+.exo-card{background:rgba(255,255,255,0.04);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.06);border-radius:12px;margin-bottom:10px;overflow:hidden;transition:.2s;}
 .exo-card.done-exo{background:#0a1a0a}
 .exo-card-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;}
 .exo-done-dot{width:22px;height:22px;border-radius:50%;border:2px solid #333;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;transition:.2s;}
@@ -161,7 +165,7 @@ body{display:flex;flex-direction:column}
 .set-num{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#555;text-align:center;line-height:1;}
 .set-num.done-num{color:var(--green)}
 .set-input{
-  width:100%;background:#111;border:none;
+  width:100%;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.06);
   border-radius:8px;padding:9px 6px;color:var(--text);
   font-size:15px;font-family:'DM Sans',sans-serif;font-weight:600;
   text-align:center;-moz-appearance:textfield;
@@ -345,7 +349,7 @@ body{display:flex;flex-direction:column}
     </div>
 
     <!-- ═══ STATS 3 EN 1 ═══ -->
-    <div style="background:#141414;border-radius:18px;margin:16px 0 12px;padding:16px">
+    <div style="background:rgba(255,255,255,0.04);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);border-radius:18px;margin:16px 0 12px;padding:16px">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">
 
         <!-- Calories -->
@@ -387,7 +391,7 @@ body{display:flex;flex-direction:column}
     </div>
 
     <!-- ═══ PROCHAIN ENTRAÎNEMENT ═══ -->
-    <div id="next-training-card" style="background:#141414;border-radius:18px;margin-bottom:12px;overflow:hidden;position:relative">
+    <div id="next-training-card" style="background:rgba(255,255,255,0.04);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);border-radius:18px;margin-bottom:12px;overflow:hidden;position:relative">
       <!-- Fond image -->
       <div style="position:absolute;right:0;top:0;bottom:0;width:50%;background:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=50') center/cover;opacity:0.25"></div>
       <div style="position:absolute;right:0;top:0;bottom:0;width:50%;background:linear-gradient(to right,#141414 30%,transparent)"></div>
@@ -397,7 +401,7 @@ body{display:flex;flex-direction:column}
     </div>
 
     <!-- ═══ TA PROGRESSION ═══ -->
-    <div style="background:#141414;border-radius:18px;padding:20px;margin-bottom:12px">
+    <div style="background:rgba(255,255,255,0.04);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);border-radius:18px;padding:20px;margin-bottom:12px">
       <div style="display:flex;align-items:stretch;gap:16px">
 
         <!-- Gauche : texte -->
@@ -543,7 +547,7 @@ body{display:flex;flex-direction:column}
     </div>
 
     <!-- CARD MACROS 3 colonnes -->
-    <div style="background:#141414;border-radius:18px;padding:16px;margin-bottom:12px">
+    <div style="background:rgba(255,255,255,0.04);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);border-radius:18px;padding:16px;margin-bottom:12px">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">
 
         <!-- Protéines -->
@@ -596,7 +600,7 @@ body{display:flex;flex-direction:column}
     </div>
 
     <!-- HYDRATATION -->
-    <div style="background:#141414;border-radius:18px;padding:16px;margin-bottom:12px">
+    <div style="background:rgba(255,255,255,0.04);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);border-radius:18px;padding:16px;margin-bottom:12px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <div style="font-size:13px;font-weight:700">💧 HYDRATATION</div>
         <div style="font-size:12px;color:#666"><span id="water-count">0</span>/8 verres · <span id="water-val-l">0</span> L</div>
@@ -707,7 +711,7 @@ body{display:flex;flex-direction:column}
 <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)">
 
 <!-- ═══ MENU PROFIL PRINCIPAL ═══ -->
-<div id="profile-panel" style="position:fixed;inset:0;z-index:9999;background:#0d0d0d;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom)">
+<div id="profile-panel" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.4);transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom)">
   <div style="padding:16px 20px 0">
     <button onclick="closeProfile()" style="background:none;border:none;color:#fff;font-size:24px;cursor:pointer;padding:4px;line-height:1">&#10005;</button>
   </div>
@@ -743,8 +747,8 @@ body{display:flex;flex-direction:column}
 </div>
 
 <!-- SOUS-PAGE PROFIL -->
-<div id="sub-profil" style="position:fixed;inset:0;z-index:10000;background:#0d0d0d;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)">
-  <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;position:sticky;top:0;background:#0d0d0d">
+<div id="sub-profil" style="position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.4);transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)">
+  <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;position:sticky;top:0;background:rgba(0,0,0,0.4)">
     <button onclick="closeSubPage('sub-profil')" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1">&#8592;</button>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px">PROFIL &amp; OBJECTIFS</div>
   </div>
@@ -757,7 +761,7 @@ body{display:flex;flex-direction:column}
   </div>
   <div style="padding:0 20px 16px">
     <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px">INFOS PERSONNELLES</div>
-    <div style="background:#141414;border-radius:14px;overflow:hidden">
+    <div style="background:rgba(255,255,255,0.04);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);border-radius:14px;overflow:hidden">
       <div style="padding:14px 16px;border-bottom:1px solid #1e1e1e"><div style="font-size:10px;color:#666;margin-bottom:4px">Pr&#233;nom</div><input id="profile-prenom" type="text" placeholder="Ton pr&#233;nom" oninput="previewProfileName()" style="width:100%;background:none;border:none;color:#fff;font-size:15px;font-weight:600;outline:none;font-family:'DM Sans',sans-serif"></div>
       <div style="padding:14px 16px;border-bottom:1px solid #1e1e1e"><div style="font-size:10px;color:#666;margin-bottom:4px">Email</div><div style="font-size:15px;color:#555" id="profile-email-static"></div></div>
       <div style="padding:14px 16px"><div style="font-size:10px;color:#666;margin-bottom:4px">Membre depuis</div><div style="font-size:15px;font-weight:600" id="profile-since-static">--</div></div>
@@ -765,7 +769,7 @@ body{display:flex;flex-direction:column}
   </div>
   <div style="padding:0 20px 16px">
     <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px">OBJECTIFS FITNESS</div>
-    <div style="background:#141414;border-radius:14px;overflow:hidden">
+    <div style="background:rgba(255,255,255,0.04);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);border-radius:14px;overflow:hidden">
       <div style="padding:14px 16px;border-bottom:1px solid #1e1e1e"><div style="font-size:10px;color:#666;margin-bottom:6px">Type d'objectif</div><select id="input-objectif-type" style="width:100%;background:none;border:none;color:#fff;font-size:15px;font-weight:600;outline:none;font-family:'DM Sans',sans-serif;-webkit-appearance:none"><option value="Prise de masse" style="background:#141414">Prise de masse</option><option value="Perte de poids" style="background:#141414">Perte de poids</option><option value="Maintien" style="background:#141414">Maintien</option><option value="Remise en forme" style="background:#141414">Remise en forme</option><option value="Performance" style="background:#141414">Performance sportive</option></select></div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
         <div style="padding:14px 16px;border-right:1px solid #1e1e1e"><div style="font-size:10px;color:#666;margin-bottom:4px">D&#233;part (kg)</div><input type="number" id="input-poids-depart" step="0.1" placeholder="75" style="width:100%;background:none;border:none;color:#fff;font-size:15px;font-weight:600;outline:none;font-family:'DM Sans',sans-serif;-moz-appearance:textfield"></div>
@@ -779,13 +783,13 @@ body{display:flex;flex-direction:column}
 </div>
 
 <!-- SOUS-PAGE NOTIFICATIONS -->
-<div id="sub-notifs" style="position:fixed;inset:0;z-index:10000;background:#0d0d0d;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)">
-  <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;position:sticky;top:0;background:#0d0d0d">
+<div id="sub-notifs" style="position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.4);transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)">
+  <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;position:sticky;top:0;background:rgba(0,0,0,0.4)">
     <button onclick="closeSubPage('sub-notifs')" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1">&#8592;</button>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px">NOTIFICATIONS</div>
   </div>
   <div style="padding:16px 20px">
-    <div style="background:#141414;border-radius:14px;overflow:hidden">
+    <div style="background:rgba(255,255,255,0.04);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);border-radius:14px;overflow:hidden">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #1e1e1e"><div><div style="font-size:15px;font-weight:600">Rappel entra&#238;nement</div><div style="font-size:12px;color:#666;margin-top:2px">Notification quotidienne</div></div><label style="position:relative;display:inline-block;width:46px;height:26px;cursor:pointer;flex-shrink:0"><input type="checkbox" id="notif-training" style="opacity:0;width:0;height:0" onchange="saveNotif()"><span id="toggle-training" style="position:absolute;inset:0;background:#333;border-radius:99px;transition:.3s"><span id="thumb-training" style="position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#666;transition:.3s"></span></span></label></div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #1e1e1e"><div><div style="font-size:15px;font-weight:600">Rappel hydratation</div><div style="font-size:12px;color:#666;margin-top:2px">Toutes les 2h</div></div><label style="position:relative;display:inline-block;width:46px;height:26px;cursor:pointer;flex-shrink:0"><input type="checkbox" id="notif-water" style="opacity:0;width:0;height:0" onchange="saveNotif()"><span id="toggle-water" style="position:absolute;inset:0;background:#333;border-radius:99px;transition:.3s"><span id="thumb-water" style="position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#666;transition:.3s"></span></span></label></div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:16px"><div><div style="font-size:15px;font-weight:600">R&#233;cap hebdo</div><div style="font-size:12px;color:#666;margin-top:2px">Chaque dimanche</div></div><label style="position:relative;display:inline-block;width:46px;height:26px;cursor:pointer;flex-shrink:0"><input type="checkbox" id="notif-weekly" style="opacity:0;width:0;height:0" onchange="saveNotif()"><span id="toggle-weekly" style="position:absolute;inset:0;background:#333;border-radius:99px;transition:.3s"><span id="thumb-weekly" style="position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#666;transition:.3s"></span></span></label></div>
@@ -794,13 +798,13 @@ body{display:flex;flex-direction:column}
 </div>
 
 <!-- SOUS-PAGE PREFERENCES -->
-<div id="sub-prefs" style="position:fixed;inset:0;z-index:10000;background:#0d0d0d;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)">
-  <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;position:sticky;top:0;background:#0d0d0d">
+<div id="sub-prefs" style="position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.4);transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)">
+  <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;position:sticky;top:0;background:rgba(0,0,0,0.4)">
     <button onclick="closeSubPage('sub-prefs')" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1">&#8592;</button>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px">PR&#201;F&#201;RENCES</div>
   </div>
   <div style="padding:16px 20px">
-    <div style="background:#141414;border-radius:14px;overflow:hidden">
+    <div style="background:rgba(255,255,255,0.04);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);border-radius:14px;overflow:hidden">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #1e1e1e"><div style="font-size:15px;font-weight:600">Unit&#233; de poids</div><div style="display:flex;gap:6px"><div onclick="selectUnit('kg',this)" id="unit-kg" style="padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:var(--accent);color:#fff">kg</div><div onclick="selectUnit('lbs',this)" id="unit-lbs" style="padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:#1e1e1e;color:#666">lbs</div></div></div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:16px"><div style="font-size:15px;font-weight:600">Langue</div><div style="display:flex;gap:6px"><div onclick="selectLang('fr',this)" id="lang-fr" style="padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:var(--accent);color:#fff">&#127467;&#127479; FR</div><div onclick="selectLang('en',this)" id="lang-en" style="padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:#1e1e1e;color:#666">&#127468;&#127463; EN</div></div></div>
     </div>
@@ -1379,7 +1383,7 @@ function renderSeance() {
   if (!cont) return;
 
   if (day.rest) {
-    cont.innerHTML = '<div style="text-align:center;padding:48px 16px;background:#141414;border-radius:16px">' +
+    cont.innerHTML = '<div style="text-align:center;padding:48px 16px;background:rgba(255,255,255,0.04);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);border-radius:16px">' +
       '<div style="font-size:52px;margin-bottom:12px">&#x1F6CC;</div>' +
       '<div style="font-family:Bebas Neue,sans-serif;font-size:26px;letter-spacing:2px;color:#555">JOUR DE REPOS</div>' +
       '<div style="font-size:13px;color:#555;margin-top:8px">R\u00e9cup\u00e8re, mange bien, hydrate-toi &#128167;</div></div>';
@@ -1396,7 +1400,7 @@ function renderSeance() {
   var seriesDone = Object.values(state.sets[sk]||{}).filter(function(v){ return v===true; }).length;
 
   // Header
-  var html = '<div style="background:#141414;border-radius:16px;overflow:hidden;margin-bottom:12px">';
+  var html = '<div style="background:rgba(255,255,255,0.04);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);border-radius:16px;overflow:hidden;margin-bottom:12px">';
   html += '<div style="padding:14px 16px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between">';
   html += '<div style="display:flex;align-items:center;gap:8px">';
   html += '<div style="width:4px;height:26px;background:var(--accent);border-radius:2px"></div>';
@@ -1408,7 +1412,7 @@ function renderSeance() {
   html += '</div>';
 
   // Colonnes header
-  html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 44px 56px 52px;gap:4px;padding:7px 16px;background:#0d0d0d">';
+  html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 44px 56px 52px;gap:4px;padding:7px 16px;background:rgba(0,0,0,0.4)">';
   ['EXERCICE','S\u00c9R.','REPS','REPOS'].forEach(function(t){
     html += '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;' + (t==='EXERCICE'?'':'text-align:center') + '">' + t + '</div>';
   });
@@ -1480,7 +1484,7 @@ function renderSeance() {
     var pd = state.poids[sk][k];
     if (pd&&pd.poids&&pd.reps) totalVol += pd.poids*pd.reps;
   });
-  html += '<div style="background:#141414;border-radius:14px;padding:14px 16px;margin-bottom:12px">';
+  html += '<div style="background:rgba(255,255,255,0.04);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);border-radius:14px;padding:14px 16px;margin-bottom:12px">';
   html += '<div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">&#128202; R\u00c9SUM\u00c9 DE LA S\u00c9ANCE</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">';
   html += '<div style="text-align:center"><div style="font-size:9px;color:#555;text-transform:uppercase;margin-bottom:4px">Volume</div><div style="font-family:Bebas Neue,sans-serif;font-size:20px">'+Math.round(totalVol)+'<span style="font-size:10px"> kg</span></div></div>';
@@ -1631,7 +1635,7 @@ function initNutrition() {
     var checked = !!repasToday[i];
     var isOpen  = !!state.repasOpen[i];
 
-    html += '<div style="background:#141414;border-radius:16px;margin-bottom:10px;overflow:hidden">';
+    html += '<div style="background:rgba(255,255,255,0.04);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,0.07);box-shadow:0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05);border-radius:16px;margin-bottom:10px;overflow:hidden">';
 
     // Ligne principale
     html += '<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer" onclick="toggleRepasExpand('+i+')">';
