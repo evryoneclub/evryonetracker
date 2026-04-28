@@ -347,91 +347,84 @@ body{display:flex;flex-direction:column}
     </div>
 
     <!-- ═══ STATS 3 EN 1 ═══ -->
-    <div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:20px;margin:16px 0 12px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,0.4)">
+    <div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:20px;margin:16px 0 12px;box-shadow:0 2px 20px rgba(0,0,0,0.4)">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
 
-        <!-- Calories -->
         <div style="padding:16px 14px;border-right:1px solid rgba(255,255,255,0.06)">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-            <div style="width:30px;height:30px;border-radius:8px;background:rgba(255,51,51,.2);display:flex;align-items:center;justify-content:center;font-size:15px">🔥</div>
-            <div style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:1px;font-weight:700">CALORIES</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+            <div style="width:28px;height:28px;border-radius:8px;background:rgba(255,51,51,.15);display:flex;align-items:center;justify-content:center;font-size:14px">🔥</div>
+            <div style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px">CALORIES</div>
           </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;color:#fff;margin-bottom:2px" id="apercu-kcal">--</div>
-          <div style="font-size:11px;color:#555;margin-bottom:12px">kcal</div>
-          <svg viewBox="0 0 80 30" style="width:100%;height:30px">
-            <polyline points="0,25 13,18 26,22 39,12 52,20 65,10 80,15" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;color:#fff" id="apercu-kcal">--</div>
+          <div style="font-size:10px;color:#555;margin-top:2px">kcal</div>
+          <svg viewBox="0 0 60 16" style="width:100%;margin-top:8px"><polyline points="0,14 10,10 20,12 30,8 40,11 50,7 60,9" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg>
         </div>
 
-        <!-- Séances -->
         <div style="padding:16px 14px;border-right:1px solid rgba(255,255,255,0.06)">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-            <div style="width:30px;height:30px;border-radius:8px;background:rgba(255,51,51,.2);display:flex;align-items:center;justify-content:center">
-              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" width="15" height="15"><rect x="1" y="10" width="3" height="4" rx="1"/><rect x="20" y="10" width="3" height="4" rx="1"/><rect x="4" y="8" width="3" height="8" rx="1"/><rect x="17" y="8" width="3" height="8" rx="1"/><line x1="7" y1="12" x2="17" y2="12" stroke-width="2.5"/></svg>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+            <div style="width:28px;height:28px;border-radius:8px;background:rgba(255,51,51,.15);display:flex;align-items:center;justify-content:center">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" width="14" height="14"><rect x="1" y="10" width="3" height="4" rx="1"/><rect x="20" y="10" width="3" height="4" rx="1"/><rect x="4" y="8" width="3" height="8" rx="1"/><rect x="17" y="8" width="3" height="8" rx="1"/><line x1="7" y1="12" x2="17" y2="12" stroke-width="2.5"/></svg>
             </div>
-            <div style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:1px;font-weight:700">SÉANCES</div>
+            <div style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px">SÉANCES</div>
           </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;color:#fff;margin-bottom:2px" id="stat-semaine">--</div>
-          <div style="font-size:11px;color:#555;margin-bottom:12px">ce mois</div>
-          <svg viewBox="0 0 80 30" style="width:100%;height:30px">
-            <polyline points="0,28 13,22 26,26 39,16 52,20 65,8 80,12" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;color:#fff" id="stat-semaine">--</div>
+          <div style="font-size:10px;color:#555;margin-top:2px">ce mois</div>
+          <svg viewBox="0 0 60 16" style="width:100%;margin-top:8px"><polyline points="0,14 10,12 20,9 30,11 40,7 50,9 60,6" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/></svg>
         </div>
 
-        <!-- Streak -->
         <div style="padding:16px 14px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-            <div style="width:30px;height:30px;border-radius:8px;background:rgba(255,51,51,.2);display:flex;align-items:center;justify-content:center;font-size:15px">⚡</div>
-            <div style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:1px;font-weight:700">STREAK</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+            <div style="width:28px;height:28px;border-radius:8px;background:rgba(255,51,51,.15);display:flex;align-items:center;justify-content:center;font-size:14px">⚡</div>
+            <div style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px">STREAK</div>
           </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;color:#fff;margin-bottom:2px" id="stat-streak">--</div>
-          <div style="font-size:11px;color:#555;margin-bottom:6px">jours</div>
-          <div style="font-size:11px;color:#555">Meilleur : <span id="stat-streak-best" style="color:var(--accent)">--</span> 🔥</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;color:#fff" id="stat-streak">--</div>
+          <div style="font-size:10px;color:#555;margin-top:2px">jours</div>
+          <div style="font-size:10px;color:#555;margin-top:6px">Meilleur : <span id="stat-streak-best" style="color:var(--accent)">--</span> 🔥</div>
         </div>
 
       </div>
     </div>
-
     <!-- ═══ PROCHAIN ENTRAÎNEMENT ═══ -->
-    <div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:20px;margin-bottom:12px;overflow:hidden;position:relative;box-shadow:0 2px 20px rgba(0,0,0,0.4)">
-      <!-- Image fond droite -->
+    <div id="next-training-card" style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:20px;margin-bottom:12px;overflow:hidden;position:relative;box-shadow:0 2px 20px rgba(0,0,0,0.4)">
       <div style="position:absolute;right:0;top:0;bottom:0;width:55%;background:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&q=50') center/cover;opacity:0.3"></div>
       <div style="position:absolute;right:0;top:0;bottom:0;width:55%;background:linear-gradient(to right,rgba(18,18,18,1) 0%,rgba(18,18,18,0.4) 60%,transparent 100%)"></div>
       <div style="position:relative;z-index:1;padding:20px">
         <div id="next-training-content"></div>
       </div>
     </div>
-
     <!-- ═══ TA PROGRESSION ═══ -->
     <div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:20px;margin-bottom:12px;box-shadow:0 2px 20px rgba(0,0,0,0.4)">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
-        <div>
-          <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">TA PROGRESSION</div>
-          <div style="display:flex;align-items:baseline;gap:4px">
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:48px;line-height:1;color:#fff" id="prog-total-val">0</div>
-            <div style="font-size:16px;color:#666;font-weight:600">kg</div>
+      <div style="display:flex;align-items:stretch;gap:16px">
+        <div style="flex:0 0 auto;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">TA PROGRESSION</div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:4px">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:1;color:#fff" id="prog-total-val">0</div>
+              <div style="font-size:16px;color:#888;font-weight:600">kg</div>
+            </div>
+            <div style="font-size:12px;color:#555;margin-bottom:14px">charge totale soulevée</div>
           </div>
-          <div style="font-size:11px;color:#555;margin-bottom:12px">charge totale soulevée</div>
           <div id="prog-trend-badge" style="display:inline-flex;align-items:center;gap:5px;background:#1a1a1a;border-radius:99px;padding:5px 12px;font-size:11px;font-weight:600;color:#888;border:1px solid rgba(255,255,255,0.06)">
             <span id="prog-trend-arrow">→</span>
             <span id="prog-trend-text">Lance-toi !</span>
           </div>
         </div>
-        <div id="prog-max-badge" style="background:var(--accent);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:14px;border-radius:10px;padding:4px 10px;flex-shrink:0">0</div>
+        <div style="flex:1;display:flex;flex-direction:column">
+          <div style="text-align:right;margin-bottom:6px">
+            <span id="prog-max-badge" style="background:var(--accent);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:14px;border-radius:8px;padding:2px 8px">0</span>
+          </div>
+          <div id="prog-bars" style="flex:1;display:flex;align-items:flex-end;gap:5px;min-height:70px"></div>
+          <div id="prog-labels" style="display:flex;gap:5px;margin-top:6px"></div>
+        </div>
       </div>
-      <!-- Barres -->
-      <div id="prog-bars" style="display:flex;align-items:flex-end;gap:6px;height:70px;margin-bottom:8px"></div>
-      <div id="prog-labels" style="display:flex;gap:6px"></div>
     </div>
-
     <!-- ═══ CITATION ═══ -->
     <div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:20px;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,0.4)">
       <div style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(255,51,51,.15),transparent 70%)"></div>
-      <div style="font-size:22px;color:var(--accent);font-family:'Bebas Neue',sans-serif;line-height:1;margin-bottom:8px">❝❝</div>
-      <div style="font-size:14px;font-weight:300;line-height:1.6;font-style:italic;color:#ddd" id="quote-text"></div>
+      <div style="font-size:24px;color:var(--accent);font-family:'Bebas Neue',sans-serif;line-height:1;margin-bottom:8px">❝❝</div>
+      <div style="font-size:14px;font-weight:300;line-height:1.6;font-style:italic;color:#fff" id="quote-text"></div>
       <div style="font-size:11px;color:var(--accent);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-top:10px" id="quote-author"></div>
     </div>
-
     <!-- Éléments cachés compat -->
     <div style="display:none">
       <div id="stat-seances"></div>
