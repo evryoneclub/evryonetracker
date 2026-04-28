@@ -691,7 +691,74 @@ body{display:flex;flex-direction:column}
     </div>
 
   </div>
-  <div class="page" id="page-recovery">
+  <div class="page" id="page-progress">
+
+    <!-- TRANSFORMATION ROADMAP -->
+    <div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:20px;overflow:hidden;margin-bottom:12px;position:relative;min-height:140px">
+      <div style="position:absolute;right:0;top:0;bottom:0;width:45%;background:url('https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&q=60') center/cover;opacity:0.4"></div>
+      <div style="position:absolute;right:0;top:0;bottom:0;width:45%;background:linear-gradient(to right,rgba(18,18,18,1) 0%,transparent 100%)"></div>
+      <div style="position:relative;z-index:1;padding:20px">
+        <div style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">PROGRAMME</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:2px">TRANSFORMATION ROADMAP</div>
+        <div style="font-size:11px;color:#666;margin-bottom:16px" id="prog-weeks-label">12 SEMAINES</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:8px" id="prog-week-current">Semaine -- / 12</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent)" id="prog-pct-label">0%</div>
+          <div style="flex:1;background:#333;border-radius:99px;height:6px;overflow:hidden">
+            <div id="prog-roadmap-bar" style="height:6px;border-radius:99px;background:linear-gradient(90deg,var(--accent),#ff6666);width:0%;transition:.6s"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉVOLUTION DU POIDS -->
+    <div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:18px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1.5px;font-weight:700">ÉVOLUTION DU POIDS</div>
+        <div style="font-size:11px" id="poids-trend-badge" style="color:var(--green)"></div>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:16px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:40px;line-height:1;color:#fff" id="poids-current-val">--</div>
+        <div style="font-size:16px;color:#666">kg</div>
+      </div>
+
+      <!-- Graphique SVG poids -->
+      <div style="position:relative;height:120px;margin-bottom:8px">
+        <svg id="poids-chart-svg" width="100%" height="120" style="overflow:visible">
+          <defs>
+            <linearGradient id="poidsGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#ff3333" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#ff3333" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div id="poids-chart-labels" style="display:flex;justify-content:space-between;margin-top:4px"></div>
+
+      <!-- Saisie nouveau poids -->
+      <div style="display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05)">
+        <div style="flex:1;background:#1a1a1a;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px">
+          <span style="font-size:14px">⚖️</span>
+          <input type="number" id="input-poids-today" step="0.1" placeholder="Ton poids aujourd'hui (kg)"
+            style="background:none;border:none;color:#fff;font-size:14px;outline:none;font-family:'DM Sans',sans-serif;width:100%">
+        </div>
+        <button onclick="savePoids()" style="background:var(--accent);border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;padding:10px 16px;cursor:pointer">OK</button>
+      </div>
+    </div>
+
+    <!-- PHOTOS PROGRESSION -->
+    <div style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;letter-spacing:.5px">PHOTOS PROGRESSION</div>
+        <label for="photo-upload" style="font-size:12px;color:var(--accent);cursor:pointer">+ Ajouter</label>
+        <input type="file" id="photo-upload" accept="image/*" style="display:none" onchange="addProgressPhoto(event)">
+      </div>
+      <div id="progress-photos" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"></div>
+    </div>
+
+  </div>
+
+    <div class="page" id="page-recovery">
 
     <!-- HEADER -->
     <div style="margin-bottom:20px">
@@ -851,6 +918,13 @@ body{display:flex;flex-direction:column}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6h3v7"/></svg>
     </div>
     <span>Nutrition</span>
+    <div class="nav-dot"></div>
+  </button>
+  <button class="nav-btn" id="nav-progress">
+    <div class="nav-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    </div>
+    <span>Progress</span>
     <div class="nav-dot"></div>
   </button>
   <button class="nav-btn" id="nav-recovery">
@@ -2236,6 +2310,7 @@ function initHeader() {
 document.getElementById('nav-dash').addEventListener('click', function(){ showPage('dash'); initDash(); });
 document.getElementById('nav-training').addEventListener('click', function(){ showPage('training'); initTraining(); });
 document.getElementById('nav-nutrition').addEventListener('click', function(){ showPage('nutrition'); initNutrition(); });
+document.getElementById('nav-progress').addEventListener('click', function(){ showPage('progress'); initProgress(); });
 document.getElementById('nav-recovery').addEventListener('click', function(){ showPage('recovery'); initRecovery(); });
 
 // Init immédiat
@@ -2244,6 +2319,7 @@ initDash();
 initTraining();
 initNutrition();
 initRecovery();
+initProgress();
 
 // Supabase en arrière-plan
 loadPersonalProgramme().then(function() {
@@ -2300,6 +2376,179 @@ function validateFromBtn(btn) {
   var body = document.getElementById('exo-body-' + ei);
   if (body) body.style.display = 'block';
   initDash();
+}
+
+
+// ══════════════════════════════════════
+// PROGRESSION
+// ══════════════════════════════════════
+function initProgress() {
+  if (!state.poids_history) state.poids_history = {};
+  if (!state.progress_photos) state.progress_photos = {};
+
+  renderPoidsChart();
+  renderProgressPhotos();
+  renderRoadmap();
+}
+
+function renderRoadmap() {
+  var obj = state.objectif || {};
+  var since = (state.profil && state.profil.since) ? state.profil.since : today;
+  var startDate = new Date(since);
+  var totalWeeks = 12;
+  var elapsed = Math.floor((new Date() - startDate) / (7 * 86400000));
+  var currentWeek = Math.min(totalWeeks, Math.max(1, elapsed + 1));
+  var pct = Math.min(100, Math.round((elapsed / totalWeeks) * 100));
+
+  var el;
+  el = document.getElementById('prog-week-current'); if(el) el.textContent = 'Semaine ' + currentWeek + ' / ' + totalWeeks;
+  el = document.getElementById('prog-pct-label'); if(el) el.textContent = pct + '%';
+  el = document.getElementById('prog-roadmap-bar'); if(el) el.style.width = pct + '%';
+}
+
+function savePoids() {
+  var input = document.getElementById('input-poids-today');
+  var val = parseFloat(input.value);
+  if (!val || val < 20 || val > 300) return;
+  if (!state.poids_history) state.poids_history = {};
+  state.poids_history[today] = val;
+  // Aussi mettre à jour l'objectif actuel
+  if (!state.objectif) state.objectif = {};
+  state.objectif.actuel = val;
+  save();
+  input.value = '';
+  renderPoidsChart();
+  renderObjectif();
+  initDash();
+}
+
+function renderPoidsChart() {
+  var svg = document.getElementById('poids-chart-svg');
+  var labelsEl = document.getElementById('poids-chart-labels');
+  var currentEl = document.getElementById('poids-current-val');
+  var trendEl = document.getElementById('poids-trend-badge');
+  if (!svg) return;
+
+  var hist = state.poids_history || {};
+  // Aussi ajouter le poids objectif initial si dispo
+  var obj = state.objectif || {};
+  if (obj.depart && obj.actuel) {
+    var oldest = Object.keys(hist).sort()[0];
+    if (!oldest) hist[today] = obj.actuel;
+  }
+
+  var keys = Object.keys(hist).sort();
+  if (keys.length === 0) {
+    svg.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#333" font-size="13">Aucune donnée — saisis ton poids</text>';
+    if (labelsEl) labelsEl.innerHTML = '';
+    return;
+  }
+
+  var vals = keys.map(function(k){ return hist[k]; });
+  var minV = Math.min.apply(null, vals) - 1;
+  var maxV = Math.max.apply(null, vals) + 1;
+
+  var W = svg.parentElement ? svg.parentElement.offsetWidth || 300 : 300;
+  var H = 110;
+  var pad = { l:28, r:8, t:10, b:10 };
+  var chartW = W - pad.l - pad.r;
+  var chartH = H - pad.t - pad.b;
+
+  var toX = function(i){ return pad.l + (keys.length===1 ? chartW/2 : i/(keys.length-1)*chartW); };
+  var toY = function(v){ return pad.t + (1-(v-minV)/(maxV-minV))*chartH; };
+
+  // Grid lines
+  var gridLines = '';
+  var steps = [minV, (minV+maxV)/2, maxV].map(Math.round);
+  steps.forEach(function(v){
+    var y = toY(v);
+    gridLines += '<line x1="'+pad.l+'" y1="'+y+'" x2="'+(W-pad.r)+'" y2="'+y+'" stroke="#1e1e1e" stroke-width="1"/>';
+    gridLines += '<text x="'+(pad.l-4)+'" y="'+(y+4)+'" text-anchor="end" fill="#555" font-size="9">'+v+'</text>';
+  });
+
+  // Points et ligne
+  var pts = keys.map(function(k,i){ return toX(i)+','+toY(hist[k]); }).join(' ');
+  var areaPath = 'M'+toX(0)+','+H+' L'+keys.map(function(k,i){ return toX(i)+','+toY(hist[k]); }).join(' L')+' L'+toX(keys.length-1)+','+H+' Z';
+
+  var dots = keys.map(function(k,i){
+    return '<circle cx="'+toX(i)+'" cy="'+toY(hist[k])+'" r="3" fill="#ff3333" stroke="#0a0a0a" stroke-width="1.5"/>';
+  }).join('');
+
+  svg.innerHTML = gridLines +
+    '<path d="'+areaPath+'" fill="url(#poidsGrad)"/>' +
+    '<polyline points="'+pts+'" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+    dots;
+
+  // Labels dates
+  if (labelsEl) {
+    var labelsHtml = '';
+    var step = Math.max(1, Math.floor(keys.length / 4));
+    keys.forEach(function(k, i) {
+      if (i % step !== 0 && i !== keys.length-1) return;
+      var d = new Date(k);
+      var lbl = (d.getDate()+'').padStart(2,'0') + '/' + ((d.getMonth()+1)+'').padStart(2,'0');
+      var pct = keys.length===1 ? 50 : Math.round(i/(keys.length-1)*100);
+      labelsHtml += '<span style="font-size:9px;color:#555;position:absolute;left:'+pct+'%;transform:translateX(-50%)">'+lbl+'</span>';
+    });
+    labelsEl.style.position = 'relative';
+    labelsEl.style.height = '14px';
+    labelsEl.innerHTML = labelsHtml;
+  }
+
+  // Valeur courante et tendance
+  var last = vals[vals.length-1];
+  if (currentEl) currentEl.textContent = last.toString().replace('.',',');
+
+  if (vals.length >= 2 && trendEl) {
+    var diff = (last - vals[vals.length-2]).toFixed(1);
+    var sign = diff >= 0 ? '+' : '';
+    trendEl.textContent = sign + diff + ' kg vs semaine dernière';
+    trendEl.style.color = diff >= 0 ? 'var(--green)' : 'var(--accent)';
+  }
+}
+
+function renderProgressPhotos() {
+  var el = document.getElementById('progress-photos');
+  if (!el) return;
+  var photos = state.progress_photos || {};
+  var keys = Object.keys(photos).sort();
+
+  if (keys.length === 0) {
+    el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:24px;color:#444;font-size:13px">📸 Ajoute ta première photo de progression</div>';
+    return;
+  }
+
+  var html = keys.map(function(k, i) {
+    var d = new Date(k).toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+    var weekNum = Math.ceil((i+1));
+    return '<div style="position:relative;border-radius:12px;overflow:hidden;aspect-ratio:3/4;background:#1a1a1a">' +
+      '<img src="'+photos[k]+'" style="width:100%;height:100%;object-fit:cover">' +
+      '<div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.8),transparent);padding:8px 8px 6px;font-size:10px;color:#fff;font-weight:600">'+d+'</div>' +
+      '<button onclick="deleteProgressPhoto(\''+k+'\')" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.6);border:none;color:#fff;width:22px;height:22px;border-radius:50%;font-size:12px;cursor:pointer">×</button>' +
+      '</div>';
+  }).join('');
+
+  el.innerHTML = html;
+}
+
+function addProgressPhoto(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    if (!state.progress_photos) state.progress_photos = {};
+    state.progress_photos[today + '_' + Date.now()] = e.target.result;
+    save();
+    renderProgressPhotos();
+  };
+  reader.readAsDataURL(file);
+}
+
+function deleteProgressPhoto(key) {
+  if (!confirm('Supprimer cette photo ?')) return;
+  delete state.progress_photos[key];
+  save();
+  renderProgressPhotos();
 }
 
 </script>
