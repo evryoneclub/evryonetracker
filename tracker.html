@@ -387,14 +387,37 @@ body{display:flex;flex-direction:column}
     </div>
 
     <!-- ═══ TA PROGRESSION ═══ -->
-    <div style="background:#141414;border-radius:18px;padding:16px;margin-bottom:12px">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
-        <div>
-          <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">TA PROGRESSION</div>
-          <div id="chart-container" style="position:relative;height:100px;width:100%">
-            <svg id="prog-chart" width="100%" height="100" style="overflow:visible"></svg>
+    <div style="background:#141414;border-radius:18px;padding:20px;margin-bottom:12px">
+      <div style="display:flex;align-items:stretch;gap:16px">
+
+        <!-- Gauche : texte -->
+        <div style="flex:0 0 auto;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">TA PROGRESSION</div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:4px">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:1;color:#fff" id="prog-total-val">0</div>
+              <div style="font-size:16px;color:#888;font-weight:600">kg</div>
+            </div>
+            <div style="font-size:12px;color:#555;margin-bottom:14px">charge totale soulevée</div>
+          </div>
+          <div id="prog-trend-badge" style="display:inline-flex;align-items:center;gap:5px;background:#1e1e1e;border-radius:99px;padding:5px 10px;font-size:11px;font-weight:600;color:#888">
+            <span id="prog-trend-arrow">↑</span>
+            <span id="prog-trend-text">--</span>
           </div>
         </div>
+
+        <!-- Droite : graphique barres -->
+        <div style="flex:1;display:flex;flex-direction:column">
+          <!-- Valeur max en rouge -->
+          <div style="text-align:right;margin-bottom:6px">
+            <span id="prog-max-badge" style="background:var(--accent);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:14px;border-radius:8px;padding:2px 8px">0</span>
+          </div>
+          <!-- Barres -->
+          <div id="prog-bars" style="flex:1;display:flex;align-items:flex-end;gap:5px;min-height:70px"></div>
+          <!-- Labels jours -->
+          <div id="prog-labels" style="display:flex;gap:5px;margin-top:6px"></div>
+        </div>
+
       </div>
     </div>
 
@@ -1110,80 +1133,93 @@ function renderObjectif() {
 
 // ── GRAPHIQUE PROGRESSION ──
 function renderChart() {
-  var svg = document.getElementById('prog-chart');
-  if (!svg) return;
+  var barsEl   = document.getElementById('prog-bars');
+  var labelsEl = document.getElementById('prog-labels');
+  var totalEl  = document.getElementById('prog-total-val');
+  var maxBadge = document.getElementById('prog-max-badge');
+  var trendBadge = document.getElementById('prog-trend-badge');
+  var trendArrow = document.getElementById('prog-trend-arrow');
+  var trendText  = document.getElementById('prog-trend-text');
+  if (!barsEl) return;
 
-  // Calculer charge totale par séance (poids × reps pour chaque série)
-  var dataPoints = [];
-  var allKeys = Object.keys(state.poids || {}).sort();
+  var days = ['LUN','MAR','MER','JEU','VEN','SAM','DIM'];
+  var weekStart = (typeof getWeekStart === 'function') ? getWeekStart(new Date()) : new Date();
+  var todayIdx = (new Date().getDay()+6)%7;
 
-  allKeys.forEach(function(sk) {
-    var total = 0;
+  // Calculer le volume par jour de la semaine courante
+  var vols = [];
+  var totalVol = 0;
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(weekStart);
+    d.setDate(d.getDate()+i);
+    var dateStr = d.toISOString().split('T')[0];
+    var sk = dateStr+'_d'+i;
+    var vol = 0;
     var setsObj = state.poids[sk] || {};
-    Object.values(setsObj).forEach(function(pd) {
-      if (pd && pd.poids && pd.reps) total += pd.poids * pd.reps;
+    Object.values(setsObj).forEach(function(pd){
+      if (pd && pd.poids && pd.reps) vol += pd.poids * pd.reps;
     });
-    if (total > 0) {
-      // Extraire la date depuis la clé (format: YYYY-MM-DD_dX)
-      var dateStr = sk.split('_d')[0];
-      dataPoints.push({ date: dateStr, val: total, key: sk });
-    }
-  });
-
-  if (dataPoints.length === 0) {
-    svg.innerHTML = '<text x="50%" y="55%" text-anchor="middle" fill="#bbb" font-size="12" font-family="DM Sans,sans-serif">Complète des séances pour voir ta progression</text>';
-    return;
+    vols.push(vol);
+    totalVol += vol;
   }
 
-  // Garder les 8 dernières séances
-  dataPoints = dataPoints.slice(-8);
+  // Volume semaine précédente pour tendance
+  var prevWeekStart = new Date(weekStart);
+  prevWeekStart.setDate(prevWeekStart.getDate()-7);
+  var prevTotal = 0;
+  for (var i = 0; i < 7; i++) {
+    var d2 = new Date(prevWeekStart);
+    d2.setDate(d2.getDate()+i);
+    var sk2 = d2.toISOString().split('T')[0]+'_d'+i;
+    var setsObj2 = state.poids[sk2] || {};
+    Object.values(setsObj2).forEach(function(pd){
+      if (pd && pd.poids && pd.reps) prevTotal += pd.poids * pd.reps;
+    });
+  }
 
-  var W = svg.parentElement.offsetWidth || 300;
-  var H = 120;
-  var padL = 10, padR = 10, padT = 10, padB = 24;
-  var w = W - padL - padR;
-  var h = H - padT - padB;
+  // Total et max
+  var maxVol = Math.max.apply(null, vols) || 1;
+  if (totalEl) totalEl.textContent = Math.round(totalVol).toLocaleString('fr-FR');
+  if (maxBadge) maxBadge.textContent = Math.round(maxVol).toLocaleString('fr-FR');
 
-  var vals = dataPoints.map(function(d){ return d.val; });
-  var minV = Math.min.apply(null, vals);
-  var maxV = Math.max.apply(null, vals);
-  var range = maxV - minV || 1;
-
-  var pts = dataPoints.map(function(d, i) {
-    var x = padL + (i / Math.max(dataPoints.length - 1, 1)) * w;
-    var y = padT + h - ((d.val - minV) / range) * h;
-    return { x: x, y: y, val: d.val, date: d.date };
-  });
-
-  var html = '';
-
-  // Aire sous la courbe
-  var areaPath = 'M ' + pts[0].x + ' ' + (padT + h);
-  pts.forEach(function(p){ areaPath += ' L ' + p.x + ' ' + p.y; });
-  areaPath += ' L ' + pts[pts.length-1].x + ' ' + (padT + h) + ' Z';
-  html += '<defs><linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff3333" stop-opacity="0.3"/><stop offset="100%" stop-color="#ff3333" stop-opacity="0"/></linearGradient></defs>';
-  html += '<path d="' + areaPath + '" fill="url(#chartGrad)"/>';
-
-  // Ligne
-  var linePath = '';
-  pts.forEach(function(p, i){ linePath += (i === 0 ? 'M' : 'L') + ' ' + p.x + ' ' + p.y + ' '; });
-  html += '<path d="' + linePath + '" fill="none" stroke="#ff3333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
-
-  // Points + labels
-  pts.forEach(function(p, i) {
-    html += '<circle cx="' + p.x + '" cy="' + p.y + '" r="4" fill="#ff3333" stroke="#0a0a0a" stroke-width="2"/>';
-    // Label valeur sur le dernier point
-    if (i === pts.length - 1) {
-      html += '<text x="' + p.x + '" y="' + (p.y - 8) + '" text-anchor="middle" fill="#ff3333" font-size="10" font-family="Bebas Neue,sans-serif">' + Math.round(p.val) + 'kg</text>';
+  // Tendance
+  if (trendBadge && trendArrow && trendText) {
+    if (prevTotal > 0) {
+      var diff = Math.round((totalVol - prevTotal) / prevTotal * 100);
+      var isUp = diff >= 0;
+      trendArrow.textContent = isUp ? '↑' : '↓';
+      trendText.textContent = (isUp?'+':'') + diff + '% vs semaine dernière';
+      trendBadge.style.color = isUp ? 'var(--green)' : 'var(--accent)';
+    } else {
+      trendText.textContent = 'Première semaine';
+      trendArrow.textContent = '→';
+      trendBadge.style.color = '#888';
     }
-    // Date en bas
-    var d = new Date(p.date);
-    var lbl = d.getDate() + '/' + (d.getMonth()+1);
-    html += '<text x="' + p.x + '" y="' + (H - 4) + '" text-anchor="middle" fill="#bbb" font-size="9" font-family="DM Sans,sans-serif">' + lbl + '</text>';
-  });
+  }
 
-  svg.setAttribute('width', W);
-  svg.innerHTML = html;
+  // Barres
+  var barsHtml = '';
+  var labelsHtml = '';
+  var isToday = function(i){ return i === todayIdx; };
+
+  for (var i = 0; i < 7; i++) {
+    var heightPct = vols[i] > 0 ? Math.max(8, Math.round(vols[i]/maxVol*100)) : 8;
+    var isT = isToday(i);
+    var hasData = vols[i] > 0;
+    var color = (isT || hasData) ? (isT ? 'var(--accent)' : '#444') : '#2a2a2a';
+    var glow = isT && hasData ? 'box-shadow:0 0 12px rgba(255,51,51,.4);' : '';
+
+    barsHtml += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end">';
+    barsHtml += '<div style="width:100%;border-radius:6px 6px 4px 4px;background:'+color+';height:'+heightPct+'%;min-height:8px;transition:.4s;'+glow+'"></div>';
+    barsHtml += '</div>';
+
+    var dayColor = isT ? 'var(--accent)' : '#555';
+    var dayWeight = isT ? '700' : '400';
+    labelsHtml += '<div style="flex:1;text-align:center;font-size:9px;color:'+dayColor+';font-weight:'+dayWeight+';letter-spacing:.3px">'+days[i]+'</div>';
+  }
+
+  barsEl.innerHTML = barsHtml;
+  labelsEl.innerHTML = labelsHtml;
 }
 
 // ══════════════════════════════════════
