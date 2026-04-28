@@ -1872,6 +1872,47 @@ loadPersonalProgramme().then(function() {
 
 
 
+function toggleExo(ei) {
+  var body = document.getElementById('exo-body-' + ei);
+  if (!body) return;
+  body.style.display = body.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveFromInput(input) {
+  var ei = parseInt(input.dataset.ei);
+  var si = parseInt(input.dataset.si);
+  var btn = document.getElementById('ok-' + ei + '-' + si);
+  var sk = btn ? btn.dataset.sk : (today + '_d' + currentDay);
+  var pEl = document.getElementById('p-' + ei + '-' + si);
+  var rEl = document.getElementById('r-' + ei + '-' + si);
+  if (!state.poids[sk]) state.poids[sk] = {};
+  state.poids[sk][ei + '_' + si] = {poids: parseFloat(pEl.value)||0, reps: parseInt(rEl.value)||0};
+  save();
+}
+
+function validateFromBtn(btn) {
+  var ei = parseInt(btn.dataset.ei);
+  var si = parseInt(btn.dataset.si);
+  var rest = parseInt(btn.dataset.rest);
+  var sk = btn.dataset.sk || (today + '_d' + currentDay);
+  var pEl = document.getElementById('p-' + ei + '-' + si);
+  var rEl = document.getElementById('r-' + ei + '-' + si);
+  if (!state.poids[sk]) state.poids[sk] = {};
+  state.poids[sk][ei + '_' + si] = {poids: parseFloat(pEl?pEl.value:0)||0, reps: parseInt(rEl?rEl.value:0)||0};
+  if (!state.sets[sk]) state.sets[sk] = {};
+  var k = ei + '_' + si;
+  var done = !(state.sets[sk][k] === true);
+  state.sets[sk][k] = done;
+  save();
+  if (done) startTimer(rest);
+  renderSeance();
+  var seriesEl = document.getElementById('total-series-training');
+  if (seriesEl) seriesEl.textContent = countSeries();
+  var body = document.getElementById('exo-body-' + ei);
+  if (body) body.style.display = 'block';
+  initDash();
+}
+
 </script>
 
 </body>
