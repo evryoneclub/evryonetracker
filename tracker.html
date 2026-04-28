@@ -443,33 +443,30 @@ body{display:flex;flex-direction:column}
 
   <div class="page" id="page-training">
 
-    <!-- HEADER ENTRAÎNEMENT -->
-    <div style="margin-bottom:16px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;margin-bottom:12px">MON <span style="color:var(--accent)">ENTRAÎNEMENT</span></div>
-
-      <!-- Semaine + compteurs -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div>
-          <div style="font-size:16px;font-weight:700" id="week-label">Semaine --</div>
-          <div style="font-size:12px;color:#888" id="week-dates"></div>
-        </div>
-        <div style="display:flex;gap:16px">
-          <div style="text-align:center">
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent)" id="total-seances-training">0</div>
-            <div style="font-size:9px;color:#666;text-transform:uppercase">Séances</div>
-          </div>
-          <div style="text-align:center">
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--green)" id="total-series-training">0</div>
-            <div style="font-size:9px;color:#666;text-transform:uppercase">Séries</div>
-          </div>
-        </div>
+    <!-- HEADER : Mois + flèches -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px">
+        <span style="color:var(--accent)" id="month-label">AVR</span> <span id="year-label">2026</span>
       </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="changeWeek(-1)" style="background:none;border:none;color:#555;font-size:18px;cursor:pointer;padding:4px 8px">‹</button>
+        <button onclick="changeWeek(1)" style="background:none;border:none;color:#555;font-size:18px;cursor:pointer;padding:4px 8px">›</button>
+      </div>
+    </div>
 
-      <!-- CALENDRIER SEMAINE -->
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <button onclick="changeWeek(-1)" style="background:#1a1a1a;border:none;color:#fff;width:32px;height:32px;border-radius:8px;font-size:16px;cursor:pointer;flex-shrink:0">&#8249;</button>
-        <div id="week-calendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;flex:1"></div>
-        <button onclick="changeWeek(1)" style="background:#1a1a1a;border:none;color:#fff;width:32px;height:32px;border-radius:8px;font-size:16px;cursor:pointer;flex-shrink:0">&#8250;</button>
+    <!-- CALENDRIER SEMAINE : juste texte, pas de cards -->
+    <div id="week-calendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:24px"></div>
+
+    <!-- STATS séances + séries : sans card -->
+    <div style="display:flex;align-items:center;gap:24px;margin-bottom:20px">
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;color:#fff" id="total-seances-training">0</div>
+        <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Séances</div>
+      </div>
+      <div style="width:1px;height:36px;background:#222"></div>
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;color:var(--green)" id="total-series-training">0</div>
+        <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Séries</div>
       </div>
     </div>
 
@@ -1300,14 +1297,13 @@ function getWeekStartWithOffset() {
 function renderWeekCalendar() {
   var weekStart = getWeekStartWithOffset();
   var days = ['LUN','MAR','MER','JEU','VEN','SAM','DIM'];
-  var months = ['jan','f\u00e9v','mar','avr','mai','jun','jul','ao\u00fb','sep','oct','nov','d\u00e9c'];
+  var months = ['JANV','FÉVR','MARS','AVR','MAI','JUIN','JUIL','AOÛT','SEPT','OCT','NOV','DÉC'];
 
-  var weekNum = getWeekNumber(weekStart);
-  var wlEl = document.getElementById('week-label');
-  if (wlEl) wlEl.textContent = 'Semaine ' + weekNum;
-  var weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate()+6);
-  var wdEl = document.getElementById('week-dates');
-  if (wdEl) wdEl.textContent = weekStart.getDate() + ' \u2013 ' + weekEnd.getDate() + ' ' + months[weekEnd.getMonth()];
+  // Mise à jour mois/année
+  var mlEl = document.getElementById('month-label');
+  var ylEl = document.getElementById('year-label');
+  if (mlEl) mlEl.textContent = months[weekStart.getMonth()];
+  if (ylEl) ylEl.textContent = weekStart.getFullYear();
 
   var cal = document.getElementById('week-calendar');
   if (!cal) return;
@@ -1318,30 +1314,42 @@ function renderWeekCalendar() {
     d.setDate(d.getDate() + i);
     var dateStr = d.toISOString().split('T')[0];
     var isToday = dateStr === today;
+    var weekDateKey = dateStr + '_d' + i;
+    var isDone = !!(PROGRAM[i] && !PROGRAM[i].rest && state.doneSeances[weekDateKey]);
     var isRest = PROGRAM[i] && PROGRAM[i].rest;
-    // Vérifier si la séance de ce jour précis est terminée (clé weekDate_dX)
-    var weekDateKey = d.toISOString().split('T')[0] + '_d' + i;
-    var isDone = !isRest && !!state.doneSeances[weekDateKey];
     var isActive = i === currentDay;
 
-    var btn = document.createElement('div');
-    btn.style.cssText = 'text-align:center;cursor:pointer;border-radius:10px;padding:8px 4px;transition:.15s;' +
-      (isActive ? 'background:var(--accent);' : isDone ? 'background:#0d2010;border:1px solid var(--green);' : 'background:#1a1a1a;');
-    btn.innerHTML =
-      '<div style="font-size:9px;font-weight:700;letter-spacing:.5px;color:' + (isActive?'#fff':'#666') + ';margin-bottom:4px">' + days[i] + '</div>' +
-      '<div style="font-family:Bebas Neue,sans-serif;font-size:18px;line-height:1;color:' + (isActive?'#fff':isDone?'var(--green)':'#ddd') + '">' + d.getDate() + '</div>' +
-      (isDone ? '<div style="width:5px;height:5px;border-radius:50%;background:var(--green);margin:3px auto 0"></div>' :
-       isRest ? '<div style="font-size:7px;color:#333;margin-top:3px">REPOS</div>' :
-       '<div style="width:5px;height:5px;border-radius:50%;background:' + (isActive?'rgba(255,255,255,.4)':'#2a2a2a') + ';margin:3px auto 0"></div>');
-    (function(idx){ btn.onclick = function(){ currentDay=idx; renderWeekCalendar(); renderSeance(); }; })(i);
-    cal.appendChild(btn);
-  }
+    var col = document.createElement('div');
+    col.style.cssText = 'text-align:center;cursor:pointer;padding:6px 0';
+    col.onclick = (function(idx){ return function(){ currentDay=idx; renderWeekCalendar(); renderSeance(); }; })(i);
 
-  // Flèches navigation semaine
-  var nav = document.getElementById('week-nav');
-  if (nav) {
-    nav.querySelector('.week-prev').disabled = false;
-    nav.querySelector('.week-next').disabled = false;
+    // Jour texte
+    var dayDiv = '<div style="font-size:9px;font-weight:700;letter-spacing:.5px;color:#555;margin-bottom:6px">' + days[i] + '</div>';
+
+    // Numéro
+    var numStyle, numColor;
+    if (isActive) {
+      // Cercle rouge pour le jour actif
+      numStyle = 'display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--accent);font-family:Bebas Neue,sans-serif;font-size:18px;color:#fff;';
+      numColor = '';
+    } else {
+      numStyle = 'font-family:Bebas Neue,sans-serif;font-size:18px;line-height:32px;color:' + (isDone?'var(--green)':isToday?'#fff':'#888') + ';';
+      numColor = '';
+    }
+    var numDiv = '<div style="' + numStyle + '">' + d.getDate() + '</div>';
+
+    // Point indicateur
+    var dot = '';
+    if (isRest) {
+      dot = '<div style="font-size:8px;color:#333;margin-top:4px">—</div>';
+    } else if (isDone) {
+      dot = '<div style="width:5px;height:5px;border-radius:50%;background:var(--green);margin:4px auto 0"></div>';
+    } else {
+      dot = '<div style="width:5px;height:5px;border-radius:50%;background:' + (isActive?'rgba(255,255,255,.4)':'#2a2a2a') + ';margin:4px auto 0"></div>';
+    }
+
+    col.innerHTML = dayDiv + numDiv + dot;
+    cal.appendChild(col);
   }
 }
 
@@ -2170,7 +2178,8 @@ loadPersonalProgramme().then(function() {
       name: m.name||m.repas||'Repas', cals: m.calories||m.kcal||0,
       prot: m.proteines||m.protein||0, gluci: m.glucides||m.carbs||0,
       lip: m.lipides||m.fat||0, detail: m.detail||m.description||''
-    };});
+    };
+    });
     initNutrition();
   }
 });
