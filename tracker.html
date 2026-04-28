@@ -692,42 +692,135 @@ body{display:flex;flex-direction:column}
 
   </div>
   <div class="page" id="page-recovery">
-    <div class="card">
-      <div class="card-title">🌙 MON ÉTAT DU JOUR</div>
-      <div class="feeling-row">
-        <div class="feeling-btn" id="feel-0" onclick="setFeeling(0)"><span style="font-size:20px">😴</span><span>Épuisé</span></div>
-        <div class="feeling-btn" id="feel-1" onclick="setFeeling(1)"><span style="font-size:20px">😐</span><span>Moyen</span></div>
-        <div class="feeling-btn" id="feel-2" onclick="setFeeling(2)"><span style="font-size:20px">😊</span><span>Bien</span></div>
-        <div class="feeling-btn" id="feel-3" onclick="setFeeling(3)"><span style="font-size:20px">🔥</span><span>En feu</span></div>
+
+    <!-- HEADER -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px">TON NIVEAU DE</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px">RÉCUPÉRATION</div>
+    </div>
+
+    <!-- GRAND CERCLE RÉCUP -->
+    <div style="display:flex;flex-direction:column;align-items:center;margin-bottom:20px">
+      <div style="position:relative;width:200px;height:200px">
+        <svg viewBox="0 0 200 200" width="200" height="200">
+          <!-- Arc fond (270° = 3/4 de cercle, ouvert en bas) -->
+          <circle cx="100" cy="100" r="80" fill="none" stroke="#222" stroke-width="12"
+            stroke-dasharray="376.99 502.65" stroke-dashoffset="-62.83"
+            transform="rotate(135 100 100)"/>
+          <!-- Arc récup vert -->
+          <circle cx="100" cy="100" r="80" fill="none" stroke="var(--green)" stroke-width="12"
+            stroke-linecap="round"
+            stroke-dasharray="376.99 502.65" stroke-dashoffset="-62.83"
+            id="big-recup-arc" style="transition:.8s;opacity:0.15;filter:blur(3px)"
+            transform="rotate(135 100 100)"/>
+          <circle cx="100" cy="100" r="80" fill="none" stroke="var(--green)" stroke-width="12"
+            stroke-linecap="round"
+            stroke-dasharray="0 502.65" stroke-dashoffset="-62.83"
+            id="big-recup-arc-fill" style="transition:stroke-dasharray .8s"
+            transform="rotate(135 100 100)"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:56px;line-height:1;color:#fff" id="big-recup-val">0<span style="font-size:24px">%</span></div>
+          <div style="font-size:16px;font-weight:700;color:var(--green);margin-top:4px" id="big-recup-status">--</div>
+        </div>
       </div>
-      <div class="input-row">
-        <div class="input-group"><label>⏱ Sommeil (h)</label><input type="number" id="input-sleep" min="0" max="12" step=".5" placeholder="7.5" oninput="calcScore()"></div>
-        <div class="input-group"><label>⚡ Énergie /10</label><input type="number" id="input-energy" min="0" max="10" placeholder="7" oninput="calcScore()"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:-8px">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div>
+        <span style="font-size:13px;color:#aaa" id="big-recup-label">Remplis tes données</span>
       </div>
-      <div class="input-group" style="margin-bottom:0">
-        <label>💪 Douleurs musculaires</label>
-        <select id="input-soreness" onchange="calcScore()">
-          <option value="">Sélectionner…</option>
+    </div>
+
+    <!-- CONSEIL -->
+    <div id="recup-conseil-card" style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:14px;padding:14px 16px;margin-bottom:12px;display:none">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <span style="font-size:20px" id="recup-conseil-icon">💪</span>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:3px" id="recup-conseil-title">Tu peux suivre ton plan</div>
+          <div style="font-size:12px;color:#888;line-height:1.5" id="recup-conseil-text">Ton corps est prêt pour une séance intense.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORMULAIRE DONNÉES -->
+    <div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:18px;overflow:hidden;margin-bottom:12px">
+
+      <!-- Sommeil -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #1a1a1a">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-size:20px">🌙</span>
+          <div>
+            <div style="font-size:14px;font-weight:600">Sommeil</div>
+            <input type="number" id="input-sleep" min="0" max="12" step="0.5" placeholder="7.5"
+              style="background:none;border:none;color:#888;font-size:12px;width:80px;outline:none;font-family:'DM Sans',sans-serif;margin-top:2px"
+              oninput="calcRecup()">
+          </div>
+        </div>
+        <span style="font-size:13px;font-weight:600;color:var(--green)" id="sleep-label">-- h</span>
+      </div>
+
+      <!-- Fatigue -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #1a1a1a">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-size:20px">⚡</span>
+          <div style="font-size:14px;font-weight:600">Fatigue</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <div onclick="setFatigueLevel(1,this)" class="recup-chip" style="padding:5px 10px;border-radius:8px;background:#1a1a1a;font-size:11px;font-weight:600;cursor:pointer;color:var(--green)">Faible</div>
+          <div onclick="setFatigueLevel(2,this)" class="recup-chip" style="padding:5px 10px;border-radius:8px;background:#1a1a1a;font-size:11px;font-weight:600;cursor:pointer;color:#f59e0b">Moyen</div>
+          <div onclick="setFatigueLevel(3,this)" class="recup-chip" style="padding:5px 10px;border-radius:8px;background:#1a1a1a;font-size:11px;font-weight:600;cursor:pointer;color:var(--accent)">Élevé</div>
+        </div>
+      </div>
+
+      <!-- Courbatures -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #1a1a1a">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-size:20px">🦵</span>
+          <div style="font-size:14px;font-weight:600">Courbatures</div>
+        </div>
+        <select id="input-soreness" onchange="calcRecup()"
+          style="background:#1a1a1a;border:none;color:#fff;font-size:12px;padding:6px 10px;border-radius:8px;outline:none;font-family:'DM Sans',sans-serif;cursor:pointer">
+          <option value="">--</option>
           <option value="0">Aucune</option>
           <option value="1">Légères</option>
           <option value="2">Modérées</option>
           <option value="3">Intenses</option>
         </select>
       </div>
-    </div>
-    <div class="card">
-      <div class="recup-score">
-        <div class="score-circle" id="score-circle" style="border-color:var(--border)">
-          <div class="score-num" id="score-num">–</div>
-          <div class="score-lbl">/100</div>
+
+      <!-- Stress -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #1a1a1a">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-size:20px">🧠</span>
+          <div style="font-size:14px;font-weight:600">Stress</div>
         </div>
-        <div class="score-status" id="score-status">REMPLIS TES DONNÉES</div>
-        <div class="score-advice" id="score-advice">Indique ton sommeil, ton énergie et tes douleurs.</div>
+        <div style="display:flex;gap:6px">
+          <div onclick="setStressLevel(1,this)" class="stress-chip" style="padding:5px 10px;border-radius:8px;background:#1a1a1a;font-size:11px;font-weight:600;cursor:pointer;color:var(--green)">Faible</div>
+          <div onclick="setStressLevel(2,this)" class="stress-chip" style="padding:5px 10px;border-radius:8px;background:#1a1a1a;font-size:11px;font-weight:600;cursor:pointer;color:#f59e0b">Moyen</div>
+          <div onclick="setStressLevel(3,this)" class="stress-chip" style="padding:5px 10px;border-radius:8px;background:#1a1a1a;font-size:11px;font-weight:600;cursor:pointer;color:var(--accent)">Élevé</div>
+        </div>
+      </div>
+
+      <!-- Énergie -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-size:20px">🔋</span>
+          <div style="font-size:14px;font-weight:600">Énergie</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <div onclick="setEnergyLevel(1,this)" class="energy-chip" style="padding:5px 10px;border-radius:8px;background:#1a1a1a;font-size:11px;font-weight:600;cursor:pointer;color:var(--accent)">Faible</div>
+          <div onclick="setEnergyLevel(2,this)" class="energy-chip" style="padding:5px 10px;border-radius:8px;background:#1a1a1a;font-size:11px;font-weight:600;cursor:pointer;color:#f59e0b">Moyenne</div>
+          <div onclick="setEnergyLevel(3,this)" class="energy-chip" style="padding:5px 10px;border-radius:8px;background:#1a1a1a;font-size:11px;font-weight:600;cursor:pointer;color:var(--green)">Élevée</div>
+        </div>
       </div>
     </div>
-    <div class="card"><div class="card-title">📊 DERNIERS JOURS</div><div id="recup-history"></div></div>
-  </div>
 
+    <!-- HISTORIQUE -->
+    <div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:18px;padding:16px;margin-bottom:12px">
+      <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;font-weight:700">HISTORIQUE</div>
+      <div id="recup-history-new"></div>
+    </div>
+
+  </div>
 </div>
 
 <div class="rest-timer" id="rest-timer">
@@ -758,6 +851,13 @@ body{display:flex;flex-direction:column}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6h3v7"/></svg>
     </div>
     <span>Nutrition</span>
+    <div class="nav-dot"></div>
+  </button>
+  <button class="nav-btn" id="nav-recovery">
+    <div class="nav-icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </div>
+    <span>Récup.</span>
     <div class="nav-dot"></div>
   </button>
 </div>
@@ -1792,7 +1892,132 @@ function toggleWater(g) {
   initNutrition();
 }
 
-function initRecovery() {}
+function initRecovery() {
+  var rec = state.recup && state.recup[today];
+  if (rec) {
+    var sleepEl = document.getElementById('input-sleep');
+    if (sleepEl) sleepEl.value = rec.sleep || '';
+    var sorEl = document.getElementById('input-soreness');
+    if (sorEl) sorEl.value = rec.soreness !== undefined ? rec.soreness : '';
+    if (rec.fatigue) restoreChip('recup-chip', rec.fatigue);
+    if (rec.stress) restoreChip('stress-chip', rec.stress);
+    if (rec.energy) restoreChip('energy-chip', rec.energy);
+    calcRecup();
+  }
+  renderRecupHistoryNew();
+}
+
+var _recupFatigue = 0, _recupStress = 0, _recupEnergy = 0;
+
+function setFatigueLevel(n, el) {
+  _recupFatigue = n;
+  document.querySelectorAll('.recup-chip').forEach(function(c){ c.style.background='#1a1a1a'; });
+  if (el) el.style.background = 'rgba(255,255,255,0.1)';
+  calcRecup();
+}
+function setStressLevel(n, el) {
+  _recupStress = n;
+  document.querySelectorAll('.stress-chip').forEach(function(c){ c.style.background='#1a1a1a'; });
+  if (el) el.style.background = 'rgba(255,255,255,0.1)';
+  calcRecup();
+}
+function setEnergyLevel(n, el) {
+  _recupEnergy = n;
+  document.querySelectorAll('.energy-chip').forEach(function(c){ c.style.background='#1a1a1a'; });
+  if (el) el.style.background = 'rgba(255,255,255,0.1)';
+  calcRecup();
+}
+
+function restoreChip(cls, val) {
+  var chips = document.querySelectorAll('.' + cls);
+  if (chips[val-1]) { chips[val-1].style.background = 'rgba(255,255,255,0.1)'; }
+}
+
+function calcRecup() {
+  var sleep = parseFloat(document.getElementById('input-sleep') ? document.getElementById('input-sleep').value : 0) || 0;
+  var soreness = parseInt(document.getElementById('input-soreness') ? document.getElementById('input-soreness').value : 0) || 0;
+
+  // Score sur 100
+  var score = 0;
+  score += Math.min(35, (sleep / 8) * 35);               // Sommeil /35
+  score += _recupEnergy === 3 ? 25 : _recupEnergy === 2 ? 15 : _recupEnergy === 1 ? 5 : 0;  // Énergie /25
+  score += _recupFatigue === 1 ? 20 : _recupFatigue === 2 ? 10 : _recupFatigue === 3 ? 0 : 0; // Fatigue /20
+  score += _recupStress === 1 ? 15 : _recupStress === 2 ? 8 : _recupStress === 3 ? 0 : 0;    // Stress /15
+  score -= [0,0,5,15][soreness] || 0;
+  score = Math.max(0, Math.min(100, Math.round(score)));
+
+  // Mettre à jour le grand cercle
+  var arcMax = 376.99;
+  var arcFill = (score / 100) * arcMax;
+  var fillEl = document.getElementById('big-recup-arc-fill');
+  if (fillEl) fillEl.style.strokeDasharray = arcFill + ' 502.65';
+
+  var valEl = document.getElementById('big-recup-val');
+  if (valEl) valEl.innerHTML = score + '<span style="font-size:24px">%</span>';
+
+  var status = score >= 80 ? 'Excellent' : score >= 65 ? 'Prêt' : score >= 50 ? 'Correct' : 'Fatigué';
+  var statusColor = score >= 65 ? 'var(--green)' : score >= 50 ? '#f59e0b' : 'var(--accent)';
+  var statusEl = document.getElementById('big-recup-status');
+  if (statusEl) { statusEl.textContent = status; statusEl.style.color = statusColor; }
+
+  var labelEl = document.getElementById('big-recup-label');
+  if (labelEl) labelEl.textContent = score >= 80 ? 'Bonne récupération' : score >= 65 ? 'Prêt à performer' : score >= 50 ? 'Récupération correcte' : 'Récupération insuffisante';
+
+  // Conseil
+  var conseilCard = document.getElementById('recup-conseil-card');
+  if (conseilCard) {
+    conseilCard.style.display = 'block';
+    var icon = score >= 65 ? '💪' : score >= 50 ? '⚠️' : '🛌';
+    var title = score >= 65 ? 'Tu peux suivre ton plan' : score >= 50 ? 'Séance légère conseillée' : 'Repos conseillé';
+    var text = score >= 65 ? 'Ton corps est prêt pour une séance intense.' : score >= 50 ? 'Réduis les charges de 20-30%, écoute ton corps.' : 'Ton corps a besoin de récupérer. Étirements et marche légère.';
+    var iconEl = document.getElementById('recup-conseil-icon'); if(iconEl) iconEl.textContent = icon;
+    var titleEl = document.getElementById('recup-conseil-title'); if(titleEl) titleEl.textContent = title;
+    var textEl = document.getElementById('recup-conseil-text'); if(textEl) textEl.textContent = text;
+    conseilCard.style.borderColor = score >= 65 ? 'rgba(34,197,94,0.2)' : score >= 50 ? 'rgba(245,158,11,0.2)' : 'rgba(255,51,51,0.2)';
+    conseilCard.style.background = score >= 65 ? 'rgba(34,197,94,0.08)' : score >= 50 ? 'rgba(245,158,11,0.08)' : 'rgba(255,51,51,0.08)';
+  }
+
+  // Sleep label
+  if (sleep > 0) {
+    var h = Math.floor(sleep);
+    var m = Math.round((sleep - h) * 60);
+    var slEl = document.getElementById('sleep-label');
+    if (slEl) slEl.textContent = h + 'h' + (m > 0 ? m : '');
+  }
+
+  // Sauvegarder
+  if (!state.recup) state.recup = {};
+  state.recup[today] = {
+    score: score, sleep: sleep,
+    fatigue: _recupFatigue, stress: _recupStress, energy: _recupEnergy, soreness: soreness
+  };
+  save();
+
+  // Mettre à jour le daily score
+  renderDailyScore();
+  renderRecupHistoryNew();
+}
+
+function renderRecupHistoryNew() {
+  var el = document.getElementById('recup-history-new');
+  if (!el) return;
+  var rows = [];
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(); d.setDate(d.getDate()-i);
+    var k = d.toISOString().split('T')[0];
+    var rec = state.recup && state.recup[k];
+    if (!rec) continue;
+    var color = rec.score>=75?'var(--green)':rec.score>=50?'#f59e0b':'var(--accent)';
+    var lbl = i===0?"Aujourd'hui":i===1?'Hier':d.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric'});
+    rows.push('<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05)">' +
+      '<span style="font-size:13px;color:#888">' + lbl + '</span>' +
+      '<div style="display:flex;align-items:center;gap:10px">' +
+      '<div style="background:#222;border-radius:99px;width:80px;height:4px;overflow:hidden"><div style="height:4px;border-radius:99px;background:'+color+';width:'+rec.score+'%"></div></div>' +
+      '<span style="font-family:\'Bebas Neue\',sans-serif;font-size:20px;color:'+color+';min-width:36px;text-align:right">'+rec.score+'</span>' +
+      '</div></div>');
+  }
+  el.innerHTML = rows.length ? rows.join('') : '<div style="color:#555;font-size:13px;text-align:center;padding:12px">Aucune donnée</div>';
+}
 
 // ══════════════════════════════════════
 // FINISH SEANCE
@@ -2011,12 +2236,14 @@ function initHeader() {
 document.getElementById('nav-dash').addEventListener('click', function(){ showPage('dash'); initDash(); });
 document.getElementById('nav-training').addEventListener('click', function(){ showPage('training'); initTraining(); });
 document.getElementById('nav-nutrition').addEventListener('click', function(){ showPage('nutrition'); initNutrition(); });
+document.getElementById('nav-recovery').addEventListener('click', function(){ showPage('recovery'); initRecovery(); });
 
 // Init immédiat
 initHeader();
 initDash();
 initTraining();
 initNutrition();
+initRecovery();
 
 // Supabase en arrière-plan
 loadPersonalProgramme().then(function() {
