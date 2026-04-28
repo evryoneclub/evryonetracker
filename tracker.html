@@ -314,21 +314,21 @@ body{display:flex;flex-direction:column}
 
         <!-- Objectif cercle -->
         <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
-          <div style="position:relative;width:110px;height:110px;flex-shrink:0">
-            <svg viewBox="0 0 110 110" width="110" height="110" style="transform:rotate(-90deg)">
-              <circle cx="55" cy="55" r="46" fill="none" stroke="#222" stroke-width="8"/>
-              <circle cx="55" cy="55" r="46" fill="none" stroke="var(--accent)" stroke-width="8"
-                stroke-linecap="round" stroke-dasharray="289.0"
-                id="hero-obj-arc" stroke-dashoffset="289.0" style="transition:stroke-dashoffset .8s;filter:drop-shadow(0 0 6px rgba(255,51,51,.5))"/>
+          <div style="position:relative;width:140px;height:140px;flex-shrink:0">
+            <svg viewBox="0 0 140 140" width="140" height="140" style="transform:rotate(-90deg)">
+              <circle cx="70" cy="70" r="58" fill="none" stroke="#222" stroke-width="9"/>
+              <circle cx="70" cy="70" r="58" fill="none" stroke="var(--accent)" stroke-width="9"
+                stroke-linecap="round" stroke-dasharray="364.4"
+                id="hero-obj-arc" stroke-dashoffset="364.4" style="transition:stroke-dashoffset .8s;filter:drop-shadow(0 0 6px rgba(255,51,51,.5))"/>
             </svg>
             <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-              <div style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px" id="hero-obj-type">OBJECTIF</div>
-              <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;color:#fff" id="hero-obj-pct">0<span style="font-size:16px">%</span></div>
-              <div style="font-size:10px;color:#666;margin-top:2px">Objectif : <span style="color:var(--accent)" id="hero-obj-cible">--</span> kg</div>
+              <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px" id="hero-obj-type">OBJECTIF</div>
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;color:#fff" id="hero-obj-pct">0<span style="font-size:20px">%</span></div>
+              <div style="font-size:12px;color:#666;margin-top:2px">Objectif : <span style="color:var(--accent)" id="hero-obj-cible">--</span> kg</div>
             </div>
           </div>
           <div>
-            <div style="font-size:13px;color:#666;margin-bottom:6px">Voir mon objectif →</div>
+            <div onclick="openProfile();setTimeout(function(){openSubPage('profil')},80)" style="font-size:13px;color:#888;cursor:pointer;display:inline-flex;align-items:center;gap:6px;border-bottom:1px solid #333;padding-bottom:3px">Voir mon objectif <span style="color:var(--accent)">→</span></div>
           </div>
         </div>
       </div>
@@ -1015,7 +1015,7 @@ function initDash() {
     var done = Math.abs(depart-actuel);
     pct = Math.min(100, Math.round(done/total*100));
   }
-  var circ = 289.0;
+  var circ = 364.4;
   var offset = circ - (pct/100)*circ;
   el = document.getElementById('hero-obj-arc'); if(el) el.style.strokeDashoffset = offset;
   el = document.getElementById('hero-obj-pct'); if(el) el.innerHTML = pct+'<span style="font-size:16px">%</span>';
