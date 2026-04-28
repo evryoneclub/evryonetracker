@@ -1491,22 +1491,24 @@ function renderSeance() {
 var _timerInterval = null;
 var _timerEl = null;
 
-function startTimer(seconds) {
-  if (_timerInterval) clearInterval(_timerInterval);
-  var pill = document.querySelector('.rest-timer');
-  if (!pill) return;
-  pill.style.display = 'flex';
-  var remaining = seconds;
-  pill.querySelector('.timer-count').textContent = remaining + 's';
-  _timerInterval = setInterval(function() {
-    remaining--;
-    if (remaining <= 0) {
-      clearInterval(_timerInterval);
-      pill.style.display = 'none';
-    } else {
-      pill.querySelector('.timer-count').textContent = remaining + 's';
-    }
+function startTimer(s) {
+  stopTimer();
+  var t = s;
+  var cntEl = document.getElementById('timer-cnt');
+  var timerEl = document.getElementById('rest-timer');
+  if (cntEl) cntEl.textContent = t;
+  if (timerEl) timerEl.classList.add('show');
+  timerInterval = setInterval(function() {
+    t--;
+    if (cntEl) cntEl.textContent = t;
+    if (t <= 0) stopTimer();
   }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  var timerEl = document.getElementById('rest-timer');
+  if (timerEl) timerEl.classList.remove('show');
 }
 
 // ══════════════════════════════════════
