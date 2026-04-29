@@ -739,7 +739,7 @@ setTimeout(function(){
     splash.style.transition = 'opacity 0.4s ease';
     setTimeout(function(){ splash.style.display='none'; }, 400);
   }
-}, 2000);
+}, 1500);
 
 // ══════════════════════════════════════
 // SUPABASE
@@ -748,8 +748,13 @@ const SUPABASE_URL = 'https://rusqjfimppgcxusnwyzq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1c3FqZmltcHBnY3h1c253eXpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1NTExNTUsImV4cCI6MjA5MjEyNzE1NX0.mWXBGMK0t1_Wwcu33Nps8xoHYF9A2LCRMnxkEaW5k88';
 const _session = localStorage.getItem('evryone-session');
 const _email = localStorage.getItem('evryone-email') || '';
+// Ne pas rediriger si on est déjà sur tracker.evryoneclub.com
+// (évite la boucle infinie et le splash bloqué)
 if (!_session && window.location.hostname !== 'localhost' && window.location.protocol !== 'file:') {
-  window.location.href = '/';
+  var _isTrackerDomain = window.location.hostname === 'tracker.evryoneclub.com';
+  if (!_isTrackerDomain) {
+    window.location.href = '/';
+  }
 }
 
 async function loadPersonalProgramme() {
