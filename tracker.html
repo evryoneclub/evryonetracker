@@ -1,5 +1,5 @@
 
-<<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="fr">
 <head>
@@ -1062,12 +1062,9 @@ function initTraining() {
 }
 
 function toggleExo(ei) {
-  var body = document.getElementById('eb-' + ei);
-  var chev = document.getElementById('chev-' + ei);
+  var body = document.getElementById('exo-body-' + ei);
   if (!body) return;
-  var isOpen = body.classList.contains('open');
-  body.classList.toggle('open', !isOpen);
-  if (chev) chev.classList.toggle('open', !isOpen);
+  body.style.display = body.style.display === 'none' ? 'block' : 'none';
 }
 
 function renderDaySelector() {
@@ -1076,63 +1073,114 @@ function renderDaySelector() {
 }
 
 function renderSeance() {
+  var weekStart = getWeekStartWithOffset();
   var day = PROGRAM[currentDay];
   var cont = document.getElementById('seance-content');
+  if (!cont) return;
+
   if (day.rest) {
-    cont.innerHTML = '<div class="card" style="text-align:center;padding:40px"><div style="font-size:52px;margin-bottom:12px">&#x1F6CC;</div><div style="font-family:Bebas Neue,sans-serif;font-size:28px;letter-spacing:2px;color:var(--muted)">JOUR DE REPOS</div><div style="font-size:13px;color:var(--muted);margin-top:8px">Récupère, mange bien, hydrate-toi</div></div>';
+    cont.innerHTML = '<div style="text-align:center;padding:48px 16px;background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:16px">'
+      + '<div style="font-size:52px;margin-bottom:12px">😴</div>'
+      + '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:26px;letter-spacing:2px;color:#555">JOUR DE REPOS</div>'
+      + '<div style="font-size:13px;color:#555;margin-top:8px">Récupère, mange bien, hydrate-toi 💧</div></div>';
     return;
   }
 
-  var sk = today + '_d' + currentDay;
+  var weekDateStr = weekStart.toISOString().split('T')[0];
+  var sk = weekDateStr + '_d' + currentDay;
   if (!state.sets[sk]) state.sets[sk] = {};
   if (!state.poids[sk]) state.poids[sk] = {};
   var seanceDone = !!state.doneSeances[sk];
+  var totalSeries = day.exercises.reduce(function(a,e){ return a+e.sets; }, 0);
+  var seriesDone = Object.values(state.sets[sk]).filter(function(v){ return v===true; }).length;
 
-  var html = '<div class="seance-header"><div class="seance-name">' + day.name + '</div><div class="seance-badge">' + day.label + '</div></div>';
+  // Header hors card
+  var html = '<div style="margin-bottom:12px">';
+  html += '<div style="font-size:10px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">FOCUS DU JOUR</div>';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between">';
+  html += '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:36px;letter-spacing:2px;color:#fff;line-height:1">' + day.name + '</div>';
+  html += seanceDone
+    ? '<div style="background:rgba(34,197,94,.15);color:var(--green);font-size:11px;font-weight:700;padding:5px 12px;border-radius:99px">✓ Terminé</div>'
+    : '<div style="font-size:12px;color:#555">' + seriesDone + '/' + totalSeries + ' séries</div>';
+  html += '</div></div>';
+
+  // Card exercices
+  html += '<div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);box-shadow:0 2px 20px rgba(0,0,0,0.4);border-radius:16px;overflow:hidden;margin-bottom:12px">';
+
+  // Colonnes header
+  html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 44px 56px 52px;gap:4px;padding:8px 16px;background:rgba(0,0,0,0.3)">';
+  ['EXERCICE','SÉR.','REPS','REPOS'].forEach(function(t){
+    html += '<div style="font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.5px;'+(t==='EXERCICE'?'':'text-align:center')+'">'+t+'</div>';
+  });
+  html += '</div>';
 
   for (var ei = 0; ei < day.exercises.length; ei++) {
     var exo = day.exercises[ei];
     var allDone = true;
     for (var s = 0; s < exo.sets; s++) {
-      if (state.sets[sk][ei + '_' + s] !== true) { allDone = false; break; }
+      if (state.sets[sk][ei+'_'+s] !== true) { allDone = false; break; }
     }
-    var isOpen = (ei === 0);
-    var gifHtml = exo.gif ? '<div style="width:52px;height:52px;border-radius:8px;flex-shrink:0;overflow:hidden;border:1px solid var(--border)"><img src="' + exo.gif + '" style="width:100%;height:100%;object-fit:cover;display:block" loading="lazy" onerror="this.parentElement.style.display=\'none\'"></div>' : '';
+    var best = getBestSet(ei, currentDay);
 
-    html += '<div class="exo-card' + (allDone ? ' done-exo' : '') + '" id="ec-' + ei + '">';
-    html += '<div class="exo-card-header" data-ei="' + ei + '" onclick="toggleExo(parseInt(this.dataset.ei))">';
-    html += '<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">';
-    html += gifHtml;
-    html += '<div class="exo-done-dot' + (allDone ? ' done' : '') + '">' + (allDone ? '&#10003;' : '') + '</div>';
-    html += '<div style="min-width:0"><div class="exo-name">' + exo.name + '</div><div class="exo-subtitle">' + exo.sets + 'x' + exo.reps + ' - ' + exo.rest + 's repos</div></div>';
-    html += '</div><div class="exo-chevron' + (isOpen ? ' open' : '') + '" id="chev-' + ei + '">&#9660;</div></div>';
-    html += '<div class="exo-body' + (isOpen ? ' open' : '') + '" id="eb-' + ei + '">';
-    html += '<div class="set-cols"><div style="text-align:center">S</div><div style="text-align:center">POIDS</div><div style="text-align:center">REPS</div><div style="text-align:center">OK</div></div>';
+    html += '<div style="border-bottom:1px solid rgba(255,255,255,0.04)">';
+    html += '<div style="display:grid;grid-template-columns:minmax(0,1fr) 44px 56px 52px;gap:4px;padding:12px 16px;align-items:center;cursor:pointer" onclick="toggleExo('+ei+')">';
+    html += '<div style="display:flex;align-items:center;gap:8px">';
+    html += '<div style="width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid '+(allDone?'var(--green)':'var(--accent)')+';color:'+(allDone?'var(--green)':'var(--accent)')+';">'+(allDone?'✓':(ei+1))+'</div>';
+    html += '<div style="width:40px;height:40px;border-radius:7px;overflow:hidden;flex-shrink:0;background:#1a1a1a">';
+    if (exo.gif) html += '<img src="'+exo.gif+'" style="width:100%;height:100%;object-fit:cover" loading="lazy">';
+    html += '</div>';
+    html += '<div style="min-width:0">';
+    html += '<div style="font-size:12px;font-weight:600;color:#fff;line-height:1.3">'+exo.name+'</div>';
+    html += '<div style="font-size:10px;color:#555;margin-top:1px">'+(best?'Dernier: '+best.poids+'kg':'–')+'</div>';
+    html += '</div></div>';
+    html += '<div style="text-align:center;font-size:15px;font-weight:700;color:#ddd">'+exo.sets+'</div>';
+    html += '<div style="text-align:center;font-size:12px;color:#ddd">'+exo.reps+'</div>';
+    html += '<div style="text-align:center;font-size:11px;color:#555">'+formatRest(exo.rest)+'</div>';
+    html += '</div>';
+
+    // Séries déroulantes
+    html += '<div id="exo-body-'+ei+'" style="display:'+(ei===0&&!seanceDone?'block':'none')+';padding:0 16px 12px;background:rgba(0,0,0,0.2)">';
+    html += '<div style="display:grid;grid-template-columns:28px 1fr 1fr 44px;gap:8px;padding:6px 0 4px;border-bottom:1px solid rgba(255,255,255,0.05);font-size:9px;color:#444;text-transform:uppercase;text-align:center;letter-spacing:.5px;margin-bottom:4px">';
+    html += '<div>S</div><div>POIDS</div><div>REPS</div><div>OK</div></div>';
 
     for (var s = 0; s < exo.sets; s++) {
-      var k = ei + '_' + s;
-      var done = state.sets[sk][k] === true;
-      var pd = state.poids[sk][k] || {};
-      var prevKeys = Object.keys(state.poids).filter(function(pk){ return pk !== sk && pk.endsWith('_d' + currentDay); });
-      var prevPd = prevKeys.length > 0 ? (state.poids[prevKeys[prevKeys.length-1]][k] || {}) : {};
-      var pph = prevPd.poids ? prevPd.poids + ' kg' : 'kg';
-      var rph = prevPd.reps ? String(prevPd.reps) : exo.reps;
-      var pval = (done && pd.poids) ? pd.poids : '';
-      var rval = (done && pd.reps) ? pd.reps : '';
-
+      var k = ei+'_'+s;
+      var done = state.sets[sk][k]===true;
+      var pd = state.poids[sk][k]||{};
+      var pval = done&&pd.poids ? String(pd.poids) : '';
+      var rval = done&&pd.reps ? String(pd.reps) : '';
+      var pph = best ? String(best.poids) : '';
       html += '<div class="set-row">';
-      html += '<div class="set-num' + (done ? ' done-num' : '') + '">' + (s+1) + '</div>';
-      html += '<input class="set-input' + (done ? ' filled' : '') + '" type="number" step="0.5" min="0" id="p-' + ei + '-' + s + '" placeholder="' + pph + '" value="' + pval + '" data-ei="' + ei + '" data-si="' + s + '" onchange="saveFromInput(this)">';
-      html += '<input class="set-input' + (done ? ' filled' : '') + '" type="number" min="0" id="r-' + ei + '-' + s + '" placeholder="' + rph + '" value="' + rval + '" data-ei="' + ei + '" data-si="' + s + '" onchange="saveFromInput(this)">';
-      html += '<button class="set-ok' + (done ? ' done' : '') + '" id="ok-' + ei + '-' + s + '" data-ei="' + ei + '" data-si="' + s + '" data-rest="' + exo.rest + '" onclick="validateFromBtn(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></button>';
+      html += '<div class="set-num'+(done?' done-num':'')+'">'+( s+1)+'</div>';
+      html += '<input class="set-input'+(done?' filled':'')+'" type="number" step="0.5" min="0" id="p-'+ei+'-'+s+'" placeholder="'+pph+'" value="'+pval+'" data-ei="'+ei+'" data-si="'+s+'" onchange="saveFromInput(this)">';
+      html += '<input class="set-input'+(done?' filled':'')+'" type="number" min="0" id="r-'+ei+'-'+s+'" placeholder="'+exo.reps+'" value="'+rval+'" data-ei="'+ei+'" data-si="'+s+'" onchange="saveFromInput(this)">';
+      html += '<button class="set-ok'+(done?' done':'')+'" id="ok-'+ei+'-'+s+'" data-ei="'+ei+'" data-si="'+s+'" data-rest="'+exo.rest+'" data-sk="'+sk+'" onclick="validateFromBtn(this)">';
+      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></button>';
       html += '</div>';
     }
     html += '</div></div>';
   }
+  html += '</div>'; // fin card
 
-  html += seanceDone
-    ? '<div style="text-align:center;padding:20px;color:var(--green);font-family:Bebas Neue,sans-serif;font-size:22px;letter-spacing:2px">SEANCE COMPLETEE !</div>'
-    : '<button class="btn-finish" onclick="finishSeance()">TERMINER LA SEANCE</button>';
+  // Résumé
+  var totalVol = 0;
+  Object.keys(state.poids[sk]).forEach(function(k){
+    var pd=state.poids[sk][k]; if(pd&&pd.poids&&pd.reps) totalVol+=pd.poids*pd.reps;
+  });
+  html += '<div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:14px 16px;margin-bottom:12px">';
+  html += '<div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">📊 RÉSUMÉ</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">';
+  html += '<div style="text-align:center"><div style="font-size:9px;color:#555;text-transform:uppercase;margin-bottom:4px">Volume</div><div style="font-family:\'Bebas Neue\',sans-serif;font-size:20px">'+Math.round(totalVol)+'<span style="font-size:10px"> kg</span></div></div>';
+  html += '<div style="text-align:center"><div style="font-size:9px;color:#555;text-transform:uppercase;margin-bottom:4px">Séries</div><div style="font-family:\'Bebas Neue\',sans-serif;font-size:20px">'+seriesDone+'/'+totalSeries+'</div></div>';
+  html += '<div style="text-align:center"><div style="font-size:9px;color:#555;text-transform:uppercase;margin-bottom:4px">Exercices</div><div style="font-family:\'Bebas Neue\',sans-serif;font-size:20px">'+day.exercises.length+'</div></div>';
+  html += '</div></div>';
+
+  // Bouton
+  if (!seanceDone) {
+    html += '<button class="btn-finish" onclick="finishSeance()">TERMINER LA SÉANCE 🔥</button>';
+  } else {
+    html += '<div style="text-align:center;padding:16px;color:var(--green);font-family:\'Bebas Neue\',sans-serif;font-size:20px;letter-spacing:2px">✅ SÉANCE COMPLÉTÉE !</div>';
+  }
 
   cont.innerHTML = html;
 }
@@ -1155,44 +1203,36 @@ function validateFromBtn(btn) {
   var ei = parseInt(btn.dataset.ei);
   var si = parseInt(btn.dataset.si);
   var rest = parseInt(btn.dataset.rest);
-  var sk = today + '_d' + currentDay;
-  saveFromInput(document.getElementById('p-' + ei + '-' + si));
-  var k = ei + '_' + si;
+  var sk = btn.dataset.sk || (getWeekStartWithOffset().toISOString().split('T')[0] + '_d' + currentDay);
+  var pEl = document.getElementById('p-'+ei+'-'+si);
+  var rEl = document.getElementById('r-'+ei+'-'+si);
+  if (!state.poids[sk]) state.poids[sk] = {};
+  state.poids[sk][ei+'_'+si] = {poids:parseFloat(pEl?pEl.value:0)||0, reps:parseInt(rEl?rEl.value:0)||0};
   if (!state.sets[sk]) state.sets[sk] = {};
-  var done = !(state.sets[sk][k] === true);
+  var k = ei+'_'+si;
+  var done = !(state.sets[sk][k]===true);
   state.sets[sk][k] = done;
   save();
   if (done) startTimer(rest);
-  var pi = document.getElementById('p-' + ei + '-' + si);
-  var ri = document.getElementById('r-' + ei + '-' + si);
-  btn.classList.toggle('done', done);
-  pi.classList.toggle('filled', done);
-  ri.classList.toggle('filled', done);
-  var numEl = document.querySelector('#eb-' + ei + ' .set-row:nth-child(' + (si+2) + ') .set-num');
-  if (numEl) numEl.classList.toggle('done-num', done);
-  var exo = PROGRAM[currentDay].exercises[ei];
-  var allDone = true;
-  for (var s = 0; s < exo.sets; s++) {
-    if (state.sets[sk][ei + '_' + s] !== true) { allDone = false; break; }
-  }
-  var card = document.getElementById('ec-' + ei);
-  var dot = card.querySelector('.exo-done-dot');
-  card.classList.toggle('done-exo', allDone);
-  dot.classList.toggle('done', allDone);
-  dot.innerHTML = allDone ? '&#10003;' : '';
-  document.getElementById('total-series-training').textContent = countSeries();
+  renderSeance();
+  var el=document.getElementById('total-series-training'); if(el) el.textContent=countSeries();
+  var body=document.getElementById('exo-body-'+ei); if(body) body.style.display='block';
   initDash();
 }
 
 
 function finishSeance() {
-  state.doneSeances[today + '_d' + currentDay] = true;
-  state.doneSeances[today] = true;
+  var weekStart = getWeekStartWithOffset();
+  var weekDateStr = weekStart.toISOString().split('T')[0];
+  var sk = weekDateStr + '_d' + currentDay;
+  state.doneSeances[sk] = true;
   save();
-  initTraining();
+  renderSeance();
+  renderWeekCalendar();
+  var el = document.getElementById('total-seances-training'); if(el) el.textContent=countSeances();
+  var el2 = document.getElementById('cg-sub'); if(el2) el2.textContent='Séance '+PROGRAM[currentDay].name+' terminée 💪';
+  var cg = document.getElementById('congrats-overlay'); if(cg) cg.classList.add('show');
   initDash();
-  document.getElementById('cg-sub').textContent = 'Séance ' + PROGRAM[currentDay].name + ' terminée 💪';
-  document.getElementById('congrats-overlay').classList.add('show');
 }
 
 // ══════════════════════════════════════
@@ -1218,33 +1258,86 @@ function stopTimer() {
 // NUTRITION
 // ══════════════════════════════════════
 function initNutrition() {
-  const REPAS = window._repasData || REPAS_DEFAULT;
-  const repasToday = state.repas[today] || {};
-  let tCal=0, tProt=0, tGluci=0, tLip=0;
+  var REPAS = window._repasData || REPAS_DEFAULT;
+  var repasToday = state.repas[today] || {};
+  var tCal=0, tProt=0, tGluci=0, tLip=0;
+  var tgtCal=window.PERSONAL_KCAL||2000, tgtProt=150, tgtGluci=200, tgtLip=65;
 
-  let html = '';
+  REPAS.forEach(function(r,i){ if(repasToday[i]){ tCal+=r.cals; tProt+=r.prot; tGluci+=r.gluci; tLip+=r.lip; } });
+
+  var pCal = Math.min(100, Math.round(tCal/tgtCal*100));
+  var reste = Math.max(0, tgtCal-tCal);
+  var arcOff = 276.5 - (pCal/100)*276.5;
+
+  var el;
+  el=document.getElementById('ring-kcal'); if(el) el.textContent=tCal.toLocaleString('fr-FR');
+  el=document.getElementById('kcal-objectif'); if(el) el.textContent=tgtCal.toLocaleString('fr-FR');
+  el=document.getElementById('kcal-reste-val'); if(el) el.textContent=reste.toLocaleString('fr-FR');
+  el=document.getElementById('kcal-pct-label'); if(el) el.textContent=pCal+"% de l'objectif";
+  el=document.getElementById('bar-cal'); if(el) el.style.width=pCal+'%';
+  el=document.getElementById('ring-cal-arc'); if(el) el.style.strokeDashoffset=arcOff;
+
+  var pProt=Math.min(100,Math.round(tProt/tgtProt*100));
+  var pGluci=Math.min(100,Math.round(tGluci/tgtGluci*100));
+  var pLip=Math.min(100,Math.round(tLip/tgtLip*100));
+  el=document.getElementById('macro-prot-big'); if(el) el.innerHTML=tProt+' <span style="font-size:13px;color:var(--accent)">g</span>';
+  el=document.getElementById('macro-gluci-big'); if(el) el.innerHTML=tGluci+' <span style="font-size:13px;color:#f59e0b">g</span>';
+  el=document.getElementById('macro-lip-big'); if(el) el.innerHTML=tLip+' <span style="font-size:13px;color:var(--green)">g</span>';
+  el=document.getElementById('macro-prot-label'); if(el) el.textContent=tProt+' / '+tgtProt+' g';
+  el=document.getElementById('macro-gluci-label'); if(el) el.textContent=tGluci+' / '+tgtGluci+' g';
+  el=document.getElementById('macro-lip-label'); if(el) el.textContent=tLip+' / '+tgtLip+' g';
+  el=document.getElementById('bar-prot'); if(el) el.style.width=pProt+'%';
+  el=document.getElementById('bar-gluci'); if(el) el.style.width=pGluci+'%';
+  el=document.getElementById('bar-lip'); if(el) el.style.width=pLip+'%';
+  el=document.getElementById('apercu-kcal'); if(el) el.textContent=tCal||'--';
+
+  // Repas stylisés
+  if (!state.repasOpen) state.repasOpen = {};
+  var html = '';
   REPAS.forEach(function(r, i) {
-    const checked = !!repasToday[i];
-    if (checked) { tCal+=r.cals; tProt+=r.prot; tGluci+=r.gluci; tLip+=r.lip; }
-    html += '<div class="repas-item"><div class="repas-top"><div class="repas-name">'+r.name+'</div><div class="repas-cals">'+r.cals+' kcal</div></div><div class="repas-detail">'+r.detail+'</div><div class="repas-check"><input type="checkbox" id="rep-'+i+'" '+(checked?'checked':'')+ ' onchange="toggleRepas('+i+')"><label for="rep-'+i+'">Repas pris ✓</label></div></div>';
+    var checked = !!repasToday[i];
+    var isOpen  = !!state.repasOpen[i];
+    html += '<div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:16px;margin-bottom:10px;overflow:hidden">';
+    // Ligne principale cliquable
+    html += '<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer" onclick="toggleRepasExpand('+i+')">';
+    html += '<div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;'+(checked?'background:var(--accent)':'border:2px solid #333')+'">';
+    if (checked) html += '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>';
+    html += '</div>';
+    html += '<div style="flex:1;min-width:0">';
+    html += '<div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">'+r.name+'</div>';
+    html += '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:22px;color:#fff;line-height:1">'+r.cals+' <span style="font-size:12px;color:#888">kcal</span></div>';
+    html += '</div>';
+    html += '<div style="display:flex;flex-direction:column;gap:3px;margin-right:8px">';
+    html += '<div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:var(--accent)"></div><span style="font-size:11px;color:#ddd">'+r.prot+'g</span></div>';
+    html += '<div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:#f59e0b"></div><span style="font-size:11px;color:#ddd">'+r.gluci+'g</span></div>';
+    html += '<div style="display:flex;align-items:center;gap:4px"><div style="width:7px;height:7px;border-radius:50%;background:var(--green)"></div><span style="font-size:11px;color:#ddd">'+r.lip+'g</span></div>';
+    html += '</div>';
+    html += '<div style="color:#555;font-size:14px;transform:rotate('+(isOpen?'180':'0')+'deg);transition:.2s">▼</div>';
+    html += '</div>';
+    // Détail déroulant
+    html += '<div id="repas-body-'+i+'" style="display:'+(isOpen?'block':'none')+';padding:0 16px 14px">';
+    html += '<div style="background:#1a1a1a;border-radius:10px;padding:12px;margin-bottom:10px">';
+    html += '<div style="font-size:12px;color:#aaa;line-height:1.6">'+(r.detail||r.name)+'</div>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px">';
+    html += '<div style="text-align:center;background:#222;border-radius:8px;padding:8px 4px"><div style="font-size:14px;color:var(--accent);font-weight:700">'+r.prot+'g</div><div style="font-size:9px;color:#555;margin-top:2px">PROT.</div></div>';
+    html += '<div style="text-align:center;background:#222;border-radius:8px;padding:8px 4px"><div style="font-size:14px;color:#f59e0b;font-weight:700">'+r.gluci+'g</div><div style="font-size:9px;color:#555;margin-top:2px">GLUCI.</div></div>';
+    html += '<div style="text-align:center;background:#222;border-radius:8px;padding:8px 4px"><div style="font-size:14px;color:var(--green);font-weight:700">'+r.lip+'g</div><div style="font-size:9px;color:#555;margin-top:2px">LIPIDES</div></div>';
+    html += '</div></div>';
+    html += '<button onclick="toggleRepas('+i+')" style="width:100%;padding:13px;border:none;border-radius:10px;cursor:pointer;font-family:\'DM Sans\',sans-serif;font-size:14px;font-weight:600;transition:.2s;'+(checked?'background:#0a1a0a;color:var(--green)':'background:var(--accent);color:#fff')+'">'+( checked?'✓ Repas pris':'Marquer comme pris')+'</button>';
+    html += '</div></div>';
   });
-  document.getElementById('repas-list').innerHTML = html;
+  el=document.getElementById('repas-list'); if(el) el.innerHTML=html;
 
-  const tgt = {cal:2000,prot:150,gluci:200,lip:65};
-  document.getElementById('m-cal').textContent = tCal;
-  document.getElementById('m-prot').textContent = tProt+'g';
-  document.getElementById('m-gluci').textContent = tGluci+'g';
-  document.getElementById('m-lip').textContent = tLip+'g';
-  document.getElementById('bar-cal').style.width = Math.min(100,tCal/tgt.cal*100)+'%';
-  document.getElementById('bar-prot').style.width = Math.min(100,tProt/tgt.prot*100)+'%';
-  document.getElementById('bar-gluci').style.width = Math.min(100,tGluci/tgt.gluci*100)+'%';
-  document.getElementById('bar-lip').style.width = Math.min(100,tLip/tgt.lip*100)+'%';
+  // Eau
+  var wc=state.water[today]||0;
+  el=document.getElementById('water-count'); if(el) el.textContent=wc;
+  el=document.getElementById('water-val-l'); if(el) el.textContent=(wc*0.25).toFixed(1);
+  el=document.getElementById('bar-water'); if(el) el.style.width=Math.min(100,Math.round(wc/8*100))+'%';
+  var wg='';
+  for(var g=0;g<8;g++) wg+='<div class="water-glass'+(g<wc?' filled':'')+'" onclick="toggleWater('+g+')">💧</div>';
+  el=document.getElementById('water-glasses'); if(el) el.innerHTML=wg;
 
-  const wc = state.water[today] || 0;
-  document.getElementById('water-count').textContent = wc;
-  let whtml = '';
-  for (let g=0; g<8; g++) whtml += '<div class="water-glass'+(g<wc?' filled':'')+'" onclick="toggleWater('+g+')">💧</div>';
-  document.getElementById('water-glasses').innerHTML = whtml;
+  initDash();
 }
 
 function toggleRepas(i) {
