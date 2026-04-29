@@ -1380,7 +1380,7 @@ function setFeeling(i) {
 
 function calcScore() {
   const sleep = parseFloat(document.getElementById('input-sleep').value);
-  const energy = parseFloat(document.getElementById('input-energy').value);
+  const energyEl2 = document.getElementById('input-energy'); const energy = parseFloat(energyEl2 ? energyEl2.value : 0);
   const soreness = parseInt(document.getElementById('input-soreness').value);
   if (isNaN(sleep)||isNaN(energy)||isNaN(soreness)) return;
 
@@ -1396,20 +1396,20 @@ function calcScore() {
   const numEl = document.getElementById('score-num');
   const status = document.getElementById('score-status');
   const advice = document.getElementById('score-advice');
-  numEl.textContent = score;
+  if (numEl) numEl.textContent = score;
 
   if (score >= 75) {
-    circle.style.borderColor='var(--green)'; numEl.style.color='var(--green)';
-    status.textContent='GO — SÉANCE INTENSE';
-    advice.textContent="Tu es au top ! Charge max, focus total. 🔥";
+    if(circle) circle.style.borderColor='var(--green)'; if(numEl) numEl.style.color='var(--green)';
+    if(status) status.textContent='GO — SÉANCE INTENSE';
+    if(advice) advice.textContent="Tu es au top ! Charge max, focus total. 🔥";
   } else if (score >= 50) {
-    circle.style.borderColor='var(--yellow)'; numEl.style.color='var(--yellow)';
-    status.textContent='SÉANCE LÉGÈRE';
-    advice.textContent="Bouge-toi mais réduis les charges de 20%, écoute ton corps.";
+    if(circle) circle.style.borderColor='var(--yellow)'; if(numEl) numEl.style.color='var(--yellow)';
+    if(status) status.textContent='SÉANCE LÉGÈRE';
+    if(advice) advice.textContent="Bouge-toi mais réduis les charges de 20%, écoute ton corps.";
   } else {
-    circle.style.borderColor='var(--accent)'; numEl.style.color='var(--accent)';
-    status.textContent='REPOS ACTIF';
-    advice.textContent="Ton corps a besoin de récupérer. Promenade légère, étirements.";
+    if(circle) circle.style.borderColor='var(--accent)'; if(numEl) numEl.style.color='var(--accent)';
+    if(status) status.textContent='REPOS ACTIF';
+    if(advice) advice.textContent="Ton corps a besoin de récupérer. Promenade légère, étirements.";
   }
   renderRecupHistory();
   initDash();
@@ -1430,7 +1430,7 @@ function initRecovery() {
 }
 
 function renderRecupHistory() {
-  const el = document.getElementById('recup-history');
+  const el = document.getElementById('recup-history'); if (!el) return;
   const rows = [];
   for (let i=0; i<5; i++) {
     const d = new Date(); d.setDate(d.getDate()-i);
