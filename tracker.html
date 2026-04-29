@@ -5,6 +5,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>EVRYØNE TRACKER</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#ff3333">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EVRYØNE">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -16,8 +22,8 @@ body{display:flex;flex-direction:column}
 .logo span{color:var(--accent)}
 .user-avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;color:#fff;cursor:pointer;overflow:hidden;flex-shrink:0}
 .pages{flex:1;overflow:hidden;position:relative}
-.page{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding:16px 16px 100px;display:none;-webkit-overflow-scrolling:touch}
-.page.active{display:block}
+.page{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding:16px 16px 100px;display:none;-webkit-overflow-scrolling:touch;opacity:0;transform:translateY(8px);transition:opacity .22s ease,transform .22s ease}
+.page.active{display:block;opacity:1;transform:translateY(0)}
 .card{background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:0 2px 20px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.04)}
 .bottom-nav{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:480px;height:70px;background:rgba(20,20,20,0.75);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-radius:28px;border:1px solid rgba(255,255,255,0.08);box-shadow:0 8px 32px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-around;padding:0 4px;z-index:100}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;color:#555;transition:all .25s;padding:8px 0}
@@ -67,9 +73,22 @@ body{display:flex;flex-direction:column}
 /* PROGRESS TABS */
 .prog-tab{flex:1;background:none;border:none;padding:10px 4px;font-size:12px;font-weight:700;color:#555;cursor:pointer;border-bottom:2px solid transparent;font-family:'DM Sans',sans-serif}
 .prog-tab.active{color:var(--accent);border-bottom:2px solid var(--accent)}
+@keyframes splashPulse{0%,100%{opacity:.3;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2)}}
 </style>
 </head>
 <body>
+
+<!-- SPLASH SCREEN -->
+
+<div id="splash" style="position:fixed;inset:0;background:#0a0a0a;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s ease">
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:4px;color:#fff;margin-bottom:8px">EVRY<span style="color:#ff3333">Ø</span>NE</div>
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:6px;color:#ff3333;margin-bottom:48px">TRACKER</div>
+  <div style="display:flex;gap:8px">
+    <div class="splash-dot" style="width:8px;height:8px;border-radius:50%;background:#ff3333;animation:splashPulse 1s ease-in-out infinite"></div>
+    <div class="splash-dot" style="width:8px;height:8px;border-radius:50%;background:#ff3333;animation:splashPulse 1s ease-in-out .2s infinite"></div>
+    <div class="splash-dot" style="width:8px;height:8px;border-radius:50%;background:#ff3333;animation:splashPulse 1s ease-in-out .4s infinite"></div>
+  </div>
+</div>
 
 <div class="header">
   <div class="logo">EVRY<span>Ø</span>NE <span style="color:var(--accent)">TRACKER</span></div>
@@ -419,6 +438,22 @@ body{display:flex;flex-direction:column}
         <button onclick="savePoids()" style="background:var(--accent);border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;padding:10px 16px;cursor:pointer">OK</button>
       </div>
     </div>
+
+```
+<!-- Graphique par exercice -->
+<div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:18px;margin-bottom:12px">
+  <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:12px">PROGRESSION PAR EXERCICE</div>
+  <select id="exo-select" onchange="renderExoChart()" style="width:100%;background:#1a1a1a;border:none;color:#fff;font-size:14px;padding:10px 12px;border-radius:10px;outline:none;font-family:'DM Sans',sans-serif;margin-bottom:14px;cursor:pointer"></select>
+  <div style="position:relative;height:100px;margin-bottom:4px">
+    <svg id="exo-chart-svg" width="100%" height="100" style="overflow:visible">
+      <defs><linearGradient id="exoGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff3333" stop-opacity="0.25"/><stop offset="100%" stop-color="#ff3333" stop-opacity="0"/></linearGradient></defs>
+    </svg>
+  </div>
+  <div id="exo-chart-labels" style="position:relative;height:14px;margin-bottom:8px"></div>
+  <div style="text-align:center;font-size:11px;color:#555" id="exo-chart-info">Sélectionne un exercice</div>
+</div>
+```
+
   </div>
 
   <!-- MENSURATIONS -->
@@ -692,24 +727,9 @@ body{display:flex;flex-direction:column}
   </div>
   <div style="padding:16px 20px">
     <div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:14px;overflow:hidden">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #1e1e1e"><div style="font-size:15px;font-weight:600">Unité de poids</div><div style="display:flex;gap:6px"><div onclick="selectUnit('kg',this)" id="unit-kg" style="padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:var(--accent);color:#fff">kg</div><div onclick="selectUnit('lbs',this)" id="unit-lbs" style="padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:#1e1e1e;color:#666">lbs</div></div></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px"><div style="font-size:15px;font-weight:600">Langue</div><div style="display:flex;gap:6px"><div onclick="selectLang('fr',this)" id="lang-fr" style="padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:var(--accent);color:#fff">🇫🇷 FR</div><div onclick="selectLang('en',this)" id="lang-en" style="padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:#1e1e1e;color:#666">🇬🇧 EN</div></div></div>
-    </div>
-  </div>
-</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #1e1e1e"><div style="font-size:15px;font-weight:600">Unité de poids</div><div style="display:flex;gap:6px"><div onclick="selectUnit('kg',this)" id="unit-kg" style="padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:var
 
 <script>
-window.onerror = function(msg, src, line, col, err) {
-  var div = document.createElement('div');
-  div.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ff3333;color:#fff;padding:12px;z-index:99999;font-size:11px;word-break:break-all;font-family:monospace';
-  div.textContent = 'JS ERROR line ' + line + ': ' + msg;
-  document.body.appendChild(div);
-  return false;
-};
-</script>
-
-<script>
-
 // ══════════════════════════════════════
 // SUPABASE
 // ══════════════════════════════════════
@@ -1229,7 +1249,13 @@ function validateFromBtn(btn) {
   var done = !(state.sets[sk][k]===true);
   state.sets[sk][k] = done;
   save();
-  if (done) startTimer(rest);
+  if (done) {
+    startTimer(rest);
+    // Haptic feedback
+    if (navigator.vibrate) navigator.vibrate(40);
+  } else {
+    if (navigator.vibrate) navigator.vibrate([20,30,20]);
+  }
   renderSeance();
   var el=document.getElementById('total-series-training'); if(el) el.textContent=countSeries();
   var body=document.getElementById('exo-body-'+ei); if(body) body.style.display='block';
@@ -1813,6 +1839,7 @@ function initProgress() {
   if(!state.records)state.records=[];
   if(!state.mensurations)state.mensurations={};
   renderPoidsChart(); renderProgressPhotos(); renderRoadmap();
+  initExoSelect();
 }
 
 function switchProgressTab(tab) {
@@ -1958,6 +1985,201 @@ function saveRecord(){
   document.getElementById('record-exo').value='';document.getElementById('record-poids').value='';document.getElementById('record-reps').value='';
   document.getElementById('add-record-form').style.display='none';
   renderRecords();
+}
+
+
+
+// ══ GRAPHIQUE PAR EXERCICE ══
+function initExoSelect() {
+  var sel = document.getElementById('exo-select');
+  if (!sel) return;
+  var exos = {};
+  PROGRAM.forEach(function(day) {
+    if (!day.rest) day.exercises.forEach(function(e){ exos[e.name] = true; });
+  });
+  sel.innerHTML = '<option value="">— Choisir un exercice —</option>';
+  Object.keys(exos).sort().forEach(function(name){
+    sel.innerHTML += '<option value="'+name+'">'+name+'</option>';
+  });
+}
+
+function renderExoChart() {
+  var sel = document.getElementById('exo-select');
+  var svg = document.getElementById('exo-chart-svg');
+  var labelsEl = document.getElementById('exo-chart-labels');
+  var infoEl = document.getElementById('exo-chart-info');
+  if (!sel || !svg) return;
+  var exoName = sel.value;
+  if (!exoName) { svg.innerHTML=''; if(infoEl)infoEl.textContent='Sélectionne un exercice'; return; }
+  var dayIdx=-1, exoIdx=-1;
+  PROGRAM.forEach(function(day,di){
+    if (!day.rest) day.exercises.forEach(function(e,ei){
+      if (e.name===exoName){dayIdx=di;exoIdx=ei;}
+    });
+  });
+  if (dayIdx===-1) return;
+  var data=[];
+  Object.keys(state.poids||{}).sort().forEach(function(sk){
+    if (!sk.endsWith('_d'+dayIdx)) return;
+    var dateStr=sk.split('_d')[0];
+    var best=0;
+    Object.keys(state.poids[sk]||{}).forEach(function(k){
+      if (k.startsWith(exoIdx+'_')){var pd=state.poids[sk][k];if(pd&&pd.poids>best)best=pd.poids;}
+    });
+    if (best>0) data.push({date:dateStr,poids:best});
+  });
+  if (!data.length){
+    svg.innerHTML='<text x="50%" y="50%" text-anchor="middle" fill="#333" font-size="12">Aucune donnée encore</text>';
+    if(infoEl)infoEl.textContent='Fais ta première séance !';
+    return;
+  }
+  var vals=data.map(function(d){return d.poids;});
+  var minV=Math.min.apply(null,vals)-2,maxV=Math.max.apply(null,vals)+2;
+  var W=svg.parentElement?svg.parentElement.offsetWidth||300:300,H=90;
+  var pad={l:28,r:8,t:8,b:8};
+  var toX=function(i){return pad.l+(data.length===1?(W-pad.l)/2:i/(data.length-1)*(W-pad.l-pad.r));};
+  var toY=function(v){return pad.t+(1-(v-minV)/(maxV-minV))*(H-pad.t-pad.b);};
+  var gL='';
+  [Math.round(minV),Math.round((minV+maxV)/2),Math.round(maxV)].forEach(function(v){
+    var y=toY(v);
+    gL+='<line x1="'+pad.l+'" y1="'+y+'" x2="'+(W-pad.r)+'" y2="'+y+'" stroke="#1e1e1e" stroke-width="1"/>';
+    gL+='<text x="'+(pad.l-4)+'" y="'+(y+4)+'" text-anchor="end" fill="#555" font-size="9">'+v+'</text>';
+  });
+  var pts=data.map(function(d,i){return toX(i)+','+toY(d.poids);}).join(' ');
+  var area='M'+toX(0)+','+(H-pad.b)+' L'+data.map(function(d,i){return toX(i)+','+toY(d.poids);}).join(' L')+' L'+toX(data.length-1)+','+(H-pad.b)+' Z';
+  var dots=data.map(function(d,i){return '<circle cx="'+toX(i)+'" cy="'+toY(d.poids)+'" r="3.5" fill="#ff3333" stroke="#0a0a0a" stroke-width="1.5"/>';}).join('');
+  svg.innerHTML=gL+'<path d="'+area+'" fill="url(#exoGrad)"/><polyline points="'+pts+'" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'+dots;
+  if(labelsEl){
+    var lh='';
+    data.forEach(function(d,i){
+      if(data.length>4&&i%Math.ceil(data.length/4)!==0&&i!==data.length-1)return;
+      var dt=new Date(d.date);
+      var lbl=(dt.getDate()+'').padStart(2,'0')+'/'+(dt.getMonth()+1+'').padStart(2,'0');
+      var pct=data.length===1?50:Math.round(i/(data.length-1)*100);
+      lh+='<span style="font-size:9px;color:#555;position:absolute;left:'+pct+'%;transform:translateX(-50%)">'+lbl+'</span>';
+    });
+    labelsEl.innerHTML=lh;
+  }
+  if(infoEl&&vals.length>=2){
+    var diff=(vals[vals.length-1]-vals[0]).toFixed(1);
+    infoEl.textContent='Max: '+vals[vals.length-1]+' kg  ·  Progression: '+(diff>=0?'+':'')+diff+' kg';
+    infoEl.style.color=diff>=0?'var(--green)':'var(--accent)';
+  } else if(infoEl){infoEl.textContent='Max: '+vals[0]+' kg';infoEl.style.color='#888';}
+}
+
+// ══ BOOT ══
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('nav-dash').addEventListener('click',function(){showPage('dash');initDash();});
+  document.getElementById('nav-training').addEventListener('click',function(){showPage('training');initTraining();});
+  document.getElementById('nav-nutrition').addEventListener('click',function(){showPage('nutrition');initNutrition();});
+  document.getElementById('nav-progress').addEventListener('click',function(){showPage('progress');initProgress();});
+  document.getElementById('nav-recovery').addEventListener('click',function(){showPage('recovery');initRecovery();});
+
+  // Init
+  updateHeaderAvatar();
+  initDash();
+  initTraining();
+  initNutrition();
+  initRecovery();
+  // Cacher splash après init
+  setTimeout(function(){
+    var splash = document.getElementById('splash');
+    if (splash) { splash.style.opacity='0'; setTimeout(function(){ splash.style.display='none'; },500); }
+  }, 800);
+
+  // Enregistrer le Service Worker (hors-ligne)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  }
+});
+
+loadPersonalProgramme().then(function(){
+  var meals=window.PERSONAL_MEALS;
+  if(typeof meals==='string'){try{meals=JSON.parse(meals);}catch(e){meals=null;}}
+  if(meals&&Array.isArray(meals)&&meals.length>0){
+    window._repasData=meals.map(function(m){return{name:m.name||m.repas||'Repas',cals:m.calories||m.kcal||0,prot:m.proteines||m.protein||0,gluci:m.glucides||m.carbs||0,lip:m.lipides||m.fat||0,detail:m.detail||m.description||''};});
+    initNutrition();
+  }
+});
+
+
+
+// ══ GRAPHIQUE PAR EXERCICE ══
+function initExoSelect() {
+  var sel = document.getElementById('exo-select');
+  if (!sel) return;
+  var exos = {};
+  PROGRAM.forEach(function(day) {
+    if (!day.rest) day.exercises.forEach(function(e){ exos[e.name] = true; });
+  });
+  sel.innerHTML = '<option value="">— Choisir un exercice —</option>';
+  Object.keys(exos).sort().forEach(function(name){
+    sel.innerHTML += '<option value="'+name+'">'+name+'</option>';
+  });
+}
+
+function renderExoChart() {
+  var sel = document.getElementById('exo-select');
+  var svg = document.getElementById('exo-chart-svg');
+  var labelsEl = document.getElementById('exo-chart-labels');
+  var infoEl = document.getElementById('exo-chart-info');
+  if (!sel || !svg) return;
+  var exoName = sel.value;
+  if (!exoName) { svg.innerHTML=''; if(infoEl)infoEl.textContent='Sélectionne un exercice'; return; }
+  var dayIdx=-1, exoIdx=-1;
+  PROGRAM.forEach(function(day,di){
+    if (!day.rest) day.exercises.forEach(function(e,ei){
+      if (e.name===exoName){dayIdx=di;exoIdx=ei;}
+    });
+  });
+  if (dayIdx===-1) return;
+  var data=[];
+  Object.keys(state.poids||{}).sort().forEach(function(sk){
+    if (!sk.endsWith('_d'+dayIdx)) return;
+    var dateStr=sk.split('_d')[0];
+    var best=0;
+    Object.keys(state.poids[sk]||{}).forEach(function(k){
+      if (k.startsWith(exoIdx+'_')){var pd=state.poids[sk][k];if(pd&&pd.poids>best)best=pd.poids;}
+    });
+    if (best>0) data.push({date:dateStr,poids:best});
+  });
+  if (!data.length){
+    svg.innerHTML='<text x="50%" y="50%" text-anchor="middle" fill="#333" font-size="12">Aucune donnée encore</text>';
+    if(infoEl)infoEl.textContent='Fais ta première séance !';
+    return;
+  }
+  var vals=data.map(function(d){return d.poids;});
+  var minV=Math.min.apply(null,vals)-2,maxV=Math.max.apply(null,vals)+2;
+  var W=svg.parentElement?svg.parentElement.offsetWidth||300:300,H=90;
+  var pad={l:28,r:8,t:8,b:8};
+  var toX=function(i){return pad.l+(data.length===1?(W-pad.l)/2:i/(data.length-1)*(W-pad.l-pad.r));};
+  var toY=function(v){return pad.t+(1-(v-minV)/(maxV-minV))*(H-pad.t-pad.b);};
+  var gL='';
+  [Math.round(minV),Math.round((minV+maxV)/2),Math.round(maxV)].forEach(function(v){
+    var y=toY(v);
+    gL+='<line x1="'+pad.l+'" y1="'+y+'" x2="'+(W-pad.r)+'" y2="'+y+'" stroke="#1e1e1e" stroke-width="1"/>';
+    gL+='<text x="'+(pad.l-4)+'" y="'+(y+4)+'" text-anchor="end" fill="#555" font-size="9">'+v+'</text>';
+  });
+  var pts=data.map(function(d,i){return toX(i)+','+toY(d.poids);}).join(' ');
+  var area='M'+toX(0)+','+(H-pad.b)+' L'+data.map(function(d,i){return toX(i)+','+toY(d.poids);}).join(' L')+' L'+toX(data.length-1)+','+(H-pad.b)+' Z';
+  var dots=data.map(function(d,i){return '<circle cx="'+toX(i)+'" cy="'+toY(d.poids)+'" r="3.5" fill="#ff3333" stroke="#0a0a0a" stroke-width="1.5"/>';}).join('');
+  svg.innerHTML=gL+'<path d="'+area+'" fill="url(#exoGrad)"/><polyline points="'+pts+'" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'+dots;
+  if(labelsEl){
+    var lh='';
+    data.forEach(function(d,i){
+      if(data.length>4&&i%Math.ceil(data.length/4)!==0&&i!==data.length-1)return;
+      var dt=new Date(d.date);
+      var lbl=(dt.getDate()+'').padStart(2,'0')+'/'+(dt.getMonth()+1+'').padStart(2,'0');
+      var pct=data.length===1?50:Math.round(i/(data.length-1)*100);
+      lh+='<span style="font-size:9px;color:#555;position:absolute;left:'+pct+'%;transform:translateX(-50%)">'+lbl+'</span>';
+    });
+    labelsEl.innerHTML=lh;
+  }
+  if(infoEl&&vals.length>=2){
+    var diff=(vals[vals.length-1]-vals[0]).toFixed(1);
+    infoEl.textContent='Max: '+vals[vals.length-1]+' kg  ·  Progression: '+(diff>=0?'+':'')+diff+' kg';
+    infoEl.style.color=diff>=0?'var(--green)':'var(--accent)';
+  } else if(infoEl){infoEl.textContent='Max: '+vals[0]+' kg';infoEl.style.color='#888';}
 }
 
 // ══ BOOT ══
