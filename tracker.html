@@ -861,13 +861,13 @@ function initDash() {
   document.getElementById('stat-semaine').textContent = allSeances.filter(k => k.startsWith(monthKey)).length;
 
   // Dots résumé
-  document.getElementById('dot-training').className = 'today-pill-dot' + (state.doneSeances[today] ? ' done' : '');
+  (document.getElementById('dot-training')||{}).className = 'today-pill-dot' + (state.doneSeances[today] ? ' done' : '');
   const rc = Object.values(state.repas[today]||{}).filter(Boolean).length;
   const rl = (window._repasData || REPAS_DEFAULT).length;
-  document.getElementById('dot-nutrition').className = 'today-pill-dot' + (rc >= rl ? ' done' : rc > 0 ? ' partial' : '');
+  (document.getElementById('dot-nutrition')||{}).className = 'today-pill-dot' + (rc >= rl ? ' done' : rc > 0 ? ' partial' : '');
   const wc = state.water[today] || 0;
-  document.getElementById('dot-water').className = 'today-pill-dot' + (wc >= 8 ? ' done' : wc > 0 ? ' partial' : '');
-  document.getElementById('dot-recup').className = 'today-pill-dot' + (state.recup[today] ? ' done' : '');
+  (document.getElementById('dot-water')||{}).className = 'today-pill-dot' + (wc >= 8 ? ' done' : wc > 0 ? ' partial' : '');
+  (document.getElementById('dot-recup')||{}).className = 'today-pill-dot' + (state.recup[today] ? ' done' : '');
 
   // Prochain entraînement
   renderNextTraining();
@@ -1347,9 +1347,9 @@ function renderRecupHistory() {
 // HEADER
 // ══════════════════════════════════════
 function initHeader() {
-  document.getElementById('header-date').textContent = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'short'});
+  var _hd=document.getElementById('header-date');if(_hd)_hd.textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'short'});
   const name = _email ? _email.split('@')[0] : 'Guest';
-  document.getElementById('user-name').textContent = name;
+  (document.getElementById('user-name')||{}).textContent = name;
   document.getElementById('user-avatar').textContent = name[0]?.toUpperCase()||'?';
 }
 
