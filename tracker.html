@@ -730,16 +730,24 @@ body{display:flex;flex-direction:column}
       <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #1e1e1e"><div style="font-size:15px;font-weight:600">Unité de poids</div><div style="display:flex;gap:6px"><div onclick="selectUnit('kg',this)" id="unit-kg" style="padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:var
 
 <script>
-// ══ SPLASH SAFETY NET ══
-// Si tout plante, on cache quand même le splash après 2s
-setTimeout(function(){
+// ══ SPLASH - HIDE IMMÉDIAT ══
+// Cacher le splash dès que le script s'exécute (DOM déjà prêt car script en bas)
+(function hideSplash() {
   var splash = document.getElementById('splash');
-  if (splash && splash.style.display !== 'none') {
+  if (!splash) return;
+  // Court délai pour montrer le logo puis cacher
+  setTimeout(function(){
     splash.style.opacity = '0';
-    splash.style.transition = 'opacity 0.4s ease';
-    setTimeout(function(){ splash.style.display='none'; }, 400);
-  }
-}, 1500);
+    splash.style.transition = 'opacity 0.5s ease';
+    setTimeout(function(){ 
+      splash.style.display = 'none'; 
+    }, 500);
+  }, 1200);
+  // Filet de sécurité absolu : forcer après 3s quoi qu'il arrive
+  setTimeout(function(){
+    if (splash) { splash.style.display = 'none'; splash.style.opacity = '0'; }
+  }, 3000);
+})();
 
 // ══════════════════════════════════════
 // SUPABASE
@@ -748,14 +756,7 @@ const SUPABASE_URL = 'https://rusqjfimppgcxusnwyzq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1c3FqZmltcHBnY3h1c253eXpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1NTExNTUsImV4cCI6MjA5MjEyNzE1NX0.mWXBGMK0t1_Wwcu33Nps8xoHYF9A2LCRMnxkEaW5k88';
 const _session = localStorage.getItem('evryone-session');
 const _email = localStorage.getItem('evryone-email') || '';
-// Ne pas rediriger si on est déjà sur tracker.evryoneclub.com
-// (évite la boucle infinie et le splash bloqué)
-if (!_session && window.location.hostname !== 'localhost' && window.location.protocol !== 'file:') {
-  var _isTrackerDomain = window.location.hostname === 'tracker.evryoneclub.com';
-  if (!_isTrackerDomain) {
-    window.location.href = '/';
-  }
-}
+// Pas de redirect - auth gérée par evryoneclub.com
 
 async function loadPersonalProgramme() {
   if (!_email) return;
