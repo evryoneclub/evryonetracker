@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 
 <html lang="fr">
 <head>
@@ -73,22 +73,9 @@ body{display:flex;flex-direction:column}
 /* PROGRESS TABS */
 .prog-tab{flex:1;background:none;border:none;padding:10px 4px;font-size:12px;font-weight:700;color:#555;cursor:pointer;border-bottom:2px solid transparent;font-family:'DM Sans',sans-serif}
 .prog-tab.active{color:var(--accent);border-bottom:2px solid var(--accent)}
-@keyframes splashPulse{0%,100%{opacity:.3;transform:scale(0.8)}50%{opacity:1;transform:scale(1.2)}}
 </style>
 </head>
 <body>
-
-<!-- SPLASH SCREEN -->
-
-<div id="splash" style="position:fixed;inset:0;background:#0a0a0a;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s ease">
-  <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:4px;color:#fff;margin-bottom:8px">EVRY<span style="color:#ff3333">Ø</span>NE</div>
-  <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:6px;color:#ff3333;margin-bottom:48px">TRACKER</div>
-  <div style="display:flex;gap:8px">
-    <div class="splash-dot" style="width:8px;height:8px;border-radius:50%;background:#ff3333;animation:splashPulse 1s ease-in-out infinite"></div>
-    <div class="splash-dot" style="width:8px;height:8px;border-radius:50%;background:#ff3333;animation:splashPulse 1s ease-in-out .2s infinite"></div>
-    <div class="splash-dot" style="width:8px;height:8px;border-radius:50%;background:#ff3333;animation:splashPulse 1s ease-in-out .4s infinite"></div>
-  </div>
-</div>
 
 <div class="header">
   <div class="logo">EVRY<span>Ø</span>NE <span style="color:var(--accent)">TRACKER</span></div>
@@ -730,24 +717,7 @@ body{display:flex;flex-direction:column}
       <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid #1e1e1e"><div style="font-size:15px;font-weight:600">Unité de poids</div><div style="display:flex;gap:6px"><div onclick="selectUnit('kg',this)" id="unit-kg" style="padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;background:var
 
 <script>
-// ══ SPLASH - HIDE IMMÉDIAT ══
-// Cacher le splash dès que le script s'exécute (DOM déjà prêt car script en bas)
-(function hideSplash() {
-  var splash = document.getElementById('splash');
-  if (!splash) return;
-  // Court délai pour montrer le logo puis cacher
-  setTimeout(function(){
-    splash.style.opacity = '0';
-    splash.style.transition = 'opacity 0.5s ease';
-    setTimeout(function(){ 
-      splash.style.display = 'none'; 
-    }, 500);
-  }, 1200);
-  // Filet de sécurité absolu : forcer après 3s quoi qu'il arrive
-  setTimeout(function(){
-    if (splash) { splash.style.display = 'none'; splash.style.opacity = '0'; }
-  }, 3000);
-})();
+// splash supprimé
 
 // ══════════════════════════════════════
 // SUPABASE
@@ -2111,14 +2081,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   } catch(e) {
     console.error('Init error:', e);
-  } finally {
-    // Toujours cacher le splash même si erreur
-    var splash = document.getElementById('splash');
-    if (splash) {
-      splash.style.opacity = '0';
-      splash.style.transition = 'opacity 0.4s ease';
-      setTimeout(function(){ splash.style.display='none'; }, 400);
-    }
   }
 });
 
