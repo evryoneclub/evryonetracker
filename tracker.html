@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 <html lang="fr">
@@ -966,80 +965,97 @@ function renderObjectif() {
 
 // ── GRAPHIQUE PROGRESSION ──
 function renderChart() {
-  var svg = document.getElementById('prog-chart');
-  if (!svg) return;
+  var barsEl   = document.getElementById('prog-bars');
+  var labelsEl = document.getElementById('prog-labels');
+  var totalEl  = document.getElementById('prog-total-val');
+  var maxBadge = document.getElementById('prog-max-badge');
+  var trendBadge = document.getElementById('prog-trend-badge');
+  var trendArrow = document.getElementById('prog-trend-arrow');
+  var trendText  = document.getElementById('prog-trend-text');
+  if (!barsEl) return;
 
-  // Calculer charge totale par séance (poids × reps pour chaque série)
-  var dataPoints = [];
-  var allKeys = Object.keys(state.poids || {}).sort();
+  var days = ['LUN','MAR','MER','JEU','VEN','SAM','DIM'];
+  var weekStart = getWeekStart(new Date());
+  var todayIdx = (new Date().getDay()+6)%7;
 
-  allKeys.forEach(function(sk) {
-    var total = 0;
-    var setsObj = state.poids[sk] || {};
-    Object.values(setsObj).forEach(function(pd) {
-      if (pd && pd.poids && pd.reps) total += pd.poids * pd.reps;
+  // Volume par jour (semaine courante)
+  var vols = [0,0,0,0,0,0,0];
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(weekStart);
+    d.setDate(d.getDate()+i);
+    var sk = d.toISOString().split('T')[0]+'_d'+i;
+    var setsObj = state.poids[sk]||{};
+    Object.values(setsObj).forEach(function(pd){
+      if (pd&&pd.poids&&pd.reps) vols[i] += pd.poids*pd.reps;
     });
-    if (total > 0) {
-      // Extraire la date depuis la clé (format: YYYY-MM-DD_dX)
-      var dateStr = sk.split('_d')[0];
-      dataPoints.push({ date: dateStr, val: total, key: sk });
-    }
-  });
-
-  if (dataPoints.length === 0) {
-    svg.innerHTML = '<text x="50%" y="55%" text-anchor="middle" fill="#444" font-size="12" font-family="DM Sans,sans-serif">Complète des séances pour voir ta progression</text>';
-    return;
   }
 
-  // Garder les 8 dernières séances
-  dataPoints = dataPoints.slice(-8);
-
-  var W = svg.parentElement.offsetWidth || 300;
-  var H = 120;
-  var padL = 10, padR = 10, padT = 10, padB = 24;
-  var w = W - padL - padR;
-  var h = H - padT - padB;
-
-  var vals = dataPoints.map(function(d){ return d.val; });
-  var minV = Math.min.apply(null, vals);
-  var maxV = Math.max.apply(null, vals);
-  var range = maxV - minV || 1;
-
-  var pts = dataPoints.map(function(d, i) {
-    var x = padL + (i / Math.max(dataPoints.length - 1, 1)) * w;
-    var y = padT + h - ((d.val - minV) / range) * h;
-    return { x: x, y: y, val: d.val, date: d.date };
-  });
-
-  var html = '';
-
-  // Aire sous la courbe
-  var areaPath = 'M ' + pts[0].x + ' ' + (padT + h);
-  pts.forEach(function(p){ areaPath += ' L ' + p.x + ' ' + p.y; });
-  areaPath += ' L ' + pts[pts.length-1].x + ' ' + (padT + h) + ' Z';
-  html += '<defs><linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff3333" stop-opacity="0.3"/><stop offset="100%" stop-color="#ff3333" stop-opacity="0"/></linearGradient></defs>';
-  html += '<path d="' + areaPath + '" fill="url(#chartGrad)"/>';
-
-  // Ligne
-  var linePath = '';
-  pts.forEach(function(p, i){ linePath += (i === 0 ? 'M' : 'L') + ' ' + p.x + ' ' + p.y + ' '; });
-  html += '<path d="' + linePath + '" fill="none" stroke="#ff3333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
-
-  // Points + labels
-  pts.forEach(function(p, i) {
-    html += '<circle cx="' + p.x + '" cy="' + p.y + '" r="4" fill="#ff3333" stroke="#0a0a0a" stroke-width="2"/>';
-    // Label valeur sur le dernier point
-    if (i === pts.length - 1) {
-      html += '<text x="' + p.x + '" y="' + (p.y - 8) + '" text-anchor="middle" fill="#ff3333" font-size="10" font-family="Bebas Neue,sans-serif">' + Math.round(p.val) + 'kg</text>';
+  // Si rien cette semaine → historique global
+  var totalVol = vols.reduce(function(a,b){return a+b;},0);
+  if (totalVol === 0) {
+    for (var i = 0; i < 7; i++) {
+      var allKeys = Object.keys(state.poids||{}).filter(function(k){ return k.endsWith('_d'+i); });
+      if (allKeys.length > 0) {
+        var lastKey = allKeys[allKeys.length-1];
+        Object.values(state.poids[lastKey]||{}).forEach(function(pd){
+          if (pd&&pd.poids&&pd.reps) vols[i] += pd.poids*pd.reps;
+        });
+      }
     }
-    // Date en bas
-    var d = new Date(p.date);
-    var lbl = d.getDate() + '/' + (d.getMonth()+1);
-    html += '<text x="' + p.x + '" y="' + (H - 4) + '" text-anchor="middle" fill="#444" font-size="9" font-family="DM Sans,sans-serif">' + lbl + '</text>';
-  });
+    totalVol = vols.reduce(function(a,b){return a+b;},0);
+  }
 
-  svg.setAttribute('width', W);
-  svg.innerHTML = html;
+  // Volume semaine précédente (tendance)
+  var prevStart = new Date(weekStart);
+  prevStart.setDate(prevStart.getDate()-7);
+  var prevTotal = 0;
+  for (var i = 0; i < 7; i++) {
+    var dp = new Date(prevStart); dp.setDate(dp.getDate()+i);
+    var skp = dp.toISOString().split('T')[0]+'_d'+i;
+    Object.values(state.poids[skp]||{}).forEach(function(pd){
+      if(pd&&pd.poids&&pd.reps) prevTotal+=pd.poids*pd.reps;
+    });
+  }
+
+  var maxVol = Math.max.apply(null, vols);
+  if (totalEl) totalEl.textContent = Math.round(totalVol).toLocaleString('fr-FR');
+  if (maxBadge) maxBadge.textContent = maxVol>0 ? Math.round(maxVol).toLocaleString('fr-FR') : '--';
+
+  // Tendance
+  if (trendArrow && trendText) {
+    if (prevTotal>0 && totalVol>0) {
+      var diff = Math.round((totalVol-prevTotal)/prevTotal*100);
+      trendArrow.textContent = diff>=0?'↑':'↓';
+      trendText.textContent = (diff>=0?'+':'')+diff+'% vs sem. dernière';
+      if (trendBadge) trendBadge.style.color = diff>=0?'var(--green)':'var(--accent)';
+    } else {
+      trendArrow.textContent = '→';
+      trendText.textContent = totalVol>0 ? 'Première semaine' : 'Lance-toi !';
+      if (trendBadge) trendBadge.style.color = '#888';
+    }
+  }
+
+  // Barres
+  var barsHtml = '';
+  var labelsHtml = '';
+  var maxH = maxVol>0 ? maxVol : 1;
+
+  for (var i = 0; i < 7; i++) {
+    var isT = (i===todayIdx);
+    var hasData = vols[i]>0;
+    var heightPct = hasData ? Math.max(12, Math.round(vols[i]/maxH*100)) : 0;
+    var color = isT&&hasData ? 'var(--accent)' : (hasData?'#444':'#222');
+    var glow = isT&&hasData ? 'box-shadow:0 0 14px rgba(255,51,51,.5);' : '';
+
+    barsHtml += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:80px">';
+    barsHtml += '<div style="width:80%;border-radius:6px 6px 3px 3px;background:'+color+';height:'+(hasData?heightPct+'%':'8px')+';'+glow+'transition:.5s"></div>';
+    barsHtml += '</div>';
+
+    labelsHtml += '<div style="flex:1;text-align:center;font-size:9px;color:'+(isT?'var(--accent)':'#555')+';font-weight:'+(isT?'700':'400')+';letter-spacing:.3px">'+days[i]+'</div>';
+  }
+
+  barsEl.innerHTML = barsHtml;
+  if (labelsEl) labelsEl.innerHTML = labelsHtml;
 }
 
 // ══════════════════════════════════════
