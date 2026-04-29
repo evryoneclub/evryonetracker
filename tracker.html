@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+<<!DOCTYPE html>
 
 <html lang="fr">
 <head>
@@ -1070,16 +1071,8 @@ function toggleExo(ei) {
 }
 
 function renderDaySelector() {
-  const sel = document.getElementById('day-selector');
-  sel.innerHTML = '';
-  PROGRAM.forEach((day, i) => {
-    const btn = document.createElement('button');
-    const isDone = !!state.doneSeances[today + '_d' + i];
-    btn.className = 'day-btn' + (i === currentDay ? ' active' : '') + (isDone ? ' done' : '');
-    btn.textContent = day.label + ' · ' + day.name;
-    btn.onclick = () => { currentDay = i; renderDaySelector(); renderSeance(); };
-    sel.appendChild(btn);
-  });
+  // Remplacée par renderWeekCalendar
+  renderWeekCalendar();
 }
 
 function renderSeance() {
