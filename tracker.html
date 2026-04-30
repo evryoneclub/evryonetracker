@@ -88,7 +88,7 @@ body{display:flex;flex-direction:column}
 <div class="page active" id="page-dash">
 
   <!-- HERO -->
-  <div style="position:relative;min-height:280px;margin:-16px -16px 0;padding:20px 20px 24px;overflow:hidden;background:#0a0a0a">
+  <div style="position:relative;min-height:240px;margin:-16px -16px 0;padding:20px 20px 24px;overflow:hidden;background:#0a0a0a">
     <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=60') right center/cover no-repeat;opacity:0.35"></div>
     <div style="position:absolute;inset:0;background:linear-gradient(to right,#0a0a0a 40%,transparent 100%)"></div>
     <div style="position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to top,#0a0a0a,transparent)"></div>
@@ -120,8 +120,74 @@ body{display:flex;flex-direction:column}
     </div>
   </div>
 
+  <!-- DAILY SCORE -->
+  <div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:18px;margin:16px 0 12px;box-shadow:0 2px 20px rgba(0,0,0,0.4)">
+    <div style="font-size:10px;color:#666;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;font-weight:700">DAILY SCORE</div>
+    <div style="display:flex;align-items:center;gap:16px">
+      <div style="position:relative;width:100px;height:100px;flex-shrink:0">
+        <svg viewBox="0 0 100 100" width="100" height="100" style="transform:rotate(-90deg)">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="#222" stroke-width="8"/>
+          <circle cx="50" cy="50" r="42" fill="none" stroke="var(--green)" stroke-width="8" stroke-linecap="round" stroke-dasharray="263.9" id="daily-score-arc" stroke-dashoffset="263.9" style="transition:.6s"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;line-height:1;color:#fff" id="daily-score-val">0</div>
+          <div style="font-size:10px;color:#666">/100</div>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:7px"><div style="width:9px;height:9px;border-radius:50%;background:#f59e0b"></div><span style="font-size:12px;color:#ccc">Training</span></div>
+          <span style="font-size:12px;font-weight:700"><span id="score-training-pts">0</span>/30</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:7px"><div style="width:9px;height:9px;border-radius:50%;background:var(--green)"></div><span style="font-size:12px;color:#ccc">Nutrition</span></div>
+          <span style="font-size:12px;font-weight:700"><span id="score-nutrition-pts">0</span>/30</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:7px"><div style="width:9px;height:9px;border-radius:50%;background:#3b82f6"></div><span style="font-size:12px;color:#ccc">Récupération</span></div>
+          <span style="font-size:12px;font-weight:700"><span id="score-recovery-pts">0</span>/20</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:7px"><div style="width:9px;height:9px;border-radius:50%;background:#ef4444"></div><span style="font-size:12px;color:#ccc">Streak</span></div>
+          <span style="font-size:12px;font-weight:700"><span id="score-streak-pts">0</span>/20</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:10px;font-size:12px;color:#888" id="daily-score-label">Commence ta journée 💪</div>
+  </div>
+
+  <!-- RÉCUP + CALORIES (2 mini-cards) -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+    <!-- Récup -->
+    <div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:14px;box-shadow:0 2px 20px rgba(0,0,0,0.4)">
+      <div style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:700">RÉCUPÉRATION</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="position:relative;width:56px;height:56px;flex-shrink:0">
+          <svg viewBox="0 0 60 60" width="56" height="56" style="transform:rotate(-90deg)">
+            <circle cx="30" cy="30" r="24" fill="none" stroke="#222" stroke-width="5"/>
+            <circle cx="30" cy="30" r="24" fill="none" stroke="var(--green)" stroke-width="5" stroke-linecap="round" stroke-dasharray="150.8" id="recup-arc" stroke-dashoffset="150.8" style="transition:.6s"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:14px;color:#fff" id="recup-pct">0%</div>
+        </div>
+        <div style="font-size:10px;color:#888;line-height:1.4" id="recup-label">Remplis tes données</div>
+      </div>
+      <div style="font-size:10px;color:#555">🌙 <span id="recup-sleep">--</span> · ⚡ <span id="recup-energy">--</span></div>
+    </div>
+    <!-- Calories -->
+    <div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:14px;box-shadow:0 2px 20px rgba(0,0,0,0.4)">
+      <div style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:700">CALORIES</div>
+      <div style="font-size:9px;color:#888;margin-bottom:2px">Reste</div>
+      <div style="display:flex;align-items:baseline;gap:3px;margin-bottom:6px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;line-height:1;color:#fff" id="dash-kcal-reste">--</div>
+        <div style="font-size:10px;color:#666">kcal</div>
+      </div>
+      <div style="font-size:10px;margin-bottom:6px"><span style="color:var(--accent);font-weight:700" id="dash-kcal-conso">0</span><span style="color:#555"> / </span><span style="color:#888" id="dash-kcal-obj">2000</span></div>
+      <div style="background:#222;border-radius:99px;height:4px;overflow:hidden"><div id="dash-bar-cal" style="height:4px;border-radius:99px;background:linear-gradient(90deg,var(--accent),#ff6666);width:0%;transition:.5s"></div></div>
+    </div>
+  </div>
+
   <!-- STATS 3EN1 -->
-  <div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:20px;margin:16px 0 12px;box-shadow:0 2px 20px rgba(0,0,0,0.4)">
+  <div style="background:rgba(18,18,18,0.92);border:1px solid rgba(255,255,255,0.06);border-radius:20px;margin-bottom:12px;box-shadow:0 2px 20px rgba(0,0,0,0.4)">
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
       <div style="padding:14px 12px;border-right:1px solid rgba(255,255,255,0.06)">
         <div style="font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🔥 CALORIES</div>
@@ -823,8 +889,52 @@ function initDash() {
   el = document.getElementById('hero-obj-type'); if(el) el.textContent = (obj.type||'OBJECTIF').toUpperCase();
   el = document.getElementById('hero-obj-cible'); if(el) el.textContent = obj.cible || '--';
 
+  renderDailyScore();
   renderNextTraining();
   renderChart();
+}
+
+function renderDailyScore() {
+  var REPAS = window._repasData || REPAS_DEFAULT;
+  var repasToday = state.repas[today] || {};
+  var allSeances = Object.keys(state.doneSeances||{}).filter(k=>k.includes('_d')&&state.doneSeances[k]);
+  var monthKey = new Date().toISOString().slice(0,7);
+  var weekSeances = allSeances.filter(k=>k.slice(0,7)===monthKey).length;
+  var sTraining = Math.min(30, weekSeances * 5);
+  var repasDone = Object.values(repasToday).filter(Boolean).length;
+  var sNutrition = Math.min(30, Math.round(repasDone / REPAS.length * 30));
+  var rec = state.recup && state.recup[today];
+  var sRecovery = rec && rec.score ? Math.min(20, Math.round(rec.score / 100 * 20)) : 0;
+  var streak = 0; var d2 = new Date();
+  while(true){var k2=d2.toISOString().split('T')[0];var di=(d2.getDay()+6)%7;if(state.doneSeances[k2+'_d'+di]){streak++;d2.setDate(d2.getDate()-1);}else break;}
+  var sStreak = Math.min(20, streak * 4);
+  var total = sTraining + sNutrition + sRecovery + sStreak;
+  var el;
+  el=document.getElementById('daily-score-val'); if(el) el.textContent=total;
+  el=document.getElementById('score-training-pts'); if(el) el.textContent=sTraining;
+  el=document.getElementById('score-nutrition-pts'); if(el) el.textContent=sNutrition;
+  el=document.getElementById('score-recovery-pts'); if(el) el.textContent=sRecovery;
+  el=document.getElementById('score-streak-pts'); if(el) el.textContent=sStreak;
+  var arc=document.getElementById('daily-score-arc');
+  if(arc) arc.style.strokeDashoffset=263.9-(total/100)*263.9;
+  var lbl=total>=80?'Excellent travail 🔥':total>=60?'Bonne journée 💪':total>=40?'Continue comme ça 👍':'Commence ta journée 💪';
+  el=document.getElementById('daily-score-label'); if(el) el.textContent=lbl;
+  // Mini récup
+  var recupPct=rec&&rec.score?rec.score:0;
+  var recupArc=document.getElementById('recup-arc');
+  if(recupArc) recupArc.style.strokeDashoffset=150.8-(recupPct/100)*150.8;
+  el=document.getElementById('recup-pct'); if(el) el.textContent=recupPct+'%';
+  el=document.getElementById('recup-label'); if(el) el.textContent=recupPct>=75?'Prêt à performer':recupPct>=50?'Bonne récupération':rec?'Récupération faible':'Remplis tes données';
+  el=document.getElementById('recup-sleep'); if(el) el.textContent=rec&&rec.sleep?rec.sleep+'h':'--';
+  el=document.getElementById('recup-energy'); if(el) el.textContent=rec&&rec.energy?rec.energy+'/10':'--';
+  // Mini calories
+  var tgtCal=window.PERSONAL_KCAL||2000; var tCal=0;
+  REPAS.forEach((r,i)=>{if(repasToday[i])tCal+=r.cals;});
+  var reste=Math.max(0,tgtCal-tCal);
+  el=document.getElementById('dash-kcal-reste'); if(el) el.textContent=reste>0?reste.toLocaleString('fr-FR'):'--';
+  el=document.getElementById('dash-kcal-conso'); if(el) el.textContent=tCal.toLocaleString('fr-FR');
+  el=document.getElementById('dash-kcal-obj'); if(el) el.textContent=tgtCal.toLocaleString('fr-FR');
+  el=document.getElementById('dash-bar-cal'); if(el) el.style.width=Math.min(100,Math.round(tCal/tgtCal*100))+'%';
 }
 
 function renderNextTraining() {
